@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+<document title="HOWTO write RTBot plugins 1.0">
+    <!-- Introduction -->
+    <normal-text>
+    Based on core version 4.2 of the bot. Repository revision: 160.
+    </normal-text>
+    
+    <!-- CHAPTER: Meta -->
+    <chapter title="Meta">
+   
+        <!--  -->
+        <paragraph>
+        Introduction to meta.
+        </paragraph>
+        
+        <!-- SECTION: Repository -->
+        <section title="Subversion Repository">
+        
+            <!-- Normal text -->
+            <paragraph>
+            The address is ...
+            </paragraph>
+            
+            <!-- Normal text -->
+            <paragraph>
+            Ask Cortex for an account. (Before you start asking, think about a password! Or decide to get assigned a random one...)
+            </paragraph>
+
+        </section>
+
+    </chapter>
+
+
+
+
+
+    <!-- CHAPTER: Basics -->
+    <chapter title="Basics">
+   
+        <!-- SECTION: Repository -->
+        <section title="Introduction">
+        
+            <!-- Normal text -->
+            <paragraph>
+            Now I will present some source code.
+            </paragraph>
+            
+            <code>import stuff
+
+            class test:
+                pass</code>
+            
+            <!-- Normal text -->
+            <paragraph>
+            And here it ends.
+            </paragraph>
+
+        </section>
+
+    </chapter>
+
+</document>
