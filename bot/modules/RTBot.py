@@ -126,7 +126,10 @@ class RTBot:
     def onChannelMessage(self, source, message, channel):
         # ============= DEBUG ===============
         if(message == "list"):
-            self.irclib.sendChannelMessage(str(self.irclib.getUserList().userList))
+            list = []
+            for (name, data) in self.irclib.getUserList().getRawDictionary().items():
+                list.append((name, data[0]))
+            self.irclib.sendChannelMessage(list)
             return
         LogLib.log.add(LogLib.LOGLVL_LOG, source + "-->#: " + message)
         self.pluginInterface.fireEvent("onChannelMessage", self.irclib, source, message)
