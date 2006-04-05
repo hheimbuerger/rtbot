@@ -1,654 +1,670 @@
-"Anchorage, Alaska, U.S.A.",-0900,AKST - Alaska Standard Time
-"Tangshan, China",+0800,UTC - Coordinated Universal Time
-"Bhubaneshwar, India",+0530,UTC - Coordinated Universal Time
-"Akron, Ohio, U.S.A.",-0500,EST - Eastern Standard Time
-"Vancouver, British Columbia, Canada",-0800,PST - Pacific Standard Time
-"Nairobi, Kenya",+0300,UTC - Coordinated Universal Time
-"Kazan, Russia",+0300,UTC - Coordinated Universal Time
-"Nanchang, China",+0800,UTC - Coordinated Universal Time
-"Astana, Kazakstan",+0600,UTC - Coordinated Universal Time
-"Victoria, Seychelles",+0400,UTC - Coordinated Universal Time
+"Anchorage, Alaska, U.S.A.",-0800,AKDT - Alaska Daylight Time
+"Tangshan, China",+0800,no timezone abbreviation
+"Bhubaneshwar, India",+0530,no timezone abbreviation
+"Akron, Ohio, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Shenzhen, China",+0800,no timezone abbreviation
+"Nairobi, Kenya",+0300,no timezone abbreviation
+"Kazan, Russia",+0400,no timezone abbreviation
+"Nanchang, China",+0800,no timezone abbreviation
+"Astana, Kazakstan",+0600,no timezone abbreviation
+"Victoria, Seychelles",+0400,no timezone abbreviation
 CET,+0100,CET - Central European Time
-"Porto Alegre, Rio Grande do Sul, Brazil",-0200,UTC - Coordinated Universal Time
-"Malang, Java, Indonesia",+0700,UTC - Coordinated Universal Time
-"Athens, Greece",+0200,EET - Eastern European Time
-"Vila, Vanuatu",+1100,UTC - Coordinated Universal Time
-"Antananarivo, Madagascar",+0300,UTC - Coordinated Universal Time
-"Port Moresby, Papua New Guinea",+1000,UTC - Coordinated Universal Time
-"Riyadh, Saudi Arabia",+0300,UTC - Coordinated Universal Time
-"Bangalore, India",+0530,UTC - Coordinated Universal Time
-"Guatemala, Guatemala",-0600,UTC - Coordinated Universal Time
+"Porto Alegre, Rio Grande do Sul, Brazil",-0300,no timezone abbreviation
+"Orlando, Florida, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Malang, Java, Indonesia",+0700,no timezone abbreviation
+"Athens, Greece",+0300,EEST - Eastern European Summer Time
+"Vancouver, British Columbia, Canada",-0700,PDT - Pacific Daylight Time
+"Antananarivo, Madagascar",+0300,no timezone abbreviation
+"Port Moresby, Papua New Guinea",+1000,no timezone abbreviation
+"Riyadh, Saudi Arabia",+0300,no timezone abbreviation
+"Bangalore, India",+0530,no timezone abbreviation
+"Guatemala, Guatemala",-0600,no timezone abbreviation
 AKDT,-0800,AKDT - Alaska Daylight Time
 P,-0300,P - Papa Time Zone
-"Mazatlan, Mexico",-0700,MST - Mountain Standard Time
-"Sacramento, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Porto, Portugal",+0000,WET - Western European Time
-"Pierre, South Dakota, U.S.A.",-0600,CST - Central Standard Time
+"Mazatlan, Mexico",-0600,MDT - Mountain Daylight Time
+"Sacramento, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Porto, Portugal",+0100,WEST - Western European Summer Time
+"Pierre, South Dakota, U.S.A.",-0500,CDT - Central Daylight Time
 "Abidjan, Cote d'Ivoire (Ivory Coast)",+0000,UTC - Coordinated Universal Time
-"Fukuoka, Japan",+0900,UTC - Coordinated Universal Time
-"Pretoria, South Africa",+0200,UTC - Coordinated Universal Time
-"Belgrade, Serbia, Serbia and Montenegro",+0100,CET - Central European Time
-"Brasilia, Distrito Federal, Brazil",-0200,UTC - Coordinated Universal Time
-"Tarawa, Kiribati",+1200,UTC - Coordinated Universal Time
-"San Jose, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Hangzhou, China",+0800,UTC - Coordinated Universal Time
-"Yangon, Myanmar",+0630,UTC - Coordinated Universal Time
-"Tunis, Tunisia",+0100,UTC - Coordinated Universal Time
-"Copenhagen, Denmark",+0100,CET - Central European Time
-"Manado, Sulawesi, Indonesia",+0800,UTC - Coordinated Universal Time
-"Ternate, Halmahera, Indonesia",+0900,UTC - Coordinated Universal Time
-"Karachi, Pakistan",+0500,UTC - Coordinated Universal Time
-"Charleston, West Virginia, U.S.A.",-0500,EST - Eastern Standard Time
-"Mamoutzou, Mayotte, France",+0300,UTC - Coordinated Universal Time
+"Fukuoka, Japan",+0900,no timezone abbreviation
+"Pretoria, South Africa",+0200,no timezone abbreviation
+"Belgrade, Serbia, Serbia and Montenegro",+0200,CEST - Central European Summer Time
+"Cebu City, Philippines",+0800,no timezone abbreviation
+"Brasilia, Distrito Federal, Brazil",-0300,no timezone abbreviation
+"Tarawa, Kiribati",+1200,no timezone abbreviation
+"San Jose, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Hangzhou, China",+0800,no timezone abbreviation
+"Yangon, Myanmar",+0630,no timezone abbreviation
+"Tunis, Tunisia",+0200,no timezone abbreviation
+"Copenhagen, Denmark",+0200,CEST - Central European Summer Time
+"Manado, Sulawesi, Indonesia",+0800,no timezone abbreviation
+"Ternate, Halmahera, Indonesia",+0900,no timezone abbreviation
+"London, Ontario, Canada",-0400,EDT - Eastern Daylight Time
+"Karachi, Pakistan",+0500,no timezone abbreviation
+"Charleston, West Virginia, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Mamoutzou, Mayotte, France",+0300,no timezone abbreviation
 CDT,-0500,CDT - Central Daylight Time
-"Lausanne, Switzerland",+0100,CET - Central European Time
+"Lausanne, Switzerland",+0200,CEST - Central European Summer Time
 G,+0700,G - Golf Time Zone
-"Riga, Latvia",+0200,EET - Eastern European Time
-"Sarajevo, Bosnia-Herzegovina",+0100,CET - Central European Time
-"Salzburg, Austria",+0100,CET - Central European Time
-"New York, New York, U.S.A.",-0500,EST - Eastern Standard Time
-"Santa Fe, New Mexico, U.S.A.",-0700,MST - Mountain Standard Time
-"Kraków, Poland",+0100,CET - Central European Time
+"Riga, Latvia",+0300,EEST - Eastern European Summer Time
+"Sarajevo, Bosnia-Herzegovina",+0200,CEST - Central European Summer Time
+"Salzburg, Austria",+0200,CEST - Central European Summer Time
+"New York, New York, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Santa Fe, New Mexico, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Kraków, Poland",+0200,CEST - Central European Summer Time
 EEST,+0300,EEST - Eastern European Summer Time
 HAP,-0700,HAP - Heure Avancée du Pacifique
-"Pristina, Kosovo, Serbia and Montenegro",+0100,CET - Central European Time
-"Dar es Salaam, Tanzania",+0300,UTC - Coordinated Universal Time
-"Azores, Portugal",-0100,UTC - Coordinated Universal Time
-"Yerevan, Armenia",+0400,UTC - Coordinated Universal Time
-"San Luis Potosi, Mexico",-0600,CST - Central Standard Time
-"Recife, Pernambuco, Brazil",-0300,UTC - Coordinated Universal Time
-"Rio Branco, Acre, Brazil",-0500,UTC - Coordinated Universal Time
-"Nukualofa, Tonga",+1300,UTC - Coordinated Universal Time
-"Roseau, Dominica",-0400,UTC - Coordinated Universal Time
-"Boise, Idaho, U.S.A.",-0700,MST - Mountain Standard Time
-"St. Petersburg, Florida, U.S.A.",-0500,EST - Eastern Standard Time
-"Jacksonville, Florida, U.S.A.",-0500,EST - Eastern Standard Time
-"Kabul, Afghanistan",+0430,UTC - Coordinated Universal Time
-"Bismarck, North Dakota, U.S.A.",-0600,CST - Central Standard Time
-"Rarotonga, Cook Islands",-1000,UTC - Coordinated Universal Time
-"Kaohsiung, Taiwan",+0800,UTC - Coordinated Universal Time
-"Yaoundé, Cameroon",+0100,UTC - Coordinated Universal Time
-"Cheyenne, Wyoming, U.S.A.",-0700,MST - Mountain Standard Time
-"Ankara, Turkey",+0200,EET - Eastern European Time
-"Valletta, Malta",+0100,CET - Central European Time
-"Samara, Russia",+0400,UTC - Coordinated Universal Time
-"Sao Paulo, São Paulo, Brazil",-0200,UTC - Coordinated Universal Time
-"Sioux Falls, South Dakota, U.S.A.",-0600,CST - Central Standard Time
-"Jersey City, New Jersey, U.S.A.",-0500,EST - Eastern Standard Time
-"Bandar Seri Begawan, Brunei",+0800,UTC - Coordinated Universal Time
-"Kinshasa, Congo Dem.Rep.",+0100,UTC - Coordinated Universal Time
-"Al Jizah, Egypt",+0200,UTC - Coordinated Universal Time
-"Leon, Mexico",-0600,CST - Central Standard Time
-"Jeddah, Saudi Arabia",+0300,UTC - Coordinated Universal Time
-"Harbin, China",+0800,UTC - Coordinated Universal Time
-"Nashville, Tennessee, U.S.A.",-0600,CST - Central Standard Time
-"Delhi, India",+0530,UTC - Coordinated Universal Time
+"Pristina, Kosovo, Serbia and Montenegro",+0200,CEST - Central European Summer Time
+"Dar es Salaam, Tanzania",+0300,no timezone abbreviation
+"Azores, Portugal",-0100,no timezone abbreviation
+"Yerevan, Armenia",+0500,no timezone abbreviation
+"San Luis Potosi, Mexico",-0500,CDT - Central Daylight Time
+"Recife, Pernambuco, Brazil",-0300,no timezone abbreviation
+"Rio Branco, Acre, Brazil",-0500,no timezone abbreviation
+"Nukualofa, Tonga",+1300,no timezone abbreviation
+"Roseau, Dominica",-0400,no timezone abbreviation
+"Boise, Idaho, U.S.A.",-0600,MDT - Mountain Daylight Time
+"St. Petersburg, Florida, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Jacksonville, Florida, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Kabul, Afghanistan",+0430,no timezone abbreviation
+"Bismarck, North Dakota, U.S.A.",-0500,CDT - Central Daylight Time
+"Rarotonga, Cook Islands",-1000,no timezone abbreviation
+"Hamilton, Ontario, Canada",-0400,EDT - Eastern Daylight Time
+"Kaohsiung, Taiwan",+0800,no timezone abbreviation
+"Yaoundé, Cameroon",+0100,no timezone abbreviation
+"Cheyenne, Wyoming, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Ankara, Turkey",+0300,EEST - Eastern European Summer Time
+"Valletta, Malta",+0200,CEST - Central European Summer Time
+"Samara, Russia",+0500,no timezone abbreviation
+"Sao Paulo, São Paulo, Brazil",-0300,no timezone abbreviation
+"Sioux Falls, South Dakota, U.S.A.",-0500,CDT - Central Daylight Time
+"Jersey City, New Jersey, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Bandar Seri Begawan, Brunei",+0800,no timezone abbreviation
+"Kinshasa, Congo Dem.Rep.",+0100,no timezone abbreviation
+"Al Jizah, Egypt",+0200,no timezone abbreviation
+"Leon, Mexico",-0500,CDT - Central Daylight Time
+"Jeddah, Saudi Arabia",+0300,no timezone abbreviation
+"Windsor, Ontario, Canada",-0400,EDT - Eastern Daylight Time
+"Nashville, Tennessee, U.S.A.",-0500,CDT - Central Daylight Time
+"Delhi, India",+0530,no timezone abbreviation
 "Mesa, Arizona, U.S.A.",-0700,MST - Mountain Standard Time
-"Palembang, Sumatera, Indonesia",+0700,UTC - Coordinated Universal Time
-"Baotou, China",+0800,UTC - Coordinated Universal Time
-"Phnom Penh, Cambodia",+0700,UTC - Coordinated Universal Time
-"Brazzaville, Congo",+0100,UTC - Coordinated Universal Time
+"Palembang, Sumatera, Indonesia",+0700,no timezone abbreviation
+"Baotou, China",+0800,no timezone abbreviation
+"Vaduz, Liechtenstein",+0200,CEST - Central European Summer Time
+"Phnom Penh, Cambodia",+0700,no timezone abbreviation
+"Brazzaville, Congo",+0100,no timezone abbreviation
 BST,+0100,BST - British Summer Time
-"Pittsburgh, Pennsylvania, U.S.A.",-0500,EST - Eastern Standard Time
-"Chongqing, China",+0800,UTC - Coordinated Universal Time
-"Chicago, Illinois, U.S.A.",-0600,CST - Central Standard Time
-"Toronto, Ontario, Canada",-0500,UTC - Coordinated Universal Time
+"Pittsburgh, Pennsylvania, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Chongqing, China",+0800,no timezone abbreviation
+"Chicago, Illinois, U.S.A.",-0500,CDT - Central Daylight Time
+"Toronto, Ontario, Canada",-0400,EDT - Eastern Daylight Time
 HAT,-0230,HAT - Heure Avancée de Terre-Neuve
-"Wroclaw, Poland",+0100,CET - Central European Time
-"Denpasar, Bali, Indonesia",+0800,UTC - Coordinated Universal Time
-"Addis Ababa, Ethiopia",+0300,UTC - Coordinated Universal Time
+"Wroclaw, Poland",+0200,CEST - Central European Summer Time
+"Denpasar, Bali, Indonesia",+0800,no timezone abbreviation
+"Addis Ababa, Ethiopia",+0300,no timezone abbreviation
 MDT,-0600,MDT - Mountain Daylight Time
-"Mobile, Alabama, U.S.A.",-0600,CST - Central Standard Time
+"Mobile, Alabama, U.S.A.",-0500,CDT - Central Daylight Time
 HAA,-0300,HAA - Heure Avancée de l'Atlantique
 F,+0600,F - Foxtrot Time Zone
-"Dodoma, Tanzania",+0300,UTC - Coordinated Universal Time
-"Caracas, Venezuela",-0400,UTC - Coordinated Universal Time
-"Sana, Yemen",+0300,UTC - Coordinated Universal Time
-"Lódz, Poland",+0100,CET - Central European Time
-"Luxembourg, Luxembourg",+0100,CET - Central European Time
-"Madison, Wisconsin, U.S.A.",-0600,CST - Central Standard Time
-"Andorra La Vella, Andorra",+0100,CET - Central European Time
-"Pago Pago, American Samoa, U.S.A.",-1100,UTC - Coordinated Universal Time
-"Seattle, Washington, U.S.A.",-0800,PST - Pacific Standard Time
-"Tallinn, Estonia",+0200,EET - Eastern European Time
-"Lhasa, China",+0800,UTC - Coordinated Universal Time
-"Pune, India",+0530,UTC - Coordinated Universal Time
-"Unalaska, Alaska, U.S.A.",-0900,AKST - Alaska Standard Time
-"Sydney, New South Wales, Australia",+1100,EST - Eastern Summer(Daylight) Time
-"Portland, Oregon, U.S.A.",-0800,PST - Pacific Standard Time
-"Ottawa, Ontario, Canada",-0500,EST - Eastern Standard Time
+"Dodoma, Tanzania",+0300,no timezone abbreviation
+"Caracas, Venezuela",-0400,no timezone abbreviation
+"Sana, Yemen",+0300,no timezone abbreviation
+"Lódz, Poland",+0200,CEST - Central European Summer Time
+"Luxembourg, Luxembourg",+0200,CEST - Central European Summer Time
+"Madison, Wisconsin, U.S.A.",-0500,CDT - Central Daylight Time
+"Andorra La Vella, Andorra",+0200,CEST - Central European Summer Time
+"Pago Pago, American Samoa, U.S.A.",-1100,no timezone abbreviation
+"Seattle, Washington, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Tallinn, Estonia",+0300,EEST - Eastern European Summer Time
+"Lhasa, China",+0800,no timezone abbreviation
+"Pune, India",+0530,no timezone abbreviation
+"Unalaska, Alaska, U.S.A.",-0800,AKDT - Alaska Daylight Time
+"Sydney, New South Wales, Australia",+1000,EST - Eastern Standard Time
+"Portland, Oregon, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Ottawa, Ontario, Canada",-0400,EDT - Eastern Daylight Time
 EDT,-0400,EDT - Eastern Daylight Time
-"Austin, Texas, U.S.A.",-0600,CST - Central Standard Time
-"Kano Nigeria, Nigeria",+0100,UTC - Coordinated Universal Time
-"Tórshavn, Faroe Islands, Denmark",+0000,WET - Western European Time
-"Sendai, Japan",+0900,UTC - Coordinated Universal Time
-"Oklahoma City, Oklahoma, U.S.A.",-0600,CST - Central Standard Time
-"San Marino, San Marino",+0100,CET - Central European Time
-"Semarang, Java, Indonesia",+0700,UTC - Coordinated Universal Time
-"Lüda, China",+0800,UTC - Coordinated Universal Time
-"Noumea, New Caledonia, France",+1100,UTC - Coordinated Universal Time
-"Oslo, Norway",+0100,CET - Central European Time
-"Rotterdam, Netherlands",+0100,CET - Central European Time
-"Georgetown, Grand Cayman, U.K.",-0500,UTC - Coordinated Universal Time
-"Vilnius, Lithuania",+0200,EET - Eastern European Time
-"Fort Worth, Texas, U.S.A.",-0600,CST - Central Standard Time
-"Kingston, Jamaica",-0500,UTC - Coordinated Universal Time
-"Mogadishu, Somalia",+0300,UTC - Coordinated Universal Time
-"Ho Chi Minh, Vietnam",+0700,UTC - Coordinated Universal Time
-"Salem, Oregon, U.S.A.",-0800,PST - Pacific Standard Time
-"Kaunas, Lithuania",+0200,EET - Eastern European Time
-"St. John's, Newfoundland and Labrador, Canada",-0330,NST - Newfoundland Standard Time
+"Austin, Texas, U.S.A.",-0500,CDT - Central Daylight Time
+"Kano Nigeria, Nigeria",+0100,no timezone abbreviation
+"Tórshavn, Faroe Islands, Denmark",+0100,WEST - Western European Summer Time
+"Sendai, Japan",+0900,no timezone abbreviation
+"Oklahoma City, Oklahoma, U.S.A.",-0500,CDT - Central Daylight Time
+"San Marino, San Marino",+0200,CEST - Central European Summer Time
+"Semarang, Java, Indonesia",+0700,no timezone abbreviation
+"Vila, Vanuatu",+1100,no timezone abbreviation
+"Lüda, China",+0800,no timezone abbreviation
+"Lima, Lima, Peru",-0500,no timezone abbreviation
+"Noumea, New Caledonia, France",+1100,no timezone abbreviation
+"Oslo, Norway",+0200,CEST - Central European Summer Time
+"Rotterdam, Netherlands",+0200,CEST - Central European Summer Time
+"Georgetown, Grand Cayman, U.K.",-0500,no timezone abbreviation
+"Vilnius, Lithuania",+0300,EEST - Eastern European Summer Time
+"Fort Worth, Texas, U.S.A.",-0500,CDT - Central Daylight Time
+"Kingston, Jamaica",-0500,no timezone abbreviation
+"Mogadishu, Somalia",+0300,no timezone abbreviation
+"Ho Chi Minh, Vietnam",+0700,no timezone abbreviation
+"Salem, Oregon, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Kaunas, Lithuania",+0300,EEST - Eastern European Summer Time
+"St. John's, Newfoundland and Labrador, Canada",-0330,NDT - Newfoundland Daylight Time
 "Banjul, Gambia",+0000,UTC - Coordinated Universal Time
-"San Diego, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Ulaanbaatar, Mongolia",+0800,UTC - Coordinated Universal Time
+"San Diego, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Ulaanbaatar, Mongolia",+0900,no timezone abbreviation
 A,+0100,A - Alpha Time Zone
-"Chatham Island, New Zealand",+1245,UTC - Coordinated Universal Time
+"Boston, Massachusetts, U.S.A.",-0400,EDT - Eastern Daylight Time
 "Casablanca, Morocco",+0000,UTC - Coordinated Universal Time
-"Port of Spain, Trinidad and Tobago",-0400,UTC - Coordinated Universal Time
-"Luanda, Angola",+0100,UTC - Coordinated Universal Time
-"Jackson, Mississippi, U.S.A.",-0600,CST - Central Standard Time
-"Venice, Italy",+0100,CET - Central European Time
-"Bridgetown, Barbados",-0400,UTC - Coordinated Universal Time
-"Barcelona, Spain",+0100,CET - Central European Time
+"Port of Spain, Trinidad and Tobago",-0400,no timezone abbreviation
+"Luanda, Angola",+0100,no timezone abbreviation
+"Jackson, Mississippi, U.S.A.",-0500,CDT - Central Daylight Time
+"Venice, Italy",+0200,CEST - Central European Summer Time
+"Bridgetown, Barbados",-0400,no timezone abbreviation
+"Barcelona, Spain",+0200,CEST - Central European Summer Time
 Q,-0400,Q - Quebec Time Zone
-"Hobart, Tasmania, Australia",+1100,EST - Eastern Summer(Daylight) Time
-"Rawaki, Phoenix Islands, Kiribati",+1300,UTC - Coordinated Universal Time
-"Wellington, New Zealand",+1300,UTC - Coordinated Universal Time
-"Chittagong, Bangladesh",+0600,UTC - Coordinated Universal Time
-"Des Moines, Iowa, U.S.A.",-0600,CST - Central Standard Time
+"Hobart, Tasmania, Australia",+1000,EST - Eastern Standard Time
+"Rawaki, Phoenix Islands, Kiribati",+1300,no timezone abbreviation
+"Wellington, New Zealand",+1200,no timezone abbreviation
+"Chittagong, Bangladesh",+0600,no timezone abbreviation
+"Des Moines, Iowa, U.S.A.",-0500,CDT - Central Daylight Time
 HADT,-0900,HADT - Hawaii-Aleutian Daylight Time
-"Omsk, Russia",+0600,UTC - Coordinated Universal Time
-"Harare, Zimbabwe",+0200,UTC - Coordinated Universal Time
-"Hartford, Connecticut, U.S.A.",-0500,EST - Eastern Standard Time
-"Bratislava, Slovakia",+0100,CET - Central European Time
-"Porto Novo, Benin",+0100,UTC - Coordinated Universal Time
-"Mar del Plata, Buenos Aires, Argentina",-0300,UTC - Coordinated Universal Time
-"Yokohama, Japan",+0900,UTC - Coordinated Universal Time
-"Kyiv, Ukraine",+0200,EET - Eastern European Time
-"Jinzhou, China",+0800,UTC - Coordinated Universal Time
-"Jayapura, Papua, Indonesia",+0900,UTC - Coordinated Universal Time
+"Omsk, Russia",+0700,no timezone abbreviation
+"Harare, Zimbabwe",+0200,no timezone abbreviation
+"Hartford, Connecticut, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Bratislava, Slovakia",+0200,CEST - Central European Summer Time
+"Canberra, Australian Capital Territory, Australia",+1000,EST - Eastern Standard Time
+"Mar del Plata, Buenos Aires, Argentina",-0300,no timezone abbreviation
+"Yokohama, Japan",+0900,no timezone abbreviation
+"Kyiv, Ukraine",+0300,EEST - Eastern European Summer Time
+"Jinzhou, China",+0800,no timezone abbreviation
+"Jayapura, Papua, Indonesia",+0900,no timezone abbreviation
 WET,+0000,WET - Western European Time
-"Guadalajara, Mexico",-0600,CST - Central Standard Time
-"Saipan, Northern Mariana Islands, U.S.A.",+1000,UTC - Coordinated Universal Time
-"Palikir, Ponape, Micronesia",+1100,UTC - Coordinated Universal Time
-"Nãgpur, India",+0530,UTC - Coordinated Universal Time
-"Maputo, Mozambique",+0200,UTC - Coordinated Universal Time
-"Road Town, Virgin Islands, U.K.",-0400,UTC - Coordinated Universal Time
-"Cairo, Egypt",+0200,UTC - Coordinated Universal Time
+"Guadalajara, Mexico",-0500,CDT - Central Daylight Time
+"Saipan, Northern Mariana Islands, U.S.A.",+1000,no timezone abbreviation
+"Palikir, Ponape, Micronesia",+1100,no timezone abbreviation
+"Nãgpur, India",+0530,no timezone abbreviation
+"Maputo, Mozambique",+0200,no timezone abbreviation
+"Road Town, Virgin Islands, U.K.",-0400,no timezone abbreviation
+"Cairo, Egypt",+0200,no timezone abbreviation
 PDT,-0700,PDT - Pacific Daylight Time
-"La Coruña, Spain",+0100,CET - Central European Time
-"Gdansk, Poland",+0100,CET - Central European Time
-"Johannesburg, South Africa",+0200,UTC - Coordinated Universal Time
-"Chelyabinsk, Russia",+0500,UTC - Coordinated Universal Time
+"La Coruña, Spain",+0200,CEST - Central European Summer Time
+"Laval, Quebec, Canada",-0400,EDT - Eastern Daylight Time
+"Gdansk, Poland",+0200,CEST - Central European Summer Time
+"Johannesburg, South Africa",+0200,no timezone abbreviation
+"Chelyabinsk, Russia",+0600,no timezone abbreviation
 V,-0900,V - Victor Time Zone
-"Singapore, Singapore",+0800,UTC - Coordinated Universal Time
-"St. Louis, Missouri, U.S.A.",-0600,CST - Central Standard Time
-"Osaka, Japan",+0900,UTC - Coordinated Universal Time
-"Tirane, Albania",+0100,CET - Central European Time
+"Singapore, Singapore",+0800,no timezone abbreviation
+"St. Louis, Missouri, U.S.A.",-0500,CDT - Central Daylight Time
+"Osaka, Japan",+0900,no timezone abbreviation
+"Tirane, Albania",+0200,CEST - Central European Summer Time
 L,+1100,L - Lima Time Zone
-"Billings, Montana, U.S.A.",-0700,MST - Mountain Standard Time
-"Yellowknife, Northwest Territories, Canada",-0700,MST - Mountain Standard Time
-"Baton Rouge, Louisiana, U.S.A.",-0600,CST - Central Standard Time
-"Liverpool, England, U.K.",+0000,GMT - Greenwich Mean Time
-"Hiroshima, Japan",+0900,UTC - Coordinated Universal Time
+"Billings, Montana, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Yellowknife, Northwest Territories, Canada",-0600,MDT - Mountain Daylight Time
+"Lilongwe, Malawi",+0200,no timezone abbreviation
+"Liverpool, England, U.K.",+0100,BST - British Summer Time
+"Hiroshima, Japan",+0900,no timezone abbreviation
 "São Tomé, Sao Tome and Principe",+0000,UTC - Coordinated Universal Time
 NST,-0330,NST - Newfoundland Standard Time
-"Hamburg, Hamburg, Germany",+0100,CET - Central European Time
-"Zagreb, Croatia",+0100,CET - Central European Time
-"Kuala Lumpur, Malaysia",+0800,UTC - Coordinated Universal Time
-"Sofia, Bulgaria",+0200,EET - Eastern European Time
-"Cardiff, Wales, U.K.",+0000,GMT - Greenwich Mean Time
-"Kunming, China",+0800,UTC - Coordinated Universal Time
-"Chengdu, China",+0800,UTC - Coordinated Universal Time
+"Hamburg, Hamburg, Germany",+0200,CEST - Central European Summer Time
+"Zagreb, Croatia",+0200,CEST - Central European Summer Time
+"Kuala Lumpur, Malaysia",+0800,no timezone abbreviation
+"Sofia, Bulgaria",+0300,EEST - Eastern European Summer Time
+"Cardiff, Wales, U.K.",+0100,BST - British Summer Time
+"Kunming, China",+0800,no timezone abbreviation
+"Chengdu, China",+0800,no timezone abbreviation
 UTC,+0000,UTC - Coordinated Universal Time
-"Lahore, Pakistan",+0500,UTC - Coordinated Universal Time
-"Khulna, Bangladesh",+0600,UTC - Coordinated Universal Time
-"Boston, Massachusetts, U.S.A.",-0500,EST - Eastern Standard Time
-"Ludhiana, India",+0530,UTC - Coordinated Universal Time
+"Lahore, Pakistan",+0500,no timezone abbreviation
+"Khulna, Bangladesh",+0600,no timezone abbreviation
+"Beirut, Lebanon",+0300,no timezone abbreviation
+"Ludhiana, India",+0530,no timezone abbreviation
 "Dakar, Senegal",+0000,UTC - Coordinated Universal Time
-"Saint John's, Antigua and Barbuda",-0400,UTC - Coordinated Universal Time
-"Wichita, Kansas, U.S.A.",-0600,CST - Central Standard Time
-"Paris, France",+0100,CET - Central European Time
-"Rosario, Santa Fe, Argentina",-0300,UTC - Coordinated Universal Time
+"Saint John's, Antigua and Barbuda",-0400,no timezone abbreviation
+"Wichita, Kansas, U.S.A.",-0500,CDT - Central Daylight Time
+"Paris, France",+0200,CEST - Central European Summer Time
+"Rosario, Santa Fe, Argentina",-0300,no timezone abbreviation
 "Perth, Western Australia, Australia",+0800,WST - Western Standard Time
-"Santa Ana, El Salvador",-0600,UTC - Coordinated Universal Time
-"Almaty, Kazakstan",+0600,UTC - Coordinated Universal Time
-"Milan, Italy",+0100,CET - Central European Time
+"Harbin, China",+0800,no timezone abbreviation
+"Santa Ana, El Salvador",-0600,no timezone abbreviation
+"Almaty, Kazakstan",+0600,no timezone abbreviation
+"Milan, Italy",+0200,CEST - Central European Summer Time
 I,+0900,I - India Time Zone
-"Jerusalem, Israel",+0200,UTC - Coordinated Universal Time
-"Lanchow, China",+0800,UTC - Coordinated Universal Time
-"Mumbai, India",+0530,UTC - Coordinated Universal Time
-"Stockholm, Sweden",+0100,CET - Central European Time
-"Belmopan, Belize",-0600,UTC - Coordinated Universal Time
-"Frankfort, Kentucky, U.S.A.",-0500,EST - Eastern Standard Time
-"Edmonton, Alberta, Canada",-0700,MST - Mountain Standard Time
-"Atlanta, Georgia, U.S.A.",-0500,EST - Eastern Standard Time
-"Carson City, Nevada, U.S.A.",-0800,PST - Pacific Standard Time
-"Kaliningrad, Russia",+0200,EET - Eastern European Time
-"Nassau, Bahamas",-0500,UTC - Coordinated Universal Time
+"Jerusalem, Israel",+0300,no timezone abbreviation
+"Lanchow, China",+0800,no timezone abbreviation
+"Basel, Switzerland",+0200,CEST - Central European Summer Time
+"Mumbai, India",+0530,no timezone abbreviation
+"Stockholm, Sweden",+0200,CEST - Central European Summer Time
+"Belmopan, Belize",-0600,no timezone abbreviation
+"Frankfort, Kentucky, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Edmonton, Alberta, Canada",-0600,MDT - Mountain Daylight Time
+"Atlanta, Georgia, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Carson City, Nevada, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Kaliningrad, Russia",+0300,EEST - Eastern European Summer Time
+"Nassau, Bahamas",-0400,no timezone abbreviation
 W,-1000,W - Whiskey Time Zone
 CST,-0600,CST - Central Standard Time
-"Tokyo, Japan",+0900,UTC - Coordinated Universal Time
-"Geneva, Switzerland",+0100,CET - Central European Time
-"Malabo, Equatorial Guinea",+0100,UTC - Coordinated Universal Time
-"Foochow, China",+0800,UTC - Coordinated Universal Time
-"Albany, New York, U.S.A.",-0500,EST - Eastern Standard Time
-"Kathmandu, Nepal",+0545,UTC - Coordinated Universal Time
-"Melbourne, Victoria, Australia",+1100,EST - Eastern Summer(Daylight) Time
-"The Valley, Anguilla, U.K.",-0400,UTC - Coordinated Universal Time
-"Tehran, Iran",+0330,UTC - Coordinated Universal Time
-"Stockton, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Kansas City, Missouri, U.S.A.",-0600,CST - Central Standard Time
-"Port Louis, Mauritius",+0400,UTC - Coordinated Universal Time
-"Riverside, California, U.S.A.",-0800,PST - Pacific Standard Time
+"Tokyo, Japan",+0900,no timezone abbreviation
+"Geneva, Switzerland",+0200,CEST - Central European Summer Time
+"Malabo, Equatorial Guinea",+0100,no timezone abbreviation
+"Foochow, China",+0800,no timezone abbreviation
+"Albany, New York, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Kathmandu, Nepal",+0545,no timezone abbreviation
+"Melbourne, Victoria, Australia",+1000,EST - Eastern Standard Time
+"The Valley, Anguilla, U.K.",-0400,no timezone abbreviation
+"Tehran, Iran",+0330,no timezone abbreviation
+"Stockton, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Kansas City, Missouri, U.S.A.",-0500,CDT - Central Daylight Time
+"Porto Novo, Benin",+0100,no timezone abbreviation
+"Riverside, California, U.S.A.",-0700,PDT - Pacific Daylight Time
 IST,+0100,IST - Irish Summer Time
-"Dallas, Texas, U.S.A.",-0600,CST - Central Standard Time
-"Mendoza, Mendoza, Argentina",-0300,UTC - Coordinated Universal Time
-"Aklavik, Northwest Territories, Canada",-0700,MST - Mountain Standard Time
-"Cape Town, South Africa",+0200,UTC - Coordinated Universal Time
-"Jaipur, India",+0530,UTC - Coordinated Universal Time
-"Montpelier, Vermont, U.S.A.",-0500,EST - Eastern Standard Time
+"Dallas, Texas, U.S.A.",-0500,CDT - Central Daylight Time
+"Mendoza, Mendoza, Argentina",-0300,no timezone abbreviation
+"Cape Town, South Africa",+0200,no timezone abbreviation
+"Jaipur, India",+0530,no timezone abbreviation
+"Montpelier, Vermont, U.S.A.",-0400,EDT - Eastern Daylight Time
 AST,-0400,AST - Atlantic Standard Time
-"Zibo, China",+0800,UTC - Coordinated Universal Time
-"Patna, India",+0530,UTC - Coordinated Universal Time
-"Las Palmas, Canary Islands, Spain",+0000,UTC - Coordinated Universal Time
-"Bastia, Corsica, France",+0100,CET - Central European Time
-"Manaus, Amazonas, Brazil",-0400,UTC - Coordinated Universal Time
-"Birmingham, England, U.K.",+0000,GMT - Greenwich Mean Time
-"Muscat, Oman",+0400,UTC - Coordinated Universal Time
-"Yekaterinburg, Russia",+0500,UTC - Coordinated Universal Time
-"Adak, Alaska, U.S.A.",-1000,HAST - Hawaii-Aleutian Standard Time
+"Zibo, China",+0800,no timezone abbreviation
+"Patna, India",+0530,no timezone abbreviation
+"Las Palmas, Canary Islands, Spain",+0100,no timezone abbreviation
+"Bastia, Corsica, France",+0200,CEST - Central European Summer Time
+"Manaus, Amazonas, Brazil",-0400,no timezone abbreviation
+"Birmingham, England, U.K.",+0100,BST - British Summer Time
+"Muscat, Oman",+0400,no timezone abbreviation
+"Yekaterinburg, Russia",+0600,no timezone abbreviation
+"Adak, Alaska, U.S.A.",-0900,HADT - Hawaii-Aleutian Daylight Time
 NFT,+1130,NFT - Norfolk (Island) Time
 "Monrovia, Liberia",+0000,UTC - Coordinated Universal Time
-"Madrid, Spain",+0100,CET - Central European Time
-"Vientiane, Laos",+0700,UTC - Coordinated Universal Time
-"Columbia, South Carolina, U.S.A.",-0500,EST - Eastern Standard Time
-"Lubumbashi, Congo Dem.Rep.",+0200,UTC - Coordinated Universal Time
+"Madrid, Spain",+0200,CEST - Central European Summer Time
+"Vientiane, Laos",+0700,no timezone abbreviation
+"Columbia, South Carolina, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Lubumbashi, Congo Dem.Rep.",+0200,no timezone abbreviation
 HAST,-1000,HAST - Hawaii-Aleutian Standard Time
-"Edinburgh, Scotland, U.K.",+0000,GMT - Greenwich Mean Time
-"Asuncion, Paraguay",-0300,UTC - Coordinated Universal Time
-"Lincoln, Nebraska, U.S.A.",-0600,CST - Central Standard Time
-"Suva, Fiji",+1200,UTC - Coordinated Universal Time
-"Amsterdam, Netherlands",+0100,CET - Central European Time
-"Acapulco, Mexico",-0600,CST - Central Standard Time
-"Bangui, Central African Republic",+0100,UTC - Coordinated Universal Time
-"Salta, Salta, Argentina",-0300,UTC - Coordinated Universal Time
-"Alofi, Niue",-1100,UTC - Coordinated Universal Time
-"Luoyang, China",+0800,UTC - Coordinated Universal Time
-"Singaraja, Bali, Indonesia",+0800,UTC - Coordinated Universal Time
-"Thimphu, Bhutan",+0600,UTC - Coordinated Universal Time
-"Fairbanks, Alaska, U.S.A.",-0900,AKST - Alaska Standard Time
-"Lisbon, Portugal",+0000,WET - Western European Time
-"Iqaluit, Nunavut Territory, Canada",-0500,EST - Eastern Standard Time
+"Sialkot, Pakistan",+0500,no timezone abbreviation
+"Edinburgh, Scotland, U.K.",+0100,BST - British Summer Time
+"Asuncion, Paraguay",-0400,no timezone abbreviation
+"Lincoln, Nebraska, U.S.A.",-0500,CDT - Central Daylight Time
+"Suva, Fiji",+1200,no timezone abbreviation
+"Amsterdam, Netherlands",+0200,CEST - Central European Summer Time
+"Acapulco, Mexico",-0500,CDT - Central Daylight Time
+"Bangui, Central African Republic",+0100,no timezone abbreviation
+"Salta, Salta, Argentina",-0300,no timezone abbreviation
+"Alofi, Niue",-1100,no timezone abbreviation
+"Markham, Ontario, Canada",-0400,EDT - Eastern Daylight Time
+"Luoyang, China",+0800,no timezone abbreviation
+"Singaraja, Bali, Indonesia",+0800,no timezone abbreviation
+"Thimphu, Bhutan",+0600,no timezone abbreviation
+"Fairbanks, Alaska, U.S.A.",-0800,AKDT - Alaska Daylight Time
+"Lisbon, Portugal",+0100,WEST - Western European Summer Time
+"Iqaluit, Nunavut Territory, Canada",-0400,EDT - Eastern Daylight Time
+"Chatham Island, New Zealand",+1245,no timezone abbreviation
 B,+0200,B - Bravo Time Zone
-"Harrisburg, Pennsylvania, U.S.A.",-0500,EST - Eastern Standard Time
-"Amman, Jordan",+0200,UTC - Coordinated Universal Time
-"Indianapolis, Indiana, U.S.A.",-0500,UTC - Coordinated Universal Time
-"Calgary, Alberta, Canada",-0700,MST - Mountain Standard Time
-"El Paso, Texas, U.S.A.",-0700,MST - Mountain Standard Time
-"Lord Howe Island, Lord Howe Island, Australia",+1100,UTC - Coordinated Universal Time
-"Beirut, Lebanon",+0200,UTC - Coordinated Universal Time
-"Veracruz, Mexico",-0600,CST - Central Standard Time
-"Juneau, Alaska, U.S.A.",-0900,AKST - Alaska Standard Time
+"Harrisburg, Pennsylvania, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Amman, Jordan",+0300,no timezone abbreviation
+"Indianapolis, Indiana, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Calgary, Alberta, Canada",-0600,MDT - Mountain Daylight Time
+"El Paso, Texas, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Lord Howe Island, Lord Howe Island, Australia",+1030,no timezone abbreviation
+"Veracruz, Mexico",-0500,CDT - Central Daylight Time
+"Juneau, Alaska, U.S.A.",-0800,AKDT - Alaska Daylight Time
 AKST,-0900,AKST - Alaska Standard Time
-"Odesa, Ukraine",+0200,EET - Eastern European Time
+"Odesa, Ukraine",+0300,EEST - Eastern European Summer Time
 CEST,+0200,CEST - Central European Summer Time
-"Kingstown, Saint Vincent and Grenadines",-0400,UTC - Coordinated Universal Time
-"Raleigh, North Carolina, U.S.A.",-0500,EST - Eastern Standard Time
-"Kawasaki, Japan",+0900,UTC - Coordinated Universal Time
-"Guam, Mariana Islands, U.S.A.",+1000,UTC - Coordinated Universal Time
-"Vladivostok, Russia",+1000,UTC - Coordinated Universal Time
-"Kishinev, Moldova",+0200,EET - Eastern European Time
-"Moscow, Russia",+0300,UTC - Coordinated Universal Time
-"Montevideo, Uruguay",-0200,UTC - Coordinated Universal Time
-"Palma, Majorca, Spain",+0100,CET - Central European Time
-"Guiyang, China",+0800,UTC - Coordinated Universal Time
-"Auckland, New Zealand",+1300,UTC - Coordinated Universal Time
-"Aden, Yemen",+0300,UTC - Coordinated Universal Time
-"Hong Kong, China",+0800,UTC - Coordinated Universal Time
-"Canberra, Australian Capital Territory, Australia",+1100,EST - Eastern Summer(Daylight) Time
-"Pyongyang, North Korea",+0900,UTC - Coordinated Universal Time
+"Longueuil, Quebec, Canada",-0400,EDT - Eastern Daylight Time
+"Kingstown, Saint Vincent and Grenadines",-0400,no timezone abbreviation
+"Raleigh, North Carolina, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Kawasaki, Japan",+0900,no timezone abbreviation
+"Guam, Mariana Islands, U.S.A.",+1000,no timezone abbreviation
+"Vladivostok, Russia",+1100,no timezone abbreviation
+"Kishinev, Moldova",+0300,EEST - Eastern European Summer Time
+"Moscow, Russia",+0400,no timezone abbreviation
+"Montevideo, Uruguay",-0300,no timezone abbreviation
+"Palma, Majorca, Spain",+0200,CEST - Central European Summer Time
+"Guiyang, China",+0800,no timezone abbreviation
+"Auckland, New Zealand",+1200,no timezone abbreviation
+"Aden, Yemen",+0300,no timezone abbreviation
+"Hong Kong, China",+0800,no timezone abbreviation
+"Pyongyang, North Korea",+0900,no timezone abbreviation
 "Darwin, Northern Territory, Australia",+0930,CST - Central Standard Time
-"Beijing, China",+0800,UTC - Coordinated Universal Time
-"Bogota, Colombia",-0500,UTC - Coordinated Universal Time
+"Beijing, China",+0800,no timezone abbreviation
+"Bogota, Colombia",-0500,no timezone abbreviation
 R,-0500,R - Romeo Time Zone
 "Freetown, Sierra Leone",+0000,UTC - Coordinated Universal Time
-"Augusta, Maine, U.S.A.",-0500,EST - Eastern Standard Time
-"Detroit, Michigan, U.S.A.",-0500,EST - Eastern Standard Time
-"Majuro, Marshall Islands",+1200,UTC - Coordinated Universal Time
-"Funchal, Madeira, Portugal",+0000,UTC - Coordinated Universal Time
-"Taegu, South Korea",+0900,UTC - Coordinated Universal Time
-"Basseterre, Saint Kitts and Nevis",-0400,UTC - Coordinated Universal Time
-"Vaduz, Liechtenstein",+0100,CET - Central European Time
+"Augusta, Maine, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Detroit, Michigan, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Majuro, Marshall Islands",+1200,no timezone abbreviation
+"Funchal, Madeira, Portugal",+0100,no timezone abbreviation
+"Taegu, South Korea",+0900,no timezone abbreviation
+"Basseterre, Saint Kitts and Nevis",-0400,no timezone abbreviation
+"Saskatoon, Saskatchewan, Canada",-0600,CST - Central Standard Time
 "Bamako, Mali",+0000,UTC - Coordinated Universal Time
-"Kigali, Rwanda",+0200,UTC - Coordinated Universal Time
+"Kigali, Rwanda",+0200,no timezone abbreviation
 "Rabat, Morocco",+0000,UTC - Coordinated Universal Time
-"Las Vegas, Nevada, U.S.A.",-0800,PST - Pacific Standard Time
-"Nome, Alaska, U.S.A.",-0900,AKST - Alaska Standard Time
-"Mbabane, Swaziland",+0200,UTC - Coordinated Universal Time
-"Novgorod, Russia",+0300,UTC - Coordinated Universal Time
-"Port-au-Prince, Haiti",-0500,UTC - Coordinated Universal Time
-"Hamilton, Bermuda, U.K.",-0400,UTC - Coordinated Universal Time
-"Houston, Texas, U.S.A.",-0600,CST - Central Standard Time
-"Albuquerque, New Mexico, U.S.A.",-0700,MST - Mountain Standard Time
-"Oranjestad, Aruba, Netherlands",-0400,UTC - Coordinated Universal Time
-"Kamchatka, Russia",+1200,UTC - Coordinated Universal Time
-"Halifax, Nova Scotia, Canada",-0400,AST - Atlantic Standard Time
+"Las Vegas, Nevada, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Nome, Alaska, U.S.A.",-0800,AKDT - Alaska Daylight Time
+"Mbabane, Swaziland",+0200,no timezone abbreviation
+"Novgorod, Russia",+0400,no timezone abbreviation
+"Port-au-Prince, Haiti",-0400,no timezone abbreviation
+"Hamilton, Bermuda, U.K.",-0300,no timezone abbreviation
+"Houston, Texas, U.S.A.",-0500,CDT - Central Daylight Time
+"Albuquerque, New Mexico, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Oranjestad, Aruba, Netherlands",-0400,no timezone abbreviation
+"Kamchatka, Russia",+1300,no timezone abbreviation
+"Halifax, Nova Scotia, Canada",-0300,ADT - Atlantic Daylight Time
 H,+0800,H - Hotel Time Zone
-"Bujumbura, Burundi",+0200,UTC - Coordinated Universal Time
-"Rome, Italy",+0100,CET - Central European Time
+"Bujumbura, Burundi",+0200,no timezone abbreviation
+"Rome, Italy",+0200,CEST - Central European Summer Time
 HAE,-0400,HAE - Heure Avancée de l'Est
-"Baku, Azerbaijan",+0400,UTC - Coordinated Universal Time
+"Baku, Azerbaijan",+0500,no timezone abbreviation
 HAY,-0800,HAY - Heure Avancée du Yukon
-"Medellin, Colombia",-0500,UTC - Coordinated Universal Time
-"Koror, Palau",+0900,UTC - Coordinated Universal Time
-"Anaheim, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Izmir, Turkey",+0200,EET - Eastern European Time
+"Medellin, Colombia",-0500,no timezone abbreviation
+"Koror, Palau",+0900,no timezone abbreviation
+"Anaheim, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Izmir, Turkey",+0300,EEST - Eastern European Summer Time
 X,-1100,X - X-ray Time Zone
 HAR,-0600,HAR - Heure Avancée des Rocheuses
-"Lucknow, India",+0530,UTC - Coordinated Universal Time
-"Dushanbe, Tajikistan",+0500,UTC - Coordinated Universal Time
-"Tianjin, China",+0800,UTC - Coordinated Universal Time
-"Santo Domingo, Dominican Republic",-0400,UTC - Coordinated Universal Time
-"Baltimore, Maryland, U.S.A.",-0500,EST - Eastern Standard Time
+"Lucknow, India",+0530,no timezone abbreviation
+"Dushanbe, Tajikistan",+0500,no timezone abbreviation
+"Tianjin, China",+0800,no timezone abbreviation
+"Santo Domingo, Dominican Republic",-0400,no timezone abbreviation
+"Baltimore, Maryland, U.S.A.",-0400,EDT - Eastern Daylight Time
 "Nouakchott, Mauritania",+0000,UTC - Coordinated Universal Time
-"Hovd, Mongolia",+0700,UTC - Coordinated Universal Time
+"Hovd, Mongolia",+0800,no timezone abbreviation
 "Bissau, Guinea-Bissau",+0000,UTC - Coordinated Universal Time
-"Kobe, Japan",+0900,UTC - Coordinated Universal Time
-"Algiers, Algeria",+0100,UTC - Coordinated Universal Time
-"San Francisco, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Havana, Cuba",-0400,UTC - Coordinated Universal Time
-"Surrey, British Columbia, Canada",-0800,PST - Pacific Standard Time
-"Galapagos Islands, Ecuador",-0600,UTC - Coordinated Universal Time
-"Moroni, Comoros",+0300,UTC - Coordinated Universal Time
-"Kuwait City, Kuwait",+0300,UTC - Coordinated Universal Time
-"Helena, Montana, U.S.A.",-0700,MST - Mountain Standard Time
+"Kobe, Japan",+0900,no timezone abbreviation
+"Algiers, Algeria",+0100,no timezone abbreviation
+"San Francisco, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Havana, Cuba",-0400,no timezone abbreviation
+"Surrey, British Columbia, Canada",-0700,PDT - Pacific Daylight Time
+"Galapagos Islands, Ecuador",-0600,no timezone abbreviation
+"Moroni, Comoros",+0300,no timezone abbreviation
+"Kuwait City, Kuwait",+0300,no timezone abbreviation
+"Helena, Montana, U.S.A.",-0600,MDT - Mountain Daylight Time
 "The Settlement, Christmas Island, Australia",+0700,CXT - Christmas Island Time
 AWST,+0800,AWST - Australian Western Standard Time
-"San Jose, Costa Rica",-0600,UTC - Coordinated Universal Time
-"Canton, China",+0800,UTC - Coordinated Universal Time
-"Funafuti, Tuvalu",+1200,UTC - Coordinated Universal Time
-"Little Rock, Arkansas, U.S.A.",-0600,CST - Central Standard Time
-"Bishkek, Kyrgyzstan",+0600,UTC - Coordinated Universal Time
+"San Jose, Costa Rica",-0600,no timezone abbreviation
+"Canton, China",+0800,no timezone abbreviation
+"Funafuti, Tuvalu",+1200,no timezone abbreviation
+"Little Rock, Arkansas, U.S.A.",-0500,CDT - Central Daylight Time
+"Bishkek, Kyrgyzstan",+0600,no timezone abbreviation
 C,+0300,C - Charlie Time Zone
-"Montreal, Quebec, Canada",-0500,EST - Eastern Standard Time
-"Easter Island, Chile",-0500,UTC - Coordinated Universal Time
-"Managua, Nicaragua",-0600,UTC - Coordinated Universal Time
-"Ambon, Seram, Indonesia",+0900,UTC - Coordinated Universal Time
-"Los Angeles, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Makkah, Saudi Arabia",+0300,UTC - Coordinated Universal Time
-"Monaco, Monaco",+0100,CET - Central European Time
-"Indore, India",+0530,UTC - Coordinated Universal Time
-"Richmond, Virginia, U.S.A.",-0500,EST - Eastern Standard Time
-"Abuja, Nigeria",+0100,UTC - Coordinated Universal Time
+"Montreal, Quebec, Canada",-0400,EDT - Eastern Daylight Time
+"Easter Island, Chile",-0600,no timezone abbreviation
+"Managua, Nicaragua",-0600,no timezone abbreviation
+"Ambon, Seram, Indonesia",+0900,no timezone abbreviation
+"Los Angeles, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Makkah, Saudi Arabia",+0300,no timezone abbreviation
+"Monaco, Monaco",+0200,CEST - Central European Summer Time
+"Indore, India",+0530,no timezone abbreviation
+"Richmond, Virginia, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Abuja, Nigeria",+0100,no timezone abbreviation
 S,-0600,S - Sierra Time Zone
-"Doha, Qatar",+0300,UTC - Coordinated Universal Time
-"Jinan, China",+0800,UTC - Coordinated Universal Time
-"Krasnoyarsk, Russia",+0700,UTC - Coordinated Universal Time
+"Doha, Qatar",+0300,no timezone abbreviation
+"Jinan, China",+0800,no timezone abbreviation
+"Krasnoyarsk, Russia",+0800,no timezone abbreviation
 PST,-0800,PST - Pacific Standard Time
-"Plymouth, Montserrat, U.K.",-0400,UTC - Coordinated Universal Time
+"Plymouth, Montserrat, U.K.",-0400,no timezone abbreviation
 HNA,-0400,HNA - Heure Normale de l'Atlantique
-"Christchurch, New Zealand",+1300,UTC - Coordinated Universal Time
+"Christchurch, New Zealand",+1200,no timezone abbreviation
 HNE,-0500,HNE - Heure Normale de l'Est
-"Tijuana, Mexico",-0800,PST - Pacific Standard Time
+"Tijuana, Mexico",-0700,PDT - Pacific Daylight Time
+"Gatineau, Quebec, Canada",-0400,EDT - Eastern Daylight Time
 HNP,-0800,HNP - Heure Normale du Pacifique
 HNR,-0700,HNR - Heure Normale des Rocheuses
 HNT,-0330,HNT - Heure Normale de Terre-Neuve
-"Montgomery, Alabama, U.S.A.",-0600,CST - Central Standard Time
-"La Paz, Bolivia",-0400,UTC - Coordinated Universal Time
+"Montgomery, Alabama, U.S.A.",-0500,CDT - Central Daylight Time
+"La Paz, Bolivia",-0400,no timezone abbreviation
 HNY,-0900,HNY - Heure Normale du Yukon
-"Cancún, Mexico",-0600,CST - Central Standard Time
-"Cayenne, French Guiana, France",-0300,UTC - Coordinated Universal Time
-"Lagos, Nigeria",+0100,UTC - Coordinated Universal Time
-"San Antonio, Texas, U.S.A.",-0600,CST - Central Standard Time
-"Manama, Bahrain",+0300,UTC - Coordinated Universal Time
-"Kitakyushu, Japan",+0900,UTC - Coordinated Universal Time
-"Kampala, Uganda",+0300,UTC - Coordinated Universal Time
-"Bern, Switzerland",+0100,CET - Central European Time
-"Vadodara, India",+0530,UTC - Coordinated Universal Time
-"Gaborone, Botswana",+0200,UTC - Coordinated Universal Time
+"Cancún, Mexico",-0500,CDT - Central Daylight Time
+"Cayenne, French Guiana, France",-0300,no timezone abbreviation
+"Lagos, Nigeria",+0100,no timezone abbreviation
+"San Antonio, Texas, U.S.A.",-0500,CDT - Central Daylight Time
+"Manama, Bahrain",+0300,no timezone abbreviation
+"Kitakyushu, Japan",+0900,no timezone abbreviation
+"Kampala, Uganda",+0300,no timezone abbreviation
+"Bern, Switzerland",+0200,CEST - Central European Summer Time
+"Vadodara, India",+0530,no timezone abbreviation
+"Gaborone, Botswana",+0200,no timezone abbreviation
 "Brisbane, Queensland, Australia",+1000,EST - Eastern Standard Time
-"Charlottetown, Pr.Edward I, Canada",-0400,AST - Atlantic Standard Time
-"Perm, Russia",+0500,UTC - Coordinated Universal Time
-"Kupang, West Timor, Indonesia",+0800,UTC - Coordinated Universal Time
-"Tel Aviv, Israel",+0200,UTC - Coordinated Universal Time
-"Wuhan, China",+0800,UTC - Coordinated Universal Time
-"Merida, Mexico",-0600,CST - Central Standard Time
-"Budapest, Hungary",+0100,CET - Central European Time
-"Asmera, Eritrea",+0300,UTC - Coordinated Universal Time
-"Cincinnati, Ohio, U.S.A.",-0500,EST - Eastern Standard Time
-"Islamabad, Pakistan",+0500,UTC - Coordinated Universal Time
+"Charlottetown, Pr.Edward I, Canada",-0300,ADT - Atlantic Daylight Time
+"Perm, Russia",+0600,no timezone abbreviation
+"Kupang, West Timor, Indonesia",+0800,no timezone abbreviation
+"Tel Aviv, Israel",+0300,no timezone abbreviation
+"Port Louis, Mauritius",+0400,no timezone abbreviation
+"Wuhan, China",+0800,no timezone abbreviation
+"Merida, Mexico",-0500,CDT - Central Daylight Time
+"Budapest, Hungary",+0200,CEST - Central European Summer Time
+"Asmera, Eritrea",+0300,no timezone abbreviation
+"Cincinnati, Ohio, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Islamabad, Pakistan",+0500,no timezone abbreviation
 N,-0100,N - November Time Zone
-"Changchun, China",+0800,UTC - Coordinated Universal Time
+"Changchun, China",+0800,no timezone abbreviation
 "Reykjavik, Iceland",+0000,GMT - Greenwich Mean Time
 NDT,-0230,NDT - Newfoundland Daylight Time
-"Oakland, California, U.S.A.",-0800,PST - Pacific Standard Time
-"Niamey, Niger",+0100,UTC - Coordinated Universal Time
-"San Salvador, El Salvador",-0600,UTC - Coordinated Universal Time
+"Oakland, California, U.S.A.",-0700,PDT - Pacific Daylight Time
+"Niamey, Niger",+0100,no timezone abbreviation
+"San Salvador, El Salvador",-0600,no timezone abbreviation
 "Kingston, Norfolk Island, Australia",+1130,NFT - Norfolk (Island) Time
-"Aqtau, Kazakstan",+0500,UTC - Coordinated Universal Time
-"Podgorica, Montenegro, Serbia and Montenegro",+0100,CET - Central European Time
-"Mexicali, Mexico",-0800,PST - Pacific Standard Time
+"Aqtau, Kazakstan",+0500,no timezone abbreviation
+"Podgorica, Montenegro, Serbia and Montenegro",+0200,CEST - Central European Summer Time
+"Mexicali, Mexico",-0700,PDT - Pacific Daylight Time
 "El Aaiún, Western Sahara",+0000,UTC - Coordinated Universal Time
-"Sapporo, Japan",+0900,UTC - Coordinated Universal Time
+"Sapporo, Japan",+0900,no timezone abbreviation
+"Mississauga, Ontario, Canada",-0400,EDT - Eastern Daylight Time
 "Ouagadougou, Burkina Faso",+0000,UTC - Coordinated Universal Time
-"Quito, Ecuador",-0500,UTC - Coordinated Universal Time
-"Tegucigalpa, Honduras",-0600,UTC - Coordinated Universal Time
-"Pensacola, Florida, U.S.A.",-0600,CST - Central Standard Time
-"Port-aux-Francais, Kerguelen, France",+0500,UTC - Coordinated Universal Time
+"Quito, Ecuador",-0500,no timezone abbreviation
+"Tegucigalpa, Honduras",-0600,no timezone abbreviation
+"Pensacola, Florida, U.S.A.",-0500,CDT - Central Daylight Time
+"Port-aux-Francais, Kerguelen, France",+0500,no timezone abbreviation
 WST,+0800,WST - Western Standard Time
-"Santiago, Chile",-0300,UTC - Coordinated Universal Time
-"Paramaribo, Suriname",-0300,UTC - Coordinated Universal Time
-"Milwaukee, Wisconsin, U.S.A.",-0600,CST - Central Standard Time
-"Agra, India",+0530,UTC - Coordinated Universal Time
-"Surabaya, Java, Indonesia",+0700,UTC - Coordinated Universal Time
-"Saint-Peterburg, Russia",+0300,UTC - Coordinated Universal Time
-"Colombo, Sri Lanka",+0600,UTC - Coordinated Universal Time
-"Charlotte, North Carolina, U.S.A.",-0500,EST - Eastern Standard Time
-"Bucharest, Romania",+0200,EET - Eastern European Time
-"Salvador, Bahia, Brazil",-0300,UTC - Coordinated Universal Time
-"Córdoba, Spain",+0100,CET - Central European Time
-"London, England, U.K.",+0000,GMT - Greenwich Mean Time
-"Bandung, Java, Indonesia",+0700,UTC - Coordinated Universal Time
-"Aguascalientes, Mexico",-0600,CST - Central Standard Time
-"Ahmadãbãd, India",+0530,UTC - Coordinated Universal Time
-"Kãnpur, India",+0530,UTC - Coordinated Universal Time
-"Taiyuan, China",+0800,UTC - Coordinated Universal Time
-"Minneapolis, Minnesota, U.S.A.",-0600,CST - Central Standard Time
-"Long Beach, California, U.S.A.",-0800,PST - Pacific Standard Time
+"Santiago, Chile",-0400,no timezone abbreviation
+"Paramaribo, Suriname",-0300,no timezone abbreviation
+"Milwaukee, Wisconsin, U.S.A.",-0500,CDT - Central Daylight Time
+"Agra, India",+0530,no timezone abbreviation
+"Surabaya, Java, Indonesia",+0700,no timezone abbreviation
+"Saint-Peterburg, Russia",+0400,no timezone abbreviation
+"Colombo, Sri Lanka",+0600,no timezone abbreviation
+"Charlotte, North Carolina, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Kowloon, China",+0800,no timezone abbreviation
+"Salvador, Bahia, Brazil",-0300,no timezone abbreviation
+"Córdoba, Spain",+0200,CEST - Central European Summer Time
+"London, England, U.K.",+0100,BST - British Summer Time
+"Bandung, Java, Indonesia",+0700,no timezone abbreviation
+"Aguascalientes, Mexico",-0500,CDT - Central Daylight Time
+"Ahmadãbãd, India",+0530,no timezone abbreviation
+"Kãnpur, India",+0530,no timezone abbreviation
+"Taiyuan, China",+0800,no timezone abbreviation
+"Minneapolis, Minnesota, U.S.A.",-0500,CDT - Central Daylight Time
+"Long Beach, California, U.S.A.",-0700,PDT - Pacific Daylight Time
 MESZ,+0200,MESZ - Mitteleuropäische Sommerzeit
-"Vatican City, Vatican City State",+0100,CET - Central European Time
-"Zürich, Switzerland",+0100,CET - Central European Time
-"San Juan, Puerto Rico",-0400,UTC - Coordinated Universal Time
-"Glasgow, Scotland, U.K.",+0000,GMT - Greenwich Mean Time
-"Miami, Florida, U.S.A.",-0500,EST - Eastern Standard Time
-"Tripoli, Libya",+0200,UTC - Coordinated Universal Time
-"Kolkata, India",+0530,UTC - Coordinated Universal Time
+"Vatican City, Vatican City State",+0200,CEST - Central European Summer Time
+"Zürich, Switzerland",+0200,CEST - Central European Summer Time
+"San Juan, Puerto Rico",-0400,no timezone abbreviation
+"Glasgow, Scotland, U.K.",+0100,BST - British Summer Time
+"Miami, Florida, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Tripoli, Libya",+0200,no timezone abbreviation
+"Kolkata, India",+0530,no timezone abbreviation
 Y,-1200,Y - Yankee Time Zone
-"Topeka, Kansas, U.S.A.",-0600,CST - Central Standard Time
-"Papeete, Tahiti, France",-1000,UTC - Coordinated Universal Time
-"Brussels, Belgium",+0100,CET - Central European Time
-"Georgetown, Guyana",-0400,UTC - Coordinated Universal Time
-"Varanasi, India",+0530,UTC - Coordinated Universal Time
-"Buffalo, New York, U.S.A.",-0500,EST - Eastern Standard Time
-"Ljubljana, Slovenia",+0100,CET - Central European Time
-"Gambier Islands, French Polynesia, France",-0900,UTC - Coordinated Universal Time
+"Brampton, Ontario, Canada",-0400,EDT - Eastern Daylight Time
+"Topeka, Kansas, U.S.A.",-0500,CDT - Central Daylight Time
+"Papeete, Tahiti, France",-1000,no timezone abbreviation
+"Brussels, Belgium",+0200,CEST - Central European Summer Time
+"Georgetown, Guyana",-0400,no timezone abbreviation
+"Varanasi, India",+0530,no timezone abbreviation
+"Buffalo, New York, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Ljubljana, Slovenia",+0200,CEST - Central European Summer Time
+"Gambier Islands, French Polynesia, France",-0900,no timezone abbreviation
 WEDT,+0100,WEDT - Western European Daylight Time
-"Prague, Czech Republic",+0100,CET - Central European Time
-"Lilongwe, Malawi",+0200,UTC - Coordinated Universal Time
-"Faisalabad, Pakistan",+0500,UTC - Coordinated Universal Time
-"Cali, Colombia",-0500,UTC - Coordinated Universal Time
-"Lima, Peru",-0500,UTC - Coordinated Universal Time
-"Newark, New Jersey, U.S.A.",-0500,EST - Eastern Standard Time
-"Munich, Bavaria, Germany",+0100,CET - Central European Time
+"Prague, Czech Republic",+0200,CEST - Central European Summer Time
+"Baton Rouge, Louisiana, U.S.A.",-0500,CDT - Central Daylight Time
+"Faisalabad, Pakistan",+0500,no timezone abbreviation
+"Cali, Colombia",-0500,no timezone abbreviation
+"Peshawar, Pakistan",+0500,no timezone abbreviation
+"Newark, New Jersey, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Munich, Bavaria, Germany",+0200,CEST - Central European Summer Time
 HNC,-0600,HNC - Heure Normale du Centre
-"Anadyr, Russia",+1200,UTC - Coordinated Universal Time
-"Vishakhapatnam, India",+0530,UTC - Coordinated Universal Time
-"Apia, Samoa",-1100,UTC - Coordinated Universal Time
-"Honolulu, Hawaii, U.S.A.",-1000,UTC - Coordinated Universal Time
-"Hyderãbãd, India",+0530,UTC - Coordinated Universal Time
+"Anadyr, Russia",+1300,no timezone abbreviation
+"Vishakhapatnam, India",+0530,no timezone abbreviation
+"Apia, Samoa",-1100,no timezone abbreviation
+"Honolulu, Hawaii, U.S.A.",-1000,no timezone abbreviation
+"Hyderãbãd, India",+0530,no timezone abbreviation
 EEDT,+0300,EEDT - Eastern European Daylight Time
-"Kiritimati, Christmas Islands, Kiribati",+1400,UTC - Coordinated Universal Time
-"Birmingham, Alabama, U.S.A.",-0600,CST - Central Standard Time
+"Kiritimati, Christmas Islands, Kiribati",+1400,no timezone abbreviation
+"Birmingham, Alabama, U.S.A.",-0500,CDT - Central Daylight Time
 "Tucson, Arizona, U.S.A.",-0700,MST - Mountain Standard Time
 "Yamoussoukro, Cote d'Ivoire (Ivory Coast)",+0000,UTC - Coordinated Universal Time
-"Okayama, Japan",+0900,UTC - Coordinated Universal Time
-"Concord, New Hampshire, U.S.A.",-0500,EST - Eastern Standard Time
-"Taipei, Taiwan",+0800,UTC - Coordinated Universal Time
+"Okayama, Japan",+0900,no timezone abbreviation
+"Concord, New Hampshire, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Taipei, Taiwan",+0800,no timezone abbreviation
 K,+1000,K - Kilo Time Zone
-"Monterrey, Mexico",-0600,CST - Central Standard Time
-"Balikpapan, Kalimantan, Indonesia",+0800,UTC - Coordinated Universal Time
-"St. Paul, Minnesota, U.S.A.",-0600,CST - Central Standard Time
-"Macau, China",+0800,UTC - Coordinated Universal Time
+"Monterrey, Mexico",-0500,CDT - Central Daylight Time
+"Balikpapan, Kalimantan, Indonesia",+0800,no timezone abbreviation
+"St. Paul, Minnesota, U.S.A.",-0500,CDT - Central Daylight Time
+"Macau, China",+0800,no timezone abbreviation
 D,+0400,D - Delta Time Zone
-"Minsk, Belarus",+0200,EET - Eastern European Time
-"Denver, Colorado, U.S.A.",-0700,MST - Mountain Standard Time
-"Qiqihar, China",+0800,UTC - Coordinated Universal Time
+"Minsk, Belarus",+0300,EEST - Eastern European Summer Time
+"Denver, Colorado, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Qiqihar, China",+0800,no timezone abbreviation
 T,-0700,T - Tango Time Zone
-"Manila, Philippines",+0800,UTC - Coordinated Universal Time
+"Manila, Philippines",+0800,no timezone abbreviation
 CXT,+0700,CXT - Christmas Island Time
-"Changsha, China",+0800,UTC - Coordinated Universal Time
+"Changsha, China",+0800,no timezone abbreviation
 ACDT,+1030,ACDT - Australian Central Daylight Time
-"Dover, Delaware, U.S.A.",-0500,EST - Eastern Standard Time
-"Louisville, Kentucky, U.S.A.",-0500,UTC - Coordinated Universal Time
-"Rochester, New York, U.S.A.",-0500,EST - Eastern Standard Time
-"Nagoya, Japan",+0900,UTC - Coordinated Universal Time
-"Murmansk, Russia",+0300,UTC - Coordinated Universal Time
+"Dover, Delaware, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Louisville, Kentucky, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Rochester, New York, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Nagoya, Japan",+0900,no timezone abbreviation
+"Murmansk, Russia",+0400,no timezone abbreviation
 "Regina, Saskatchewan, Canada",-0600,CST - Central Standard Time
-"Naples, Italy",+0100,CET - Central European Time
-"Nicosia, Cyprus",+0200,UTC - Coordinated Universal Time
-"Sian, China",+0800,UTC - Coordinated Universal Time
-"New Delhi, India",+0530,UTC - Coordinated Universal Time
-"Fushun, China",+0800,UTC - Coordinated Universal Time
-"Knoxville, Tennessee, U.S.A.",-0500,EST - Eastern Standard Time
-"Surakarta, Java, Indonesia",+0700,UTC - Coordinated Universal Time
-"Basse-Terre, Guadeloupe, France",-0400,UTC - Coordinated Universal Time
-"Zhengzhou, China",+0800,UTC - Coordinated Universal Time
-"Gaza, Gaza Strip",+0200,UTC - Coordinated Universal Time
-"Abu Dhabi, United Arab Emirates",+0400,UTC - Coordinated Universal Time
+"Naples, Italy",+0200,CEST - Central European Summer Time
+"Nicosia, Cyprus",+0300,no timezone abbreviation
+"Sian, China",+0800,no timezone abbreviation
+"New Delhi, India",+0530,no timezone abbreviation
+"Fushun, China",+0800,no timezone abbreviation
+"Knoxville, Tennessee, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Surakarta, Java, Indonesia",+0700,no timezone abbreviation
+"Basse-Terre, Guadeloupe, France",-0400,no timezone abbreviation
+"Zhengzhou, China",+0800,no timezone abbreviation
+"Gaza, Gaza Strip",+0200,no timezone abbreviation
+"Abu Dhabi, United Arab Emirates",+0400,no timezone abbreviation
 EET,+0200,EET - Eastern European Time
-"Düsseldorf, North Rhine-Westphalia, Germany",+0100,CET - Central European Time
-"Nice, France",+0100,CET - Central European Time
-"Vienna, Austria",+0100,CET - Central European Time
+"Düsseldorf, North Rhine-Westphalia, Germany",+0200,CEST - Central European Summer Time
+"Nice, France",+0200,CEST - Central European Summer Time
+"Vienna, Austria",+0200,CEST - Central European Summer Time
 EST,-0500,EST - Eastern Standard Time
-"Philadelphia, Pennsylvania, U.S.A.",-0500,EST - Eastern Standard Time
-"Saint George's, Grenada",-0400,UTC - Coordinated Universal Time
-"Alexandria, Egypt",+0200,UTC - Coordinated Universal Time
-"Adamstown, Pitcairn, U.K.",-0800,UTC - Coordinated Universal Time
-"Hanoi, Vietnam",+0700,UTC - Coordinated Universal Time
-"Aurora, Colorado, U.S.A.",-0700,MST - Mountain Standard Time
-"Esfahãn, Iran",+0330,UTC - Coordinated Universal Time
-"Endeh, Flores, Indonesia",+0800,UTC - Coordinated Universal Time
-"Shanghai, China",+0800,UTC - Coordinated Universal Time
-"Kyoto, Japan",+0900,UTC - Coordinated Universal Time
-"Praia, Cape Verde",-0100,UTC - Coordinated Universal Time
-"Bethlehem, West Bank",+0200,UTC - Coordinated Universal Time
-"Cleveland, Ohio, U.S.A.",-0500,EST - Eastern Standard Time
-"Willemstad, Netherlands Antilles, Netherlands",-0400,UTC - Coordinated Universal Time
-"Raba, Sumbawa, Indonesia",+0800,UTC - Coordinated Universal Time
-"Taiohae, Marquesas Islands, France",-0930,UTC - Coordinated Universal Time
-"Fort-de-France, Martinique, France",-0400,UTC - Coordinated Universal Time
-"Tampa, Florida, U.S.A.",-0500,EST - Eastern Standard Time
-"Choibalsan, Mongolia",+0800,UTC - Coordinated Universal Time
-"Whitehorse, Yukon Territory, Canada",-0800,PST - Pacific Standard Time
+"Philadelphia, Pennsylvania, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Saint George's, Grenada",-0400,no timezone abbreviation
+"Alexandria, Egypt",+0200,no timezone abbreviation
+"Adamstown, Pitcairn, U.K.",-0800,no timezone abbreviation
+"Hanoi, Vietnam",+0700,no timezone abbreviation
+"Aurora, Colorado, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Esfahãn, Iran",+0330,no timezone abbreviation
+"Endeh, Flores, Indonesia",+0800,no timezone abbreviation
+"Shanghai, China",+0800,no timezone abbreviation
+"Kyoto, Japan",+0900,no timezone abbreviation
+"Praia, Cape Verde",-0100,no timezone abbreviation
+"Bethlehem, West Bank",+0200,no timezone abbreviation
+"Cleveland, Ohio, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Willemstad, Netherlands Antilles, Netherlands",-0400,no timezone abbreviation
+"Raba, Sumbawa, Indonesia",+0800,no timezone abbreviation
+"Taiohae, Marquesas Islands, France",-0930,no timezone abbreviation
+"Fort-de-France, Martinique, France",-0400,no timezone abbreviation
+"Tampa, Florida, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Choibalsan, Mongolia",+0900,no timezone abbreviation
+"Whitehorse, Yukon Territory, Canada",-0700,PDT - Pacific Daylight Time
 M,+1200,M - Mike Time Zone
 O,-0200,O - Oscar Time Zone
-"Frankfurt, Hesse, Germany",+0100,CET - Central European Time
-"Trenton, New Jersey, U.S.A.",-0500,EST - Eastern Standard Time
-"Jefferson City, Missouri, U.S.A.",-0600,CST - Central Standard Time
-"Libreville, Gabon",+0100,UTC - Coordinated Universal Time
-"Berlin, Berlin, Germany",+0100,CET - Central European Time
-"Damascus, Syria",+0200,UTC - Coordinated Universal Time
-"Victoria, British Columbia, Canada",-0800,PST - Pacific Standard Time
-"Anshan, China",+0800,UTC - Coordinated Universal Time
-"Lusaka, Zambia",+0200,UTC - Coordinated Universal Time
-"Jilin, China",+0800,UTC - Coordinated Universal Time
-"Mexico City, Mexico",-0600,CST - Central Standard Time
-"Chihuahua, Mexico",-0700,MST - Mountain Standard Time
-"Szczecin, Poland",+0100,CET - Central European Time
-"Virginia Beach, Virginia, U.S.A.",-0500,EST - Eastern Standard Time
-"Mataram, Lombok, Indonesia",+0800,UTC - Coordinated Universal Time
-"La Plata, Buenos Aires, Argentina",-0300,UTC - Coordinated Universal Time
-"Adelaide, South Australia, Australia",+0930,CST - Central Summer(Daylight) Time
-"Basra, Iraq",+0300,UTC - Coordinated Universal Time
-"Tsingtao, China",+0800,UTC - Coordinated Universal Time
-"New Orleans, Louisiana, U.S.A.",-0600,CST - Central Standard Time
-"Tbilisi, Georgia",+0400,UTC - Coordinated Universal Time
-"Buenos Aires, Argentina",-0300,UTC - Coordinated Universal Time
-"Honiara, Solomon Islands",+1100,UTC - Coordinated Universal Time
+"Frankfurt, Hesse, Germany",+0200,CEST - Central European Summer Time
+"Trenton, New Jersey, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Jefferson City, Missouri, U.S.A.",-0500,CDT - Central Daylight Time
+"Libreville, Gabon",+0100,no timezone abbreviation
+"Berlin, Berlin, Germany",+0200,CEST - Central European Summer Time
+"Damascus, Syria",+0300,no timezone abbreviation
+"Victoria, British Columbia, Canada",-0700,PDT - Pacific Daylight Time
+"Anshan, China",+0800,no timezone abbreviation
+"Lusaka, Zambia",+0200,no timezone abbreviation
+"Jilin, China",+0800,no timezone abbreviation
+"Mexico City, Mexico",-0500,CDT - Central Daylight Time
+"Chihuahua, Mexico",-0600,MDT - Mountain Daylight Time
+"Szczecin, Poland",+0200,CEST - Central European Summer Time
+"Virginia Beach, Virginia, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Mataram, Lombok, Indonesia",+0800,no timezone abbreviation
+"La Plata, Buenos Aires, Argentina",-0300,no timezone abbreviation
+"Adelaide, South Australia, Australia",+0930,CST - Central Standard Time
+"Basra, Iraq",+0400,no timezone abbreviation
+"Tsingtao, China",+0800,no timezone abbreviation
+"New Orleans, Louisiana, U.S.A.",-0500,CDT - Central Daylight Time
+"Tbilisi, Georgia",+0400,no timezone abbreviation
+"Buenos Aires, Argentina",-0300,no timezone abbreviation
+"Honiara, Solomon Islands",+1100,no timezone abbreviation
 AEDT,+1100,AEDT - Australian Eastern Daylight Time
-"Saint John, New Brunswick, Canada",-0400,UTC - Coordinated Universal Time
-"Québec, Quebec, Canada",-0500,EST - Eastern Standard Time
-"Ufa, Russia",+0500,UTC - Coordinated Universal Time
-"Incheon, South Korea",+0900,UTC - Coordinated Universal Time
-"Tucumán, Tucumán, Argentina",-0300,UTC - Coordinated Universal Time
-"Providence, Rhode Island, U.S.A.",-0500,EST - Eastern Standard Time
-"Tashkent, Uzbekistan",+0500,UTC - Coordinated Universal Time
-"Madurai, India",+0530,UTC - Coordinated Universal Time
+"Saint John, New Brunswick, Canada",-0300,ADT - Atlantic Daylight Time
+"Québec, Quebec, Canada",-0400,EDT - Eastern Daylight Time
+"Ufa, Russia",+0600,no timezone abbreviation
+"Incheon, South Korea",+0900,no timezone abbreviation
+"Tucumán, Tucumán, Argentina",-0300,no timezone abbreviation
+"Providence, Rhode Island, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Tashkent, Uzbekistan",+0500,no timezone abbreviation
+"Madurai, India",+0530,no timezone abbreviation
 HAC,-0500,HAC - Heure Avancée du Centre
 ADT,-0300,ADT - Atlantic Daylight Time
-"Ashgabat, Turkmenistan",+0500,UTC - Coordinated Universal Time
-"Nuuk, Greenland, Denmark",-0300,UTC - Coordinated Universal Time
-"Gibraltar, Gibraltar, U.K.",+0100,CET - Central European Time
-"Salt Lake City, Utah, U.S.A.",-0700,MST - Mountain Standard Time
-"Castries, Saint Lucia",-0400,UTC - Coordinated Universal Time
+"Ashgabat, Turkmenistan",+0500,no timezone abbreviation
+"Nuuk, Greenland, Denmark",-0200,no timezone abbreviation
+"Gibraltar, Gibraltar, U.K.",+0200,CEST - Central European Summer Time
+"Salt Lake City, Utah, U.S.A.",-0600,MDT - Mountain Daylight Time
+"Castries, Saint Lucia",-0400,no timezone abbreviation
 "Phoenix, Arizona, U.S.A.",-0700,MST - Mountain Standard Time
-"Saint-Denis, Reunion (French)",+0400,UTC - Coordinated Universal Time
-"Male, Maldives",+0500,UTC - Coordinated Universal Time
-"Windhoek, Namibia",+0200,UTC - Coordinated Universal Time
+"Saint-Denis, Reunion (French)",+0400,no timezone abbreviation
+"Male, Maldives",+0500,no timezone abbreviation
+"Windhoek, Namibia",+0100,no timezone abbreviation
 Z,+0000,Z - Zulu Time Zone
-"Pusan, South Korea",+0900,UTC - Coordinated Universal Time
-"Guayaquil, Ecuador",-0500,UTC - Coordinated Universal Time
+"Pusan, South Korea",+0900,no timezone abbreviation
+"Guayaquil, Ecuador",-0500,no timezone abbreviation
 GMT,+0000,GMT - Greenwich Mean Time
-"Dubai, United Arab Emirates",+0400,UTC - Coordinated Universal Time
+"Dubai, United Arab Emirates",+0400,no timezone abbreviation
 "Tanger, Morocco",+0000,UTC - Coordinated Universal Time
-"Warsaw, Poland",+0100,CET - Central European Time
-"Seoul, South Korea",+0900,UTC - Coordinated Universal Time
-"Stanley, Falkland Islands, U.K.",-0300,UTC - Coordinated Universal Time
-"Rio de Janeiro, Rio de Janeiro, Brazil",-0200,UTC - Coordinated Universal Time
+"Warsaw, Poland",+0200,CEST - Central European Summer Time
+"Seoul, South Korea",+0900,no timezone abbreviation
+"Stanley, Falkland Islands, U.K.",-0300,no timezone abbreviation
+"Rio de Janeiro, Rio de Janeiro, Brazil",-0300,no timezone abbreviation
 MEZ,+0100,MEZ - Mitteleuropäische Zeit
-"Chennai, India",+0530,UTC - Coordinated Universal Time
+"Chennai, India",+0530,no timezone abbreviation
 "Lome, Togo",+0000,UTC - Coordinated Universal Time
 MST,-0700,MST - Mountain Standard Time
-"Ndjamena, Chad",+0100,UTC - Coordinated Universal Time
+"Ndjamena, Chad",+0100,no timezone abbreviation
 AEST,+1000,AEST - Australian Eastern Standard Time
-"Dublin, Ireland",+0000,GMT - Greenwich Mean Time
-"Khartoum, Sudan",+0300,UTC - Coordinated Universal Time
-"Kowloon, China",+0800,UTC - Coordinated Universal Time
-"Poznan, Poland",+0100,CET - Central European Time
-"Surat, India",+0530,UTC - Coordinated Universal Time
-"Medan, Sumatera, Indonesia",+0700,UTC - Coordinated Universal Time
-"Bangkok, Thailand",+0700,UTC - Coordinated Universal Time
+"Dublin, Ireland",+0100,IST - Irish Summer Time
+"Khartoum, Sudan",+0300,no timezone abbreviation
+"Bucharest, Romania",+0300,EEST - Eastern European Summer Time
+"Poznan, Poland",+0200,CEST - Central European Summer Time
+"Surat, India",+0530,no timezone abbreviation
+"Medan, Sumatera, Indonesia",+0700,no timezone abbreviation
+"Bangkok, Thailand",+0700,no timezone abbreviation
 ACST,+0930,ACST - Australian Central Standard Time
-"Baghdad, Iraq",+0300,UTC - Coordinated Universal Time
-"Helsinki, Finland",+0200,EET - Eastern European Time
-"Maseru, Lesotho",+0200,UTC - Coordinated Universal Time
+"Baghdad, Iraq",+0400,no timezone abbreviation
+"Helsinki, Finland",+0300,EEST - Eastern European Summer Time
+"Maseru, Lesotho",+0200,no timezone abbreviation
+"Yuzhno-Sakhalinsk, Russia",+1100,no timezone abbreviation
 CEDT,+0200,CEDT - Central European Daylight Time
-"Djibouti, Djibouti",+0300,UTC - Coordinated Universal Time
-"Norfolk, Virginia, U.S.A.",-0500,EST - Eastern Standard Time
+"Djibouti, Djibouti",+0300,no timezone abbreviation
+"Norfolk, Virginia, U.S.A.",-0400,EDT - Eastern Daylight Time
 "Accra, Ghana",+0000,UTC - Coordinated Universal Time
-"Memphis, Tennessee, U.S.A.",-0600,CST - Central Standard Time
-"Washington DC, District of Columbia, U.S.A.",-0500,EST - Eastern Standard Time
-"Skopje, F.Y.R.O. Macedonia",+0100,CET - Central European Time
+"Memphis, Tennessee, U.S.A.",-0500,CDT - Central Daylight Time
+"Washington DC, District of Columbia, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Skopje, F.Y.R.O. Macedonia",+0200,CEST - Central European Summer Time
 E,+0500,E - Echo Time Zone
-"Lexington-Fayette, Kentucky, U.S.A.",-0500,EST - Eastern Standard Time
-"Novosibirsk, Russia",+0600,UTC - Coordinated Universal Time
-"Columbus, Ohio, U.S.A.",-0500,EST - Eastern Standard Time
+"Lexington-Fayette, Kentucky, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Novosibirsk, Russia",+0700,no timezone abbreviation
+"Columbus, Ohio, U.S.A.",-0400,EDT - Eastern Daylight Time
 "Conakry, Guinea",+0000,UTC - Coordinated Universal Time
-"Jakarta, Java, Indonesia",+0700,UTC - Coordinated Universal Time
-"Khon Kaen, Thailand",+0700,UTC - Coordinated Universal Time
-"Arlington, Texas, U.S.A.",-0600,CST - Central Standard Time
+"Jakarta, Java, Indonesia",+0700,no timezone abbreviation
+"Khon Kaen, Thailand",+0700,no timezone abbreviation
+"Arlington, Texas, U.S.A.",-0500,CDT - Central Daylight Time
 U,-0800,U - Uniform Time Zone
-"Dili, Timor-Leste",+0900,UTC - Coordinated Universal Time
-"Dhaka, Bangladesh",+0600,UTC - Coordinated Universal Time
+"Dili, Timor-Leste",+0900,no timezone abbreviation
+"Dhaka, Bangladesh",+0600,no timezone abbreviation
 WEST,+0100,WEST - Western European Summer Time
-"Toledo, Ohio, U.S.A.",-0500,EST - Eastern Standard Time
-"Aqtobe, Kazakstan",+0500,UTC - Coordinated Universal Time
-"Belfast, Northern Ireland, U.K.",+0000,GMT - Greenwich Mean Time
-"Winnipeg, Manitoba, Canada",-0600,CST - Central Standard Time
-"Makwa, Nauru",+1200,UTC - Coordinated Universal Time
-"Istanbul, Turkey",+0200,EET - Eastern European Time
-"Turin, Italy",+0100,CET - Central European Time
-"Fernando de Noronha, Pernambuco, Brazil",-0200,UTC - Coordinated Universal Time
-"Shijiazhuang, China",+0800,UTC - Coordinated Universal Time
-"Panama, Panama",-0500,UTC - Coordinated Universal Time
+"Toledo, Ohio, U.S.A.",-0400,EDT - Eastern Daylight Time
+"Aqtobe, Kazakstan",+0500,no timezone abbreviation
+"Belfast, Northern Ireland, U.K.",+0100,BST - British Summer Time
+"Winnipeg, Manitoba, Canada",-0500,CDT - Central Daylight Time
+"Makwa, Nauru",+1200,no timezone abbreviation
+"Istanbul, Turkey",+0300,EEST - Eastern European Summer Time
+"Turin, Italy",+0200,CEST - Central European Summer Time
+"Fernando de Noronha, Pernambuco, Brazil",-0200,no timezone abbreviation
+"Shijiazhuang, China",+0800,no timezone abbreviation
+"Panama, Panama",-0500,no timezone abbreviation
