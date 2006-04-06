@@ -1,0 +1,12 @@
+<table border="1">
+    <tr>
+        <th>Permission</th>
+        <th>Your state</th>
+    </tr>
+    <% @permissions.each do |permission| %>
+        <tr>
+            <td><%= permission.name %></td>
+            <td><% if permission.isUserAllowed(@session[:user].id) then %><div style="color: green">enabled</div><% else %><div style="color: red">disabled</div><% end %></td>
+        </tr>
+    <% end %>
+</table>
