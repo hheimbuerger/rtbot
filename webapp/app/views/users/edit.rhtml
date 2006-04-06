@@ -1,0 +1,16 @@
+<h1>Editing user</h1>
+
+<%= start_form_tag :action => 'update', :id => @user %>
+  <%= render :partial => 'form' %>
+  <%= submit_tag 'Edit' %>
+
+<%= end_form_tag %>
+
+    <% @permissions.each do |permission| %>
+        <p>
+            <b><%= permission.name %></b>: 
+            <% if permission.isUserAllowed(@user.id) then %><input type="submit" name="revoke<%= permission.id %>" value="revoke"/><% else %><input type="submit" name="grant<%= permission.id %>" value="grant"/><% end %>
+        </p>
+    <% end %>
+
+<%= link_to 'Back', :action => 'list' %>

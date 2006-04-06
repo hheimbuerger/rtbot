@@ -1,5 +1,5 @@
 class AccountController < ApplicationController
-  layout  'scaffold'
+#  layout  'scaffold'
 
   def login
     case @request.method
@@ -16,16 +16,6 @@ class AccountController < ApplicationController
       end
     end
   end
-  
-  def signup
-    @user = User.new(@params[:user])
-
-    if @request.post? and @user.save
-      @session[:user] = User.authenticate(@user.login, @params[:user][:password])
-      flash['notice']  = "Signup successful"
-      redirect_to :controller => "status"
-    end      
-  end  
   
   def switch
     if @session[:user].nil?

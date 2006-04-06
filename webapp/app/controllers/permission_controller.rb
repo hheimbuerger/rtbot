@@ -8,4 +8,9 @@ class PermissionController < ApplicationController
 #    breakpoint "Breaking"
   end
 
+  def access_denied
+    flash.now['notice']  = "Permission denied!"
+    redirect_to :action => 'index'
+  end
+
 end
