@@ -49,20 +49,21 @@ class HumanBehaviourPlugin:
   @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_LOW)
   def onChannelMessage(self, irclib, source, msg):
 	#print self.saidMyNameLastMessage
-	if(source in self.saidMyNameLastMessage):
-	  temp = True
-	  del self.saidMyNameLastMessage[source]
-	else:
-	  temp = False
-	if((temp == True) and (msg == "'2" or msg == "`2" or msg.lower().find("i didn't")!=-1)):
-		self.insult(irclib, self.getCanonicalName(source))
-	elif((temp == True) and (msg == "'1" or msg == "`1" or msg.lower().find("yes")!=-1 or msg.lower().find("ya")!=-1 or msg.lower().find("yup")!=-1 or msg.lower().find("yep")!=-1 or msg.lower().find("yeah")!=-1 or msg.lower().find("i did")!=-1)):
-		irclib.sendChannelMessage(":)")
-	elif((temp == True) and (msg.lower().find("no")!=-1 or msg.lower().find("nah")!=-1)):
-		self.insult(irclib, self.getCanonicalName(source))
-	elif((temp == True) and (msg.lower().find("naturally")!=-1 or msg.lower().find("of course")!=-1)):
-		irclib.sendChannelMessage(":)")
-	elif(msg.lower() == "'yt" or msg.lower() == "`yt"):
+#	if(source in self.saidMyNameLastMessage):
+#	  temp = True
+#	  del self.saidMyNameLastMessage[source]
+#	else:
+#	  temp = False
+#	if((temp == True) and (msg == "'2" or msg == "`2" or msg.lower().find("i didn't")!=-1)):
+#		self.insult(irclib, self.getCanonicalName(source))
+#	elif((temp == True) and (msg == "'1" or msg == "`1" or msg.lower().find("yes")!=-1 or msg.lower().find("ya")!=-1 or msg.lower().find("yup")!=-1 or msg.lower().find("yep")!=-1 or msg.lower().find("yeah")!=-1 or msg.lower().find("i did")!=-1)):
+#		irclib.sendChannelMessage(":)")
+#	elif((temp == True) and (msg.lower().find("no")!=-1 or msg.lower().find("nah")!=-1)):
+#		self.insult(irclib, self.getCanonicalName(source))
+#	elif((temp == True) and (msg.lower().find("naturally")!=-1 or msg.lower().find("of course")!=-1)):
+#		irclib.sendChannelMessage(":)")
+#   elif
+	if(msg.lower() == "'yt" or msg.lower() == "`yt"):
 		irclib.sendChannelMessage("'rt")
 	elif(msg.lower() == "'yb" or msg.lower() == "`yb"):
 		irclib.sendChannelMessage("'yb")
@@ -78,12 +79,12 @@ class HumanBehaviourPlugin:
 		irclib.sendChannelMessage("Ram it! Ram it! RAM IT!!!")
 	elif(msg.lower() == "'gn" or msg.lower() == "`gn"):
 		irclib.sendChannelMessage("Read the Academy, you n00b!")
-	elif(self.removeURLs(msg).lower().find("rtbot") != -1):
-		if((msg.lower().find("'yh") != -1) or (msg.lower().find("sup") != -1)):
-			irclib.sendChannelMessage("'yh! I'm fine. How about you?")
-		else:
-			irclib.sendChannelMessage("Hey " + self.getCanonicalName(source) + ", did you just say my name?")
-			self.saidMyNameLastMessage[source] = True
+#	elif(self.removeURLs(msg).lower().find("rtbot") != -1):
+#		if((msg.lower().find("'yh") != -1) or (msg.lower().find("sup") != -1)):
+#			irclib.sendChannelMessage("'yh! I'm fine. How about you?")
+#		else:
+#			irclib.sendChannelMessage("Hey " + self.getCanonicalName(source) + ", did you just say my name?")
+#			self.saidMyNameLastMessage[source] = True
 #		elif(self.getCanonicalName(source).lower().find("denga") != -1):
 #			irclib.sendChannelEmote("closes his eyes and sings: bla bla bla, bla blaaaaa")
 
