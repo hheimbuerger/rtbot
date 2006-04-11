@@ -43,9 +43,14 @@ class ConsoleModePlugin:
     
     @PluginInterface.Priorities.prioritized( PluginInterface.Priorities.PRIORITY_VERYHIGH )
     def onPrivateMessage(self, irclib, source, message):
-        if(message == "!login godmode" and not self.currentUser):
+        if(message == "!login" and not self.currentUser):
             # switch to console mode
             irclib.sendPrivateMessage(source, "===== LOGGED IN =====")
+            irclib.sendPrivateMessage(source, "Initialised local variables:")
+            irclib.sendPrivateMessage(source, "- self: the ConsoleModePlugin you're working with")
+            irclib.sendPrivateMessage(source, "- irclib: the IRC library")
+            irclib.sendPrivateMessage(source, "- pi: the plugin interface")
+            irclib.sendPrivateMessage(source, "- core: the bot core")
             self.currentUser = source
             self.interpreter = MyInterpreter(irclib, source, {"self": self, "irclib": irclib, "pi": self.pluginInterfaceReference, "core": self.pluginInterfaceReference.botcore})
             return(True)
