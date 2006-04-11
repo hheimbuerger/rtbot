@@ -25,6 +25,16 @@ class InsultPlugin:
     else:
       return(authenticationPlugin.getCanonicalName(rawName))
 
+  def punish(self, irclib, name):
+    # retrieve AuthenticationPlugin
+    authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+    if(authenticationPlugin == None):
+      LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of punish()")
+      return(False)
+    else:
+      authenticationPlugin.punish(irclib, name)
+      return(True)
+
   def listAll(self):
     for insult in self.insults:
       print insult
@@ -37,7 +47,7 @@ class InsultPlugin:
       name = message[7:]
       if(name.lower().find("bot") != -1):
           self.insult(irclib, self.getCanonicalName(sender))
-          irclib.unOp(sender)
+          self.punish(irclib, sender)
       else:
           self.insult(irclib, name)
 
