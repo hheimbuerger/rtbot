@@ -21,7 +21,7 @@
 '''
 
 import sys, os, threading, traceback, time
-from modules import IrcLib, RTBot, LogLib, config, PluginInterface, util
+from modules import IrcLib, RTBot, LogLib, config, PluginInterface, util, WebService
 from signal import SIGTERM
 
 def deamonize(stdout='/dev/null', stderr=None, stdin='/dev/null',
@@ -127,47 +127,103 @@ class BotManager:
 
         self.settings = config.Settings()
 
+    def controller_IRCLibrary(self, action):
+        if(action == "start"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Loading IRC library...")
+            self.irclib = IrcLib.LowlevelIrcLib()
+            self.irclib.connect(self.settings.server, self.settings.port, self.settings.nickname, self.settings.username, self.settings.realname)
+        elif(action == "stop"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Disconnecting from IRC...")
+            try:
+                self.irclib.disconnect()
+            except Exception, exc:
+                LogLib.log.addException("Exception during irclib.disconnect()", exc)
+            self.irclib = None
+        else:
+            raise("NO ACTION SPECIFIED")
+
+    def controller_PluginInterface(self, action):
+        if(action == "start"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Loading PluginInterface...")
+            self.pluginInterface = PluginInterface.PluginInterface(self.pluginsDirectory)
+        elif(action == "stop"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Unloading PluginInterface...")
+            try:
+                self.pluginInterface.dispose()
+            except Exception, exc:
+                LogLib.log.addException("Exception during pluginInterface.dispose()", exc)
+            self.pluginInterface = None
+        else:
+            raise("NO ACTION SPECIFIED")
+
+    def controller_BotCore(self, action):
+        if(action == "start"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Loading core bot code...")
+            self.rtbot = RTBot.RTBot(self.irclib, self.settings.channel, self.pluginInterface)
+            self.irclib.registerEventTarget(self.rtbot)
+            self.pluginInterface.registerInformTarget(self.rtbot)
+        elif(action == "stop"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Unloading core bot code...")
+            try:
+                self.rtbot.dispose()
+            except Exception, exc:
+                LogLib.log.addException("Exception during rtbot.dispose()", exc)
+            self.rtbot = None
+        else:
+            raise("NO ACTION SPECIFIED")
+
+    def controller_Plugins(self, action):
+        if(action == "start"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Loading plugins...")
+            self.pluginInterface.updatePlugins(False)
+        elif(action == "stop"):
+            pass
+        else:
+            raise("NO ACTION SPECIFIED")
+
+    def controller_ModificationsTimer(self, action):
+        if(action == "start"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Starting to check for changed plugins every X seconds...")
+            self.modificationsTimerLock = threading.RLock()
+            self.startModificationsTimer()
+        elif(action == "stop"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "Stopping changed plugin check...")
+            self.modificationsTimer.cancel()
+            self.modificationsTimer = None
+        else:
+            raise("NO ACTION SPECIFIED")
+
+    def controller_WebService(self, action):
+        if(action == "start"):
+            if(self.settings.webservice_host and self.settings.webservice_port):
+                LogLib.log.add(LogLib.LOGLVL_INFO, "Starting WebService...")
+                self.webservice = WebService.WebService(self, self.settings.webservice_host, self.settings.webservice_port)
+                self.webservice.start()
+            else:
+                LogLib.log.add(LogLib.LOGLVL_INFO, "WebService deactivated...")
+        elif(action == "stop"):
+            LogLib.log.add(LogLib.LOGLVL_INFO, "STOPPING WEBSERVICE NOT YET IMPLEMENTED!")
+            self.webservice = None
+        else:
+            raise("NO ACTION SPECIFIED")
+
     def startup(self):
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Loading IRC library...")
-        self.irclib = IrcLib.LowlevelIrcLib()
-        self.irclib.connect(self.settings.server, self.settings.port, self.settings.nickname, self.settings.username, self.settings.realname)
-
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Loading PluginInterface...")
-        self.pluginInterface = PluginInterface.PluginInterface(self.pluginsDirectory)
-
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Loading core bot code...")
-        self.rtbot = RTBot.RTBot(self.irclib, self.settings.channel, self.pluginInterface)
-        self.irclib.registerEventTarget(self.rtbot)
-        self.pluginInterface.registerInformTarget(self.rtbot)
-
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Loading plugins...")
-        self.pluginInterface.updatePlugins(False)
-        
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Starting to check for changed plugins every X seconds...")
-        self.modificationsTimerLock = threading.RLock()
-        self.startModificationsTimer()
+        self.controller_IRCLibrary("start")
+        self.controller_PluginInterface("start")
+        self.controller_BotCore("start")
+        self.controller_Plugins("start")
+        self.controller_ModificationsTimer("start")
 
     @util.withMemberLock("modificationsTimerLock")
     def shutdown(self):
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Stopping changed plugin check...")
-        self.modificationsTimer.cancel()
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Unloading PluginInterface...")
-        try:
-            self.pluginInterface.dispose()
-        except Exception, exc:
-            LogLib.log.addException("Exception during pluginInterface.dispose()", exc)
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Unloading core bot code...")
-        try:
-            self.rtbot.dispose()
-        except Exception, exc:
-            LogLib.log.addException("Exception during rtbot.dispose()", exc)
-        LogLib.log.add(LogLib.LOGLVL_INFO, "Disconnecting from IRC...")
-        try:
-            self.irclib.disconnect()
-        except Exception, exc:
-            LogLib.log.addException("Exception during irclib.disconnect()", exc)
+        self.controller_ModificationsTimer("stop")
+        self.controller_PluginInterface("stop")
+        self.controller_BotCore("stop")
+        self.controller_IRCLibrary("stop")
 
     def run(self):
+        self.controller_WebService("start")
+        
         LogLib.log.add(LogLib.LOGLVL_DEBUG, "Entering main BotManager loop...")        
 
         while(True):
@@ -199,6 +255,9 @@ class BotManager:
         LogLib.log.add(LogLib.LOGLVL_INFO, "BotManager.run(): Destructing BotManager...")
         self.shutdown()
         LogLib.log.add(LogLib.LOGLVL_INFO, "Thank you for using RTBot! 'yb")
+
+        self.controller_WebService("stop")
+
         LogLib.log.close()
 
     def startModificationsTimer(self):
