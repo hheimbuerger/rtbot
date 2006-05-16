@@ -218,6 +218,10 @@ class ClockPlugin:
 
 
     def findZone(self, nameparts, checkForAliases=True):
+        # ASSERT: nameparts is a list
+        if(type(nameparts) != list):
+            raise TypeError("ERROR: Parameter 'nameparts' has to be a list!")
+
         currentBestZone = ""
 
         # construct RE
@@ -273,6 +277,8 @@ class ClockPlugin:
             time = arguments[0]
             hours = int(time[0:2])
             minutes = int(time[3:5])
+            if(time[2] != ":"):
+                raise Exception()
         except:
             irclib.sendChannelMessage("That is not a valid time: HH:MM")
             return
@@ -284,10 +290,13 @@ class ClockPlugin:
         #print "|%s|%s|" % (str(sourceZone), str(targetZone))
         
         # find the zones
-        source = self.findZone(sourceZone)
-        if(not source):
-            irclib.sendChannelMessage("That is not a valid source timezone!")
-            return
+        if(sourceZone == []):
+            source = self.findZone(["UTC"])
+        else:
+            source = self.findZone(sourceZone)
+            if(not source):
+                irclib.sendChannelMessage("That is not a valid source timezone!")
+                return
         (source_zone, source_modifier, source_zonename) = source
         target = self.findZone(targetZone)
         if(not target):
@@ -351,7 +360,7 @@ class ClockPlugin:
                     self.doTimezoneRefresh()
                 elif((len(commandArguments) >= 4) and (commandArguments[0] == "define") and ("as" in commandArguments[2:])):
                     self.defineAlias(irclib, commandArguments[1:])
-                elif((len(commandArguments) >= 4) and ("in" in commandArguments[1:])):
+                elif((len(commandArguments) >= 3) and ("in" in commandArguments[1:])):
                     self.showTranslation(irclib, commandArguments[0:])
                 else:
                     self.showResult(irclib, commandArguments)
