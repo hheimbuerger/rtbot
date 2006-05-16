@@ -125,9 +125,9 @@ class LowlevelIrcLib:
         for line in self.splitLongMessages(msg):
             self.sendRawMsg("PRIVMSG %s :%s" % (target, line))
 
-#    def sendPrivateNotice(self, target, msg):
-#        for line in self.splitLongMessages(msg):
-#            self.sendRawMsg("NOTICE %s :%s" % (target, line))
+    def sendPrivateNotice(self, target, msg):
+        for line in self.splitLongMessages(msg):
+            self.sendRawMsg("NOTICE %s :%s" % (target, line))
 
     def sendChannelEmote(self, emote):
         LogLib.log.add(LogLib.LOGLVL_LOG, "%s-->#: * %s" % (self.nickname, emote))
