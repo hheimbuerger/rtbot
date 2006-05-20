@@ -13,6 +13,9 @@ class Settings:
     username = "rtbottest"
     realname = "RTBotTest"
 
+    # The database connection (currently used to log exceptions for the webapp)
+    database_connection_string = None    #"mysql://root@localhost/rtbotadmin"
+
     # The host and port of the webservice or "None" to deactivate the webservice.
     webservice_host = None      #"tufer.de"
     webservice_port = None      #8000
