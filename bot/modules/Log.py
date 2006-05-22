@@ -59,7 +59,7 @@ XMLEmitter = UniqueFileHandler(path("exceptions"))
 XMLEmitter.setLevel(logging.ERROR)
 XMLEmitter.addFilter(ExceptionFilter())
 XMLEmitter.setFormatter(XMLFormatter())
-#rootlog.addHandler(XMLEmitter)
+rootlog.addHandler(XMLEmitter)
 
 ##          Handler that emits exceptions to a database
 
@@ -83,16 +83,16 @@ if(Settings.database_connection_string):
             message = logrecord.msg % logrecord.args
             (type, exception, tb) = logrecord.exc_info
             formattedTraceback = traceback.format_exception(exception.__class__.__name__, exception, tb)
-                        
+
             #LoggedException._connection.debug = True
             sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(Settings.database_connection_string)
             exc = LoggedException(exception_type=str(exc_type), meta_message=message, message=str(exc_value), traceback=stringTraceback)
     
     DatabaseEmitter = DatabaseHandler()
-    DatabaseHandler.setLevel(logging.ERROR)
-    DatabaseHandler.addFilter(ExceptionFilter())
-    rootlog.addHandler(XMLEmitter)
-    
+    DatabaseEmitter.setLevel(logging.ERROR)
+    DatabaseEmitter.addFilter(ExceptionFilter())
+    rootlog.addHandler(DatabaseEmitter)
+
 # Standard file logs
 debuglog = logging.FileHandler(path("logs/debuglog.txt"))
 debuglog.setLevel(logging.DEBUG)
