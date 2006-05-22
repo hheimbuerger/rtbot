@@ -118,7 +118,7 @@ class MutingPlugin:
             if(len(self.revolutionists) == 1):
                 irclib.sendChannelMessage("Are you sure? I need %i more to support this..." % (self.minimumRevolutionistsNeeded - len(self.revolutionists)))
             else:
-                irclib.sendChannelMessage("Okay, I need %i more..." % (self.minimumRevolutionistsNeeded - len(self.revolutionists)))
+                irclib.sendChannelMessage("Okay %s, I need %i more..." % (canonicalName, self.minimumRevolutionistsNeeded - len(self.revolutionists)))
 
     def printMuteList(self, irclib):
         outputList = []
