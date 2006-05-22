@@ -16,7 +16,7 @@ class CoreReaderPlugin:
     def readCore(self, core):
         reader = self.plugins.CoreReaderPlugin.igc.IGCReader()
         try:
-            reader.open("cores/" + core + ".igc")
+            reader.open("resources/cores/" + core + ".igc")
             return(reader)
         except IOError:
             return(None)
