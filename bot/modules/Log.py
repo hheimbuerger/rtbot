@@ -1,9 +1,9 @@
 import datetime, sys, traceback, threading, os, logging, util
-from path import path
+from lib.path import path
 from config import Settings
 from xml.dom.minidom import getDOMImplementation
 if(Settings.database_connection_string):
-    from sqlobject import *
+    import sqlobject
 
 "This file sets up the built-in python logging module"
 
@@ -64,16 +64,17 @@ XMLEmitter.setFormatter(XMLFormatter())
 ##          Handler that emits exceptions to a database
 
 if(Settings.database_connection_string):
-    class LoggedException(SQLObject):
+    class LoggedException(sqlobject.SQLObject):
         class sqlmeta:
             table = "exceptions"
-        timestamp = DateTimeCol(default=datetime.datetime.utcnow)
-        type = StringCol(length=255, varchar=True)
-        message = StringCol(length=255, varchar=True)
-        traceback = StringCol()
-        handled_by = IntCol(default=None)
-        handled_when = DateTimeCol(default=None)
-        
+        timestamp = sqlobject.DateTimeCol(default=datetime.datetime.utcnow)    # when did the exception get raised?
+        exception_type = sqlobject.StringCol(length=255, varchar=True)         # what class is the exception of?
+        meta_message = sqlobject.StringCol(length=255, varchar=True)           # what message did the bot code give?
+        message = sqlobject.StringCol(length=255, varchar=True)                # what message did the runtime system give?
+        traceback = sqlobject.StringCol()                                      # what's the stack trace? (multilined!)
+        handled_by = sqlobject.IntCol(default=None)                            # who marked this exception as handled (not used by the bot)
+        handled_when = sqlobject.DateTimeCol(default=None)                     # when was this exception marked as handled (not used by the bot)
+
     class DatabaseHandler(logging.Handler):
         def emit(self, logrecord):
             # We only want exception records
@@ -83,9 +84,9 @@ if(Settings.database_connection_string):
             (type, exception, tb) = logrecord.exc_info
             formattedTraceback = traceback.format_exception(exception.__class__.__name__, exception, tb)
                         
-            sqlhub.processConnection = connectionForURI(Settings.database_connection_string)
             #LoggedException._connection.debug = True
-            exc = LoggedException(type, message=message, traceback=formattedTraceback)
+            sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(Settings.database_connection_string)
+            exc = LoggedException(exception_type=str(exc_type), meta_message=message, message=str(exc_value), traceback=stringTraceback)
     
     DatabaseEmitter = DatabaseHandler()
     DatabaseHandler.setLevel(logging.ERROR)

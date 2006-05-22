@@ -3,7 +3,7 @@ import unittest, os, time, logging
 import Log
 import coverage, colorize
 
-from path import path
+from lib.path import path
 
 class FakeBot:
     def informPluginChanges(self, loadedPluginsList, reloadedPluginsList, removedPluginsList, unused):

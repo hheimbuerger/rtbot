@@ -1,5 +1,5 @@
 import sys, inspect, imp, operator, util, logging, traceback
-from path import path
+from lib.path import path
 
 # Vocabulary
 # classname - the name of the plugin class in the plugin file (eg. SeenPlugin is the
