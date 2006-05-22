@@ -5,7 +5,7 @@ import string
 class WebService(Thread):
     def __init__(self, botManagerReference, host, port):
         Thread.__init__(self, group=None, target=None, name="WebServiceThread", args=(), kwargs={})
-        self.server = SimpleXMLRPCServer((host, port))
+        self.server = SimpleXMLRPCServer(addr=(host, port), logRequests=False)
         self.setDaemon(True)
         self.botManager = botManagerReference
 
@@ -16,11 +16,12 @@ class WebService(Thread):
     def status(self, plugin):
         return (plugin, ["1.0", "running"])
 
-    def pluginList(self):
+    def PluginList(self):
         list = self.botManager.pluginInterface.getPluginNames()
         list.sort()
-        return("Plugins: " + string.join(list, ", "))
-        
+        #return("Plugins: " + string.join(list, ", "))
+        return(list)
+
 
 
 if __name__ == "__main__":
