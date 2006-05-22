@@ -1,0 +1,33 @@
+Right now, these are only snippets. More documentation will be added later. (How many
+projects broke that promise already? :D)
+
+===========================================================================================================
+
+Path structure:
+/					Contains the BotManager.py, the starting code for the bot.
+/debugging_pluins	Various plugins that aren't used in the production environment but for testing.
+/exceptions (*)		XML files that are dumped for every exception detected in the repository. The
+					filename contains the date, time and a running number per bot session.
+/lib				3rd party modules necessary for running the bot.
+/logs (*)			The logs created by the bot.
+/modules			Core modules of the bot.
+/plugins			Plugins for the bot.
+/resources			Various resources needed by various plugins. Also used as a storage area for plugins.
+
+(*) = Please do not commit the contents of these directories to the repository.
+
+===========================================================================================================
+
+Running the bot:
+Windows:
+	Run the BotManager.py. (Calling "python BotManager.py" might be necessary, depending on your setup.)
+Linux:
+	Run the BotManager.py with a control parameter: "python BotManager.py start",
+		"python BotManager.py stop", "python BotManager.py restart"
+
+===========================================================================================================
+
+The database connection (activated by entering a connection string in Settings.database_connection_string)
+requires MySQLdb (http://sourceforge.net/projects/mysqldb) and SQLObject (http://www.sqlobject.org/). It
+is not necessary for running the bot, though (and deactivated by default).
+
