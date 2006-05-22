@@ -1,48 +1,59 @@
 import math
+import re
 
 class MathEvalPlugin:
 
     def getVersionInformation(self):
         return("$Id$")
 
-    def onPrivateMessage(self, irclib, source, msg):
-        if((len(msg.split()) > 1) and (msg.split()[0] == "eval")):
-            try:
-                exp = msg.split(None, 1)[1]
-                if(exp == "42"):
-                    irclib.sendPrivateMessage(source, "No need to think about that. It's The Answer to Life, the Universe, and Everything, of course!")
-                else:
-                    result = eval(exp)
-                    str_result = str(result)
-                    irclib.sendPrivateEmote("thinks...")
-                    if(len(str_result) > 100):
-                        irclib.sendPrivateMessage(source, "That's too long, I won't write all that down...")
-                    else:
-                        irclib.sendPrivateMessage(source, "I think '" + exp + "' evaluates to '" + str_result + "', but I'm not all knowing. ;)")
-            except:
-                irclib.sendPrivateMessage(source, "Too complex to do with mental arithmetics. Am I a computer or what!?")
-
-    def onChannelMessage(self, irclib, source, msg):
+    def handleMessage(self, msg, replyMessage, replyEmote):
         if((len(msg.split()) > 1) and ((msg.split()[0] == "eval") or (msg.split()[0] == "evalstatement"))):
-            try:
+            #try:
                 exp = msg.split(None, 1)[1]
-                if(exp == "42"):
-                    irclib.sendChannelMessage("No need to think about that. It's The Answer to Life, the Universe, and Everything, of course!")
+                if(len(re.findall("\*\*", exp)) > 1):
+                    replyMessage("Sorry, excessive use of power is not allowed.")
+                elif(exp == "42"):
+                    replyMessage("No need to think about that. It's The Answer to Life, the Universe, and Everything, of course!")
                 elif(msg.split()[0] == "evalstatement"):
                     result = eval(exp)
                     str_result = str(result)
-                    irclib.sendChannelEmote("thinks...")
+                    replyEmote("thinks...")
                     if(len(str_result) > 100):
-                        irclib.sendChannelMessage("That's too long, I won't write all that down...")
+                        replyMessage("That's too long, I won't write all that down...")
                     else:
-                        irclib.sendChannelMessage(str_result)
+                        replyMessage(str_result)
                 else:
                     result = eval(exp)
                     str_result = str(result)
-                    irclib.sendChannelEmote("thinks...")
+                    replyEmote("thinks...")
                     if(len(str_result) > 100):
-                        irclib.sendChannelMessage("That's too long, I won't write all that down...")
+                        replyMessage("That's too long, I won't write all that down...")
                     else:
-                        irclib.sendChannelMessage("I think '" + exp + "' evaluates to '" + str_result + "', but I'm not all knowing. ;)")
-            except:
-                irclib.sendChannelMessage("Too complex to do with mental arithmetics. Am I a computer or what!?")
+                        replyMessage("I think '" + exp + "' evaluates to '" + str_result + "', but I'm not all knowing. ;)")
+            #except:
+            #    replyMessage("Too complex to do with mental arithmetics. Am I a computer or what!?")
+
+    def onPrivateMessage(self, irclib, source, msg):
+        self.handleMessage(msg, (lambda reply: irclib.sendPrivateMessage(source, reply)), (lambda reply: irclib.sendPrivateEmote(source, reply)))
+
+    def onChannelMessage(self, irclib, source, msg):
+        self.handleMessage(msg, (lambda reply: irclib.sendChannelMessage(reply)), (lambda reply: irclib.sendChannelEmote(reply)))
+
+
+
+
+
+if __name__ == "__main__":
+    class IrcLibMock:
+        def sendPrivateMessage(self, target, text):
+            print text
+        def sendChannelMessage(self, text):
+            print text
+        def sendPrivateEmote(self, target, text):
+            print "* " + text
+        def sendChannelEmote(self, text):
+            print "* " + text
+    a = MathEvalPlugin()
+    a.onChannelMessage(IrcLibMock(), "source", "eval 1+2")
+    a.onChannelMessage(IrcLibMock(), "source", "irclib.sendChannelMessage('test')")
+    
