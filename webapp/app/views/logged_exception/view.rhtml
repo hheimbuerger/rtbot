@@ -1,0 +1,41 @@
+<% if @flash[:note] -%>
+<div id="notice"><%= @flash[:note] %></div>
+<% end -%>
+
+<h3>Time of occurence:</h3>
+<p><%= @logged_exception.timestamp.to_s() %></p>
+
+<h3>Type:</h3>
+<p><%= @logged_exception.exception_type %></p>
+
+<h3>Meta message:</h3>
+<p><%= @logged_exception.meta_message %></p>
+
+<h3>Message:</h3>
+<p><%= @logged_exception.message %></p>
+
+<h3>Confirmed by:</h3>
+<p>
+<% if not @logged_exception.user.nil? %>
+  confirmed by <%= @logged_exception.user.login %>
+  <% if has_permission?("confexc") %>
+    <%= button_to "reopen!", :action => 'reopen', :id => params[:id] %>
+  <% end %>
+<% else %>
+  not confirmed
+  <% if has_permission?("confexc") %>
+    <%= button_to "handled!", :action => 'confirm', :id => params[:id] %>
+  <% end %>
+<% end %>
+<% if has_permission?("delexc") %>
+  <%= button_to "delete!", :action => 'delete', :id => params[:id] %>
+<% end %>
+</p>
+
+<h3>Confirmed at:</h3>
+<p><%= @logged_exception.handled_when.to_s() %></p>
+
+<h3>Traceback:</h3>
+<p><%= simple_format(@logged_exception.traceback) %></p>
+
+<p><%= link_to "back", :action => 'index' %></p>

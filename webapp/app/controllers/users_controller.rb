@@ -58,10 +58,28 @@ class UsersController < ApplicationController
 
   def update
     @user = User.find(params[:id])
-    if @user.update_attributes(params[:user])
+    @permissions = Permission.find_all
+
+    @user.login = params[:login]
+    if(params[:password] != "")
+      @user.password = params[:password]
+    end
+
+    # save permissions in the database
+    @permissions.each do |permission|
+      @user.permissions.delete(permission)
+      if(@params["permission"][permission.id.to_s()] == "true") then
+        @user.permissions << permission
+      end
+    end
+    
+#    if @user.update_attributes(params[:user])
+    if @user.save
+      logger.info("UsersController#update: User saved.")
       flash[:notice] = 'User was successfully updated.'
-      redirect_to :action => 'edit', :id => @user
+      redirect_to :action => 'list'
     else
+      logger.info("UsersController#update: Saving failed.")
       render :action => 'edit'
     end
   end

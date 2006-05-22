@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class ExceptionsTest < Test::Unit::TestCase
-  fixtures :exceptions
+class LoggedExceptionTest < Test::Unit::TestCase
+  fixtures :logged_exceptions
 
   # Replace this with your real tests.
   def test_truth

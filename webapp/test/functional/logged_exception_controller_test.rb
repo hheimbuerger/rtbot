@@ -1,12 +1,12 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'exceptions_controller'
+require 'logged_exception_controller'
 
 # Re-raise errors caught by the controller.
-class ExceptionsController; def rescue_action(e) raise e end; end
+class LoggedExceptionController; def rescue_action(e) raise e end; end
 
-class ExceptionsControllerTest < Test::Unit::TestCase
+class LoggedExceptionControllerTest < Test::Unit::TestCase
   def setup
-    @controller = ExceptionsController.new
+    @controller = LoggedExceptionController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
   end

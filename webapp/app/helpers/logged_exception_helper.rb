@@ -1,0 +1,2 @@
+module LoggedExceptionHelper
+end

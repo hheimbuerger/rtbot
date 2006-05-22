@@ -1,0 +1,15 @@
+<% if @flash[:note] -%>
+<div id="notice"><%= @flash[:note] %></div>
+<% end -%>
+
+<table border="1">
+  <% for logged_exception in @logged_exceptions %>
+    <tr>
+      <td><%= link_to logged_exception.timestamp.to_s(), :action => 'view', :id => logged_exception.id %></td>
+      <td><%= logged_exception.exception_type %></td>
+      <td><%= logged_exception.meta_message %></td>
+      <td><%= logged_exception.message %></td>
+      <!--      <td><%= simple_format(logged_exception.traceback) %></td>-->
+    </tr>
+  <% end %>
+</table>

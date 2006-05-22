@@ -1,1 +1,7 @@
-status here
+<% if @has_connection %>
+	<% @plugins.each do |plugin| %>
+	    <%= plugin %>,
+	<% end %>
+<% else %>
+    no connection
+<% end %>

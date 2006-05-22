@@ -1,0 +1,10 @@
+To run the webapp, you need at least Ruby and Rails. Ruby has to be downloaded and installed manually (installer
+packages are available for most platforms), Rails can be downloaded via the Ruby package manager, RubyGems, which
+comes with every Ruby installation.
+
+The instructions can be found at http://www.rubyonrails.org/down
+In a nutshell:
+1. Install Ruby.
+2. Run "gem install rails --include-dependencies".
+3. Have a local MySQL server running, filled with the schema ...
+4. Run "ruby script/server" in the /webapp directory to fire up a local test server (slow, but fully functional).

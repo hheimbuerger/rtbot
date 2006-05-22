@@ -1,16 +1,21 @@
 <h1>Editing user</h1>
 
-<%= start_form_tag :action => 'update', :id => @user %>
-  <%= render :partial => 'form' %>
-  <%= submit_tag 'Edit' %>
+<div id="message"><%= @user.errors.full_messages.to_s() %></div>
 
-<%= end_form_tag %>
-
-    <% @permissions.each do |permission| %>
+<%= start_form_tag :action => 'update', :id => params[:id] %>
+  <p>Username<br/>
+  <input name="login" type="text" value="<%= @user.login %>" size="20" maxlength="20" /></p>
+  <p>Password<br/>
+  <input name="password" type="password" size="40" maxlength="40" /></p>
+  
+  <% @permissions.each do |permission| %>
+        
         <p>
-            <b><%= permission.name %></b>: 
-            <% if permission.isUserAllowed(@user.id) then %><input type="submit" name="revoke<%= permission.id %>" value="revoke"/><% else %><input type="submit" name="grant<%= permission.id %>" value="grant"/><% end %>
+            <input type="checkbox" name="permission[<%= permission.id %>]" value="true" <% if permission.isUserAllowed(params[:id]) then %>checked="checked"<% end %>><%= permission.name %></input><br/>
         </p>
-    <% end %>
+  <% end %>
+
+  <%= submit_tag 'Edit' %>
+  <%= end_form_tag %>
 
 <%= link_to 'Back', :action => 'list' %>
