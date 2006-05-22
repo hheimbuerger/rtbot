@@ -1,5 +1,4 @@
-import re
-from modules import LogLib
+import re, logging
 from modules import PluginInterface
 
 class HumanBehaviourPlugin:
@@ -19,7 +18,7 @@ class HumanBehaviourPlugin:
 	# retrieve AuthenticationPlugin
 	authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
 	if(authenticationPlugin == None):
-	  LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
+	  logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
 	  return(rawName)
 	else:
 	  return(authenticationPlugin.getCanonicalName(rawName))
@@ -28,7 +27,7 @@ class HumanBehaviourPlugin:
 	# retrieve InsultPlugin
 	insultPlugin = self.pluginInterfaceReference.getPluginByClassname("InsultPlugin")
 	if(insultPlugin == None):
-	  LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: HumanBehaviourPlugin didn't succeed at lookup of InsultPlugin during execution of insult()")
+	  logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of InsultPlugin during execution of insult()")
 	  pass
 	else:
 	  insultPlugin.insult(irclib, name)

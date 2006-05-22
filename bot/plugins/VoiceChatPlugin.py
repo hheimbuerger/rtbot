@@ -1,6 +1,5 @@
 # These imports are only used for the unit-test code, they are ignored when used as a plugin (but all of them are automatically imported by the PluginInterface)
-import re
-from modules import LogLib
+import re, logging
 
 class VoiceChatPlugin:
     import csv, os, pickle, exceptions
@@ -38,7 +37,7 @@ class VoiceChatPlugin:
         # retrieve AuthenticationPlugin
         authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-            LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: VoiceChatPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
+            logging.info("ERROR: VoiceChatPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
             return(rawName)
         else:
             return(authenticationPlugin.getCanonicalName(rawName))
@@ -163,16 +162,6 @@ if __name__ == "__main__":
     class FakeFailingPluginInterface:
         def getPluginByClassname(self, name):
             return None
-    
-    class FakeLog:
-        def add(self, level, msg):
-            print msg
-    
-    class FakeLogLib:
-        LOGLVL_INFO = 1
-        log = FakeLog()
-        
-    LogLib = FakeLogLib()
 
     a = VoiceChatPlugin(FakePluginInterface())
     #a.listAll()

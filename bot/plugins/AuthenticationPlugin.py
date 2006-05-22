@@ -1,8 +1,4 @@
-import re, time
-import datetime
-import string
-import pickle
-from modules import LogLib
+import re, time, datetime, string, pickle, logging
 from modules import PluginInterface
 
 class AuthenticationPlugin:
@@ -20,7 +16,7 @@ class AuthenticationPlugin:
     def sendMessage(self, sender, receiver, message, needDeliveryNotification, isDeliveryNotification, instantDelivery = False):
         mailboxPlugin = self.pluginInterfaceReference.getPluginByClassname("MailboxPlugin")
         if(mailboxPlugin == None):
-            LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: AuthenticationPlugin didn't succeed at lookup of MailboxPlugin during execution of sendMessage()")
+            logging.info("ERROR: AuthenticationPlugin didn't succeed at lookup of MailboxPlugin during execution of sendMessage()")
             return(False)
         else:
             mailboxPlugin.sendMessage(sender, receiver, message, needDeliveryNotification, isDeliveryNotification, instantDelivery)
@@ -29,7 +25,7 @@ class AuthenticationPlugin:
     def getListOfMutees(self):
         mutingPlugin = self.pluginInterfaceReference.getPluginByClassname("MutingPlugin")
         if(mutingPlugin == None):
-            LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: AuthenticationPlugin didn't succeed at lookup of MutingPlugin during execution of getListOfMutees()")
+            logging.info("ERROR: AuthenticationPlugin didn't succeed at lookup of MutingPlugin during execution of getListOfMutees()")
             return([])
         else:
             return(mutingPlugin.getList())
@@ -154,7 +150,7 @@ class AuthenticationPlugin:
             return(re.compile("^" + RE + "$").match(input))
         except re.error:
             message = "ERROR: RegEx error in auth info ('%s'|'%s')!" % (RE, input)
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, message)
+            logging.debug(message)
             #self.sendMessage(irclib.nickname, "@Cort", message, False, False, True)
             return(False)
 

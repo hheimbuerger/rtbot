@@ -1,5 +1,4 @@
-from modules import LogLib
-import random
+import random, logging
 
 class AllegTacToePlugin:
 
@@ -11,23 +10,23 @@ class AllegTacToePlugin:
 
     def onChannelMessage(self, irclib, source, msg):
       if((msg == "play") or (msg == "play novice")):
-          LogLib.log.add(False, "play")
+          logging.debug("play")
           if((len(msg.split()) >= 2) and (msg.split()[1] == "novice")):
             irclib.sendChannelMessage("Okay, here we go (easy mode):")
             self.games[source] = AllegTacToeGame(False)
           else:
             irclib.sendChannelMessage("Okay, here we go (expert mode):")
             self.games[source] = AllegTacToeGame(True)
-          #LogLib.log.add(False, "board:" + string.join(self.games[source].showBoard(), "\n"))
+          #logging.debug("board:" + string.join(self.games[source].showBoard(), "\n"))
           for line in self.games[source].showBoard():
               irclib.sendChannelMessage(line)
       elif(source in self.games):
-          LogLib.log.add(False, "move")
+          logging.debug("move")
           (isValid, error) = self.games[source].isValidMove(msg)
           if(isValid):
-              LogLib.log.add(False, "valid move")
+              logging.debug("valid move")
               res = self.games[source].nextTurn(int(msg))
-              LogLib.log.add(False, "next board")
+              logging.debug("next board")
               for line in self.games[source].showBoard():
                   irclib.sendChannelMessage(line)
               if(res != ""):

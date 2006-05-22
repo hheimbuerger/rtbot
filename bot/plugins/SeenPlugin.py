@@ -1,6 +1,5 @@
 # Keeps track of the last time people were in the channel
-import pickle, os, datetime, exceptions
-from modules import LogLib
+import pickle, os, datetime, exceptions, logging
 from modules import PluginInterface
 
 class SeenRecord:
@@ -64,7 +63,7 @@ class SeenPlugin:
         # retrieve AuthenticationPlugin
         authenticationPlugin = self.pluginInterface.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-            LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
+            logging.info("ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
             return(rawName)
         else:
             return(authenticationPlugin.getCanonicalName(rawName))
@@ -74,7 +73,7 @@ class SeenPlugin:
         # retrieve AuthenticationPlugin
         authenticationPlugin = self.pluginInterface.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-            LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalUserList()")
+            logging.info("ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalUserList()")
             return rawUserList
         else:
             return [authenticationPlugin.getCanonicalName(rawName) for rawName in rawUserList]

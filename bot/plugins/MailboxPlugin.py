@@ -1,7 +1,5 @@
-import csv
-import datetime
+import csv, logging, datetime
 from modules import PluginInterface
-from modules import LogLib
 
 class MailboxPlugin:
 
@@ -34,7 +32,7 @@ class MailboxPlugin:
         # retrieve AuthenticationPlugin
         authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-          LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
+          logging.info("ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
           return(None)
         else:
           return(authenticationPlugin.isFriend(irclib, name))
@@ -43,7 +41,7 @@ class MailboxPlugin:
         # retrieve AuthenticationPlugin
         authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-          LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isKnown()")
+          logging.info("ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isKnown()")
           return(None)
         else:
           return(authenticationPlugin.isKnown(username))
@@ -52,7 +50,7 @@ class MailboxPlugin:
       # retrieve AuthenticationPlugin
       authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
       if(authenticationPlugin == None):
-        LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
+        logging.info("ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
         return(rawName)
       else:
         return(authenticationPlugin.getCanonicalName(rawName))
@@ -79,7 +77,7 @@ class MailboxPlugin:
         for mail in self.storedMails:
             (sender, receiver, message, date, needDeliveryNotification, isDeliveryNotification) = mail
             if((receiver == person) or (authedName and receiver == '@'+authedName)):
-                LogLib.log.add(LogLib.LOGLVL_DEBUG, "Deleting message that is about to be delivered: |%s|" % (str(mail)))
+                logging.debug("Deleting message that is about to be delivered: |%s|" % (str(mail)))
                 self.storedMails.remove(mail)
                 self.saveMails()
                 if(needDeliveryNotification):

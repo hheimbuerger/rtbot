@@ -36,3 +36,33 @@ def withMemberLock(lockName, blocking = True):
             lock.release()
         return wrapped
     return decorator
+
+from UserDict import UserDict
+import pickle
+class Archive(UserDict):
+    # This is basically a shelf with custom picklers
+    def __init__(self, filepath, persistent_id, persistent_load):
+        self.__dict__.update(locals())
+        if filepath.exists() and not filepath.size == 0:
+            up = pickle.Unpickler(filepath.open("rb"))
+            up.persistent_load = self.persistent_load
+            try:
+                data = up.load()
+            except:
+                data = {}
+        else:
+            data = {}
+        UserDict.__init__(self, data)
+    def __del__(self):
+        self.sync()
+    def sync(self):
+        "Writes the contents of the data back to disk"
+        p = pickle.Pickler(self.filepath.open("wb"), -1) # use highest version of pickle protocol
+        p.persistent_id = self.persistent_id
+        p.dump(self.data)
+    def __setitem__(self, key, item):
+        self.data[key] = item
+        self.sync()
+    def __delitem__(self, key):
+        del self.data[key]
+        self.sync()

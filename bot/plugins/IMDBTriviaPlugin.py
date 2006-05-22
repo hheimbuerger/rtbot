@@ -1,7 +1,4 @@
-import random, re
-import httplib, urllib, htmllib, formatter, StringIO
-from modules import LogLib
-
+import random, re, logging, httplib, urllib, htmllib, formatter, StringIO
 
 class IMDBTriviaPlugin:
     def __init__(self):
@@ -17,7 +14,7 @@ class IMDBTriviaPlugin:
         #print r1.status, r1.reason, r1.getheader("Location")
         data = r1.read()
         conn.close()
-        #LogLib.log.add(LogLib.LOGLVL_DEBUG, str((r1.status, data, r1.getheader("Location"))))
+        #logging.debug(str((r1.status, data, r1.getheader("Location"))))
         return((r1.status, data, r1.getheader("Location")))
 
     def extractAllPopularFilmSearchResults(self, page):
@@ -29,7 +26,7 @@ class IMDBTriviaPlugin:
 
         reobj = re.compile("<ol>(.*?)</ol>", re.DOTALL).search(page)
         if(not reobj):
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, "IMDBTriviaLib: couldn't find the film list")
+            logging.debug("IMDBTriviaLib: couldn't find the film list")
             return(result)
         filmList = reobj.group(1)
         #print filmList
@@ -50,7 +47,7 @@ class IMDBTriviaPlugin:
                 result.append(reobj.group(1))
             else:
                 cleansedURL = reobj.group(1)[:reobj.group(1).find("?")]
-                LogLib.log.add(LogLib.LOGLVL_DEBUG, "IMDBTriviaLib: removing URL artifact from (%s), result (%s)" % (reobj.group(1), cleansedURL))
+                logging.debug("IMDBTriviaLib: removing URL artifact from (%s), result (%s)" % (reobj.group(1), cleansedURL))
                 result.append(cleansedURL)
             
             reobj = re.search("<li>(.*?)</li>(.*)", filmList)
@@ -134,15 +131,15 @@ class IMDBTriviaPlugin:
     def findFilmAndExtractTrivia(self, query):
         (status, page, url) = self.getPage("www.imdb.com", "/find?tt=on;q=" + urllib.quote(query))
         if(status == 200):        #"ok"
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, "IMDBTriviaLib: got search result page, selecting first of the popular results")
+            logging.debug("IMDBTriviaLib: got search result page, selecting first of the popular results")
             films = self.extractAllPopularFilmSearchResults(page)
             if(not films):
-                LogLib.log.add(LogLib.LOGLVL_DEBUG, "IMDBTriviaLib: no popular films found on (%s)" % ("/find?q=" + urllib.quote(query)))
+                logging.debug("IMDBTriviaLib: no popular films found on (%s)" % ("/find?q=" + urllib.quote(query)))
                 return
             chosenFilm = films[0]
             #print "URL = " + chosenFilm + "trivia"
             (status, page, url) = self.getPage("www.imdb.com", chosenFilm+"trivia")
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, "IMDBTriviaLib: selected (%s), extracting trivia now" % (chosenFilm+"trivia"))
+            logging.debug("IMDBTriviaLib: selected (%s), extracting trivia now" % (chosenFilm+"trivia"))
 
             #a = open("temp.txt", "w")
             #a.write(page)
@@ -155,13 +152,13 @@ class IMDBTriviaPlugin:
             reobj = re.match("http://www\.imdb\.com(.*)", url)
             chosenFilm = reobj.group(1)
             (status, page, url) = self.getPage("www.imdb.com", chosenFilm+"trivia")
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, "IMDBTriviaLib: direct film hit (%s), extracting trivia now" % (chosenFilm+"trivia"))
+            logging.debug("IMDBTriviaLib: direct film hit (%s), extracting trivia now" % (chosenFilm+"trivia"))
             title = self.getTitle(page)
             trivia = self.extractAllTrivia(page)
             return((title, trivia))
         else:
             #print "IMDBTriviaLib: incorrect status code: " + status + " (query: " + query + ")"
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, "IMDBTriviaLib: incorrect status code: " + status + " (query: " + query + ")")
+            logging.debug("IMDBTriviaLib: incorrect status code: " + status + " (query: " + query + ")")
 
     def getStrippedRandomTrivia(self, query):
 #        try:

@@ -1,5 +1,4 @@
-import random
-from modules import LogLib
+import random, logging
 
 class InsultPlugin:
   insults = []
@@ -20,7 +19,7 @@ class InsultPlugin:
     # retrieve AuthenticationPlugin
     authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
     if(authenticationPlugin == None):
-      LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
+      logging.info("ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
       return(rawName)
     else:
       return(authenticationPlugin.getCanonicalName(rawName))
@@ -29,7 +28,7 @@ class InsultPlugin:
     # retrieve AuthenticationPlugin
     authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
     if(authenticationPlugin == None):
-      LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of punish()")
+      logging.info("ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of punish()")
       return(False)
     else:
       authenticationPlugin.punish(irclib, name)

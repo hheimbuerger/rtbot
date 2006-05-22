@@ -1,6 +1,4 @@
-import datetime
-import string
-from modules import LogLib
+import datetime, string, logging
 
 class MutingPlugin:
     mutingTimeoutSeconds = 60
@@ -24,7 +22,7 @@ class MutingPlugin:
         # retrieve AuthenticationPlugin
         authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-          LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: MutingPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
+          logging.info("ERROR: MutingPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
           return(False)
         else:
           return(authenticationPlugin.isFriend(irclib, name))
@@ -33,7 +31,7 @@ class MutingPlugin:
         # retrieve AuthenticationPlugin
         authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-          LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
+          logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
           return(rawName)
         else:
           return(authenticationPlugin.getCanonicalName(rawName))
@@ -44,7 +42,7 @@ class MutingPlugin:
     def triggerModeUpdate(self, irclib):
         authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
         if(authenticationPlugin == None):
-          LogLib.log.add(LogLib.LOGLVL_INFO, "ERROR: MutingPlugin didn't succeed at lookup of AuthenticationPlugin during execution of triggerModeUpdate()")
+          logging.info("ERROR: MutingPlugin didn't succeed at lookup of AuthenticationPlugin during execution of triggerModeUpdate()")
           return(False)
         else:
           authenticationPlugin.updateModes(irclib)

@@ -1,8 +1,5 @@
-import socket, select, re, sys, time, datetime
-import string
-import LogLib, util
-import UserList
-
+import socket, select, re, sys, time, datetime, logging, string
+import util, UserList
 
 timeout = 1
 _linesep_regexp = re.compile("\r?\n")
@@ -55,7 +52,7 @@ class LowlevelIrcLib:
         try:
             self.socket.bind(("", 0))
             self.socket.connect((server, port))
-            LogLib.log.add(LogLib.LOGLVL_LOG, "CONNECTED")
+            logging.info("CONNECTED")
         except socket.error, x:
             self.socket.close()
             self.socket = None
@@ -65,7 +62,7 @@ class LowlevelIrcLib:
         self.changeUser(username, realname)
 
     def disconnect(self):
-        LogLib.log.add(LogLib.LOGLVL_LOG, "Closing socket...")
+        logging.info("Closing socket...")
         if(self.socket):
             self.socket.close()
 
@@ -73,25 +70,25 @@ class LowlevelIrcLib:
         try:
             self.shutdownInitiated = True
             self.sendRawMsg("QUIT " + message)
-            LogLib.log.add(LogLib.LOGLVL_LOG, "QUIT SENT")
+            logging.info("QUIT SENT")
         except:
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, "tried to quit, but failed")
+            logging.debug("tried to quit, but failed")
 
     def changeNick(self, nickname):
         self.sendRawMsg("NICK " + nickname)
-        LogLib.log.add(LogLib.LOGLVL_LOG, "NICK SENT")
+        logging.info("NICK SENT")
         self.nickname = nickname
 
     def changeUser(self, username, realname):
         self.sendRawMsg("USER %s 0 * :%s" % (username, realname))
-        LogLib.log.add(LogLib.LOGLVL_LOG, "USER SENT")
+        logging.info("USER SENT")
 
     def joinChannel(self, channel):
         # create a new user list for this channel
         self.userLists[channel] = UserList.UserList()
         
         # send the JOIN request
-        LogLib.log.add(LogLib.LOGLVL_LOG, "JOIN SENT")
+        logging.info("JOIN SENT")
         self.sendRawMsg("JOIN :%s" % (channel))
         self.channel = channel
 
@@ -110,18 +107,18 @@ class LowlevelIrcLib:
         elif not (self.channel == "#RollingThunder" or self.channel == "#RollingThunder.test" or self.channel == "#RollingThunder.development"):
             raise Exception("ERROR: Tried to send channel message to a suspicious channel: " + self.channel)
         else:
-            LogLib.log.add(LogLib.LOGLVL_LOG, "%s-->#: %s" % (self.nickname, msg))
+            logging.info("%s-->#: %s" % (self.nickname, msg))
             for line in self.splitLongMessages(msg):
                 self.sendRawMsg("PRIVMSG %s :\x0310%s" % (self.channel, line))
 
     def sendPrivateMessage(self, target, msg):
         if(str(target).lower() == "none"):
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, 
+            logging.debug(
                 "========================================\n"
                 "TRIED TO PM 'NoNe'!\n"
                 "========================================")
             raise Exception("TRIED TO PM 'NoNe'!")
-        LogLib.log.add(LogLib.LOGLVL_LOG, "%s-->%s: %s" % (self.nickname, target, msg))
+        logging.info("%s-->%s: %s" % (self.nickname, target, msg))
         for line in self.splitLongMessages(msg):
             self.sendRawMsg("PRIVMSG %s :%s" % (target, line))
 
@@ -130,31 +127,31 @@ class LowlevelIrcLib:
             self.sendRawMsg("NOTICE %s :%s" % (target, line))
 
     def sendChannelEmote(self, emote):
-        LogLib.log.add(LogLib.LOGLVL_LOG, "%s-->#: * %s" % (self.nickname, emote))
+        logging.info("%s-->#: * %s" % (self.nickname, emote))
         self.sendRawMsg("PRIVMSG %s :\x01ACTION %s\x01" % (self.channel, emote))
 
     def sendPrivateEmote(self, target, emote):
-        LogLib.log.add(LogLib.LOGLVL_LOG, "%s-->%s: * %s" % (self.nickname, target, emote))
+        logging.info("%s-->%s: * %s" % (self.nickname, target, emote))
         self.sendRawMsg("PRIVMSG %s :\x01ACTION %s\x01" % (target, emote))
         
     def setModes(self, flagModifiers, targets):
         for startingIndex in range(0, len(targets), 6):
             currentFlagModifiers = flagModifiers[startingIndex*2:(startingIndex+6)*2]
             currentTargets = targets[startingIndex:(startingIndex+6)]
-            LogLib.log.add(LogLib.LOGLVL_LOG, "* Mode changed: %s %s" % (currentFlagModifiers, currentTargets))
+            logging.info("* Mode changed: %s %s" % (currentFlagModifiers, currentTargets))
             self.sendRawMsg("MODE %s %s %s" % (self.channel, currentFlagModifiers, string.join(currentTargets, " ")))
             self.userLists[self.channel].onMode(self.nickname, currentTargets, currentFlagModifiers, self.channel)
 
 #    def setUserMode(self, flags, target):
 #        assert re.match(r"[-+][diRwx]", flags) # available quakenet user modes
-#        LogLib.log.add(LogLib.LOGLVL_LOG, "* Mode changed: %s-->%s" % (target, flags))
+#        logging.info("* Mode changed: %s-->%s" % (target, flags))
 #        self.sendRawMsg("MODE %s %s" % (target, flags))
 #        self.userLists[self.channel].onUserMode(self.nickname, [target], flags, self.channel)
 
 #    @requirePrivileges
     def setChannelMode(self, flags, target = ""):
 #        assert re.match(r"[-+][bcCdDiklmnNoprstuv]", flags) # available quakenet channel modes
-        LogLib.log.add(LogLib.LOGLVL_LOG, "* Mode changed: %s %s-->%s" % (self.channel, target, flags))
+        logging.info("* Mode changed: %s %s-->%s" % (self.channel, target, flags))
         self.sendRawMsg("MODE %s %s %s" % (self.channel, flags, target))
         
 #    @requirePrivileges
@@ -194,7 +191,7 @@ class LowlevelIrcLib:
         message = self.decodeGenericMessage(line)
         if(message):
             (prefix, command, arguments, trailing) = message
-            #LogLib.log.add(LogLib.LOGLVL_DEBUG, "--> Message: [Prefix: %s, Command: %s, Arguments: %s, Trailing: %s]" % (prefix, command, arguments, trailing))
+            #logging.debug("--> Message: [Prefix: %s, Command: %s, Arguments: %s, Trailing: %s]" % (prefix, command, arguments, trailing))
 
             if(prefix != None):
                 source = self.extractSource(prefix)
@@ -203,7 +200,7 @@ class LowlevelIrcLib:
 
         # else: shouldn't occur
         else:
-            LogLib.log.add(LogLib.LOGLVL_DEBUG, "--> Error: couldn't decode message")
+            logging.debug("--> Error: couldn't decode message")
             return
 
         # Process message
@@ -226,7 +223,7 @@ class LowlevelIrcLib:
             if(len(arguments) > 2):
                 self.channelModes = arguments[2]
             else:
-                LogLib.log.add(LogLib.LOGLVL_DEBUG, "Error: MODE response without third argument!")
+                logging.debug("Error: MODE response without third argument!")
         elif(command == "353"):        # part of NAMES result
             # Adding more names
             self.receivingNAMESResult = True
@@ -250,7 +247,7 @@ class LowlevelIrcLib:
                 self.userLists[self.channel].reportWhois(nick, username, host, userinfo)
                 self.eventTarget.onWhoisResult(nick, username, host, userinfo)
             else:
-                LogLib.log.add(LogLib.LOGLVL_DEBUG, "Error: WHOIS response with less than four arguments!")
+                logging.debug("Error: WHOIS response with less than four arguments!")
         elif(command == "401"):        # WHOIS: "no such nick"
             nick = arguments[1]
             LogLib.log.add(LogLib.LOGLVL_DEBUG, "WHOIS: no such nick (%s)" % (nick))
@@ -298,7 +295,7 @@ class LowlevelIrcLib:
                 self.userLists[self.channel].onKick(source, arguments[1], trailing, arguments[0])
                 self.eventTarget.onKick(source, arguments[1], trailing, arguments[0])
         elif(command == "ERROR"):
-            #LogLib.log.add(LogLib.LOGLVL_DEBUG, "Error ERROR-command in handleIncomingMessage()!")
+            #logging.debug("Error ERROR-command in handleIncomingMessage()!")
             raise IrcError("ERROR: ERROR-command in handleIncomingMessage() ('%s')" % (str((source, command, arguments, trailing))))
         return
     
@@ -327,7 +324,7 @@ class LowlevelIrcLib:
                     if not new_data:
                         # Read nothing: connection must be down.
                         if(self.shutdownInitiated):
-                            LogLib.log.add(LogLib.LOGLVL_DEBUG, "LowlevelIrcLib.receiveDataLooped(): self.socket.recv() returned without new data, the connection must be down, but we recently sent QUIT, so the server probably just closed the connection as requested.")
+                            logging.debug("LowlevelIrcLib.receiveDataLooped(): self.socket.recv() returned without new data, the connection must be down, but we recently sent QUIT, so the server probably just closed the connection as requested.")
                             return
                         else:
                             raise ServerConnectionError, "LowLevelIrcLib.receiveDataLooped(): self.socket.recv() returned without new data, the connection must be lost!"
@@ -339,7 +336,7 @@ class LowlevelIrcLib:
                     lines = lines[:-1]
     
                     for line in lines:
-                        LogLib.log.add(LogLib.LOGLVL_DEBUG, line)
+                        logging.debug(line)
                         # Add message to queue
                         try:
                             self.processMessage(line)
@@ -347,7 +344,7 @@ class LowlevelIrcLib:
                             raise ServerConnectionError, "LowLevelIrcLib.receiveDataLooped(): seems like self.socket.sendall() threw a socket.error, the connection must be lost!"
 
                 except KeyboardInterrupt, x:
-                    LogLib.log.addException("Exception: KeyboardInterrupt in LowLevelIrcLib.receiveDataLooped(), calling the onKeyboardInterrupt event now...", x)
+                    logging.exception("Exception: KeyboardInterrupt in LowLevelIrcLib.receiveDataLooped(), calling the onKeyboardInterrupt event now...")
                     self.eventTarget.onKeyboardInterrupt()
     
     def splitLongMessages(self, message):
@@ -397,28 +394,28 @@ class LowlevelIrcLib:
 #        pass
 #
 #    def onPrivateMessage(self, source, message):
-#        LogLib.log.add(LogLib.LOGLVL_DEBUG, "%s sent a private message: %s" % (source, message))
+#        logging.debug("%s sent a private message: %s" % (source, message))
 #        if(message == "quit"):
 #            self.irc.quit("test2")
 #            raise SystemExit()
 #
 #    def onChannelMessage(self, source, message, channel):
-#        LogLib.log.add(LogLib.LOGLVL_DEBUG, "%s sent this to the channel %s message: %s" % (source, channel, message))
+#        logging.debug("%s sent this to the channel %s message: %s" % (source, channel, message))
 #
 #    def onNick(self, source, newnick):
-#        LogLib.log.add(LogLib.LOGLVL_DEBUG, "%s changed nick to %s" % (source, newnick))
+#        logging.debug("%s changed nick to %s" % (source, newnick))
 #
 #    def onKick(self, source, target, channel, reason):
-#        LogLib.log.add(LogLib.LOGLVL_DEBUG, "%s kicked %s from %s, reason: %s" % (source, target, channel, reason))
+#        logging.debug("%s kicked %s from %s, reason: %s" % (source, target, channel, reason))
 #
 #    def onMode(self, source, target, flags, channel):
-#        LogLib.log.add(LogLib.LOGLVL_DEBUG, "%s changed %s's mode to %s in channel %s" % (source, target, flags, channel))
+#        logging.debug("%s changed %s's mode to %s in channel %s" % (source, target, flags, channel))
 #
 #    def onJoin(self, source, channel):
-#        LogLib.log.add(LogLib.LOGLVL_DEBUG, "%s joined the channel %s" % (source, channel))
+#        logging.debug("%s joined the channel %s" % (source, channel))
 #
 #    def onLeave(self, source, channel, reason):
-#        LogLib.log.add(LogLib.LOGLVL_DEBUG, "%s left the channel %s, reason: %s" % (source, channel, reason))
+#        logging.debug("%s left the channel %s, reason: %s" % (source, channel, reason))
 #
 #
 #
