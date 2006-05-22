@@ -251,6 +251,10 @@ class LowlevelIrcLib:
                 self.eventTarget.onWhoisResult(nick, username, host, userinfo)
             else:
                 LogLib.log.add(LogLib.LOGLVL_DEBUG, "Error: WHOIS response with less than four arguments!")
+        elif(command == "401"):        # WHOIS: "no such nick"
+            nick = arguments[1]
+            LogLib.log.add(LogLib.LOGLVL_DEBUG, "WHOIS: no such nick (%s)" % (nick))
+            self.eventTarget.onWhoisResult(nick, None, None, None)
         elif(command == "PRIVMSG"):
             if(arguments[0] == self.nickname):
                 #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
