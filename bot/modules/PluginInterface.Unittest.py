@@ -1,8 +1,7 @@
 # Note: Should be run from the project root - modules\..
 import unittest, os, time, logging
 import Log
-import coverage, colorize
-
+from lib import coverage, colorize
 from lib.path import path
 
 class FakeBot:
@@ -111,6 +110,10 @@ class PluginInterfaceTestCase(unittest.TestCase):
             
             pi.fireEvent("onFaultyEvent")
             self.assert_(fakebot.informErrorRemovedPluginCalled)
+            pi.setPluginStateByFilename("TestPlugin.py", True)
+            fakebot.informErrorRemovedPluginCalled = False
+            pi.fireEvent("onFaultyEvent")
+            self.assert_(fakebot.informErrorRemovedPluginCalled)            
         finally:
             RemoveTestFiles()
 
@@ -203,8 +206,8 @@ class PluginInterfaceTestCase(unittest.TestCase):
             CreateTestFile("DependencyPlugin.py")
             CreateTestFile("CircularPlugin.py")
             pi.updatePlugins()
-            self.assertRaises(MissingDependenciesError, lambda: pi.getPluginByClassname("FooPlugin"))
-            self.assertRaises(MissingDependenciesError, lambda: pi.getPluginByClassname("BarPlugin"))
+            self.assert_(not pi.getPluginByClassname("FooPlugin"))
+            self.assert_(not pi.getPluginByClassname("BarPlugin"))
         finally:
             RemoveTestFiles()
     def testEnabling(self):
@@ -223,7 +226,7 @@ class PluginInterfaceTestCase(unittest.TestCase):
             self.assert_(len(pi.getPlugins()) == 2)
             pi.setPluginStateByFilename("BarPlugin.py", False)
             self.assert_(len(pi.getPluginNames()) == 1)
-            self.assertRaises(MissingDependenciesError, lambda: pi.getPluginByClassname("DependencyPlugin"))
+            self.assert_(not pi.getPluginByClassname("DependencyPlugin"))
             
             pi.setPluginStateByFilename("BarPlugin.py", True)
             self.assert_(len(pi.getPluginNames()) == 2)
@@ -246,7 +249,7 @@ class PluginInterfaceTestCase(unittest.TestCase):
             self.assert_(len(pi.getPlugins()) == 1)
             pi.setPluginStateByFilename("BarPlugin.py", False)
             self.assert_(len(pi.getPluginNames()) == 0)
-            self.assertRaises(MissingDependenciesError, lambda: pi.getPluginByClassname("BarPlugin"))
+            self.assert_(not pi.getPluginByClassname("BarPlugin"))
             
             pi.dispose()
             pi = PluginInterface("modules")
@@ -255,7 +258,7 @@ class PluginInterfaceTestCase(unittest.TestCase):
             
             self.assert_(len(pi.pluginFiles) == 1)
             self.assert_(len(pi.getPluginNames()) == 0)
-            self.assertRaises(MissingDependenciesError, lambda: pi.getPluginByClassname("BarPlugin"))
+            self.assert_(not pi.getPluginByClassname("BarPlugin"))
         finally:
             RemoveTestFiles()
 def suite():

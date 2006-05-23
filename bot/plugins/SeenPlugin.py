@@ -54,10 +54,12 @@ class SeenPlugin:
         
     def loadList(self):
         # If file present - load the old list
-        if os.path.isfile(self.SaveFile) and os.path.getsize(self.SaveFile) > 0:
+        try:
             file = open(self.SaveFile, "r")
             self.lastSeenTimes = pickle.load(file)
             file.close()
+        except:
+            lastSeenTimes = {}
             
     def getCanonicalName(self, rawName):
         # retrieve AuthenticationPlugin
@@ -101,25 +103,22 @@ class SeenPlugin:
     @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_NORMAL)
     def onChannelMessage(self, irclib, source, message):
         words = message.split()
-        if len(words) > 1:
-            command = words[0]
-            
-            if command == "seen":
-                name = self.getCanonicalName(words[1]).lower()
-                source = self.getCanonicalName(source).lower()
-                if name == source:
-                    irclib.sendChannelMessage("I see you very well, sai!") # bonus-points for recognizing the quote / reference  // Ksero
+        if len(words) == 2 and words[0] == "seen":
+            name = self.getCanonicalName(words[1]).lower()
+            source = self.getCanonicalName(source).lower()
+            if name == source:
+                irclib.sendChannelMessage("I see you very well, sai!") # bonus-points for recognizing the quote / reference  // Ksero
+            else:
+                users = self.getCanonicalUserList(irclib)
+                if name == "rtbot":
+                    irclib.sendChannelMessage("#mute " + source + "@jesters :P")
+                elif name in users:
+                    irclib.sendChannelMessage("Ummm... " + name + " is right here, yo? Whatcha talkin' bout, boy?")
+                elif name in self.lastSeenTimes:
+                    irclib.sendChannelMessage(name + " was last seen " + str(self.lastSeenTimes[name]))
                 else:
-                    users = self.getCanonicalUserList(irclib)
-                    if name == "rtbot":
-                        irclib.sendChannelMessage("#mute " + source + "@jesters :P")
-                    elif name in users:
-                        irclib.sendChannelMessage("Ummm... " + name + " is right here, yo? Whatcha talkin' bout, boy?")
-                    elif name in self.lastSeenTimes:
-                        irclib.sendChannelMessage(name + " was last seen " + str(self.lastSeenTimes[name]))
-                    else:
-                        irclib.sendChannelMessage("I've never seen anybody called " + name)
-                return(True)
+                    irclib.sendChannelMessage("I've never seen anybody called " + name)
+            return(True)
 
 #Unit-test
 if __name__ == "__main__":

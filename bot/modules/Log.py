@@ -1,4 +1,4 @@
-import datetime, sys, traceback, threading, os, logging, util
+import datetime, sys, traceback, threading, os, logging, util, time
 from lib.path import path
 from config import Settings
 from xml.dom.minidom import getDOMImplementation
@@ -93,15 +93,33 @@ if(Settings.database_connection_string):
     DatabaseEmitter.addFilter(ExceptionFilter())
     rootlog.addHandler(DatabaseEmitter)
 
+import logging.handlers
+class CortLogger(logging.handlers.TimedRotatingFileHandler):
+    "A logger that rotates log files but never erases them. And it has the log-file date in the filename"
+    def __init__(self, filepath):
+        # filepath should be a path-object
+        self.path, self.filename = filepath.splitpath()
+        logging.handlers.TimedRotatingFileHandler.__init__(self, self.getCurrentFilename(), "midnight")
+        
+    def getCurrentFilename(self):
+        return self.path / (time.strftime("%Y%m%d ") + self.filename)
+    def doRollover():
+        "Called when we need to switch files."
+        self.stream.close()
+        if self.encoding:
+            self.stream = codecs.open(self.getCurrentFilename(), 'w', self.encoding)
+        else:
+            self.stream = open(self.getCurrentFilename(), 'w')
+
 # Standard file logs
-debuglog = logging.FileHandler(path("logs/debuglog.txt"))
+debuglog = CortLogger(path("logs/debuglog.txt"))
 debuglog.setLevel(logging.DEBUG)
-debuglog.setFormatter(logging.Formatter("%(asctime)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
+debuglog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 rootlog.addHandler(debuglog)
 
 filelog = logging.FileHandler(path("logs/logfile.txt"))
 filelog.setLevel(logging.INFO)
-filelog.setFormatter(logging.Formatter("%(asctime)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
+filelog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 rootlog.addHandler(filelog)
 
 console = logging.StreamHandler()

@@ -215,9 +215,6 @@ class Plugin:
             raise PluginLoadError("Can't find plugin class")
 
         try:                                                          # try to ...
-            print "Trying to determine dependencies"
-            print dir(self.pluginClass)
-            print self.pluginClass.getDependencies()
             self.dependencyClassNames = set(self.pluginClass.getDependencies()) # ... get the dependencies
         except AttributeError:                                        # if this fails ...
             self.dependencyClassNames = set()                                  # then it's okay, it just means the plugin doesn't declare any dependencies
