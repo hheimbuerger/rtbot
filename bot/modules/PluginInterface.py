@@ -322,9 +322,12 @@ class PluginInterface:
         self.eventHandlers = {}     # dict of eventName -> EventHandlerRepository
         self.pluginWrappers = {}    # dict of pluginName -> PluginWrapper
         if self.pluginMetaData.exists():
-            up = pickle.Unpickler(self.pluginMetaData.open("r"))
-            up.persistent_load = self.persistent_load
-            up.load()
+            try:
+                up = pickle.Unpickler(self.pluginMetaData.open("r"))
+                up.persistent_load = self.persistent_load
+                up.load()
+            except:
+                pass # If we can't load the plugin states, no biggie...        
         
     def dispose(self):
         p = pickle.Pickler(self.pluginMetaData.open("w"))
