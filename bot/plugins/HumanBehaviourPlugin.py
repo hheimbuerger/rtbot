@@ -16,7 +16,7 @@ class HumanBehaviourPlugin:
 
   def getCanonicalName(self, rawName):
 	# retrieve AuthenticationPlugin
-	authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+	authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
 	if(authenticationPlugin == None):
 	  logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
 	  return(rawName)
@@ -25,7 +25,7 @@ class HumanBehaviourPlugin:
 
   def insult(self, irclib, name):
 	# retrieve InsultPlugin
-	insultPlugin = self.pluginInterfaceReference.getPluginByClassname("InsultPlugin")
+	insultPlugin = self.pluginInterfaceReference.getPlugin("InsultPlugin")
 	if(insultPlugin == None):
 	  logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of InsultPlugin during execution of insult()")
 	  pass

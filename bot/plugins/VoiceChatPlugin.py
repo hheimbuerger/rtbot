@@ -35,7 +35,7 @@ class VoiceChatPlugin:
 
     def getCanonicalName(self, rawName):
         # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
             logging.info("ERROR: VoiceChatPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
             return(rawName)
@@ -155,12 +155,12 @@ if __name__ == "__main__":
             return name
     
     class FakePluginInterface:
-        def getPluginByClassname(self, name):
+        def getPlugin(self, name):
             if name == "AuthenticationPlugin":
                 return FakeAuthenticationPlugin()
     
     class FakeFailingPluginInterface:
-        def getPluginByClassname(self, name):
+        def getPlugin(self, name):
             return None
 
     a = VoiceChatPlugin(FakePluginInterface())

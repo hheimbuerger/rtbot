@@ -19,7 +19,7 @@ class VersionPlugin:
     return result
 
   def getPluginVersion(self, requestedPlugin, replyfunc):
-    plugin = self.pluginInterface.getPluginByClassname(requestedPlugin)
+    plugin = self.pluginInterface.getPlugin(requestedPlugin)
     if plugin:
       if hasattr(plugin, "getVersionInformation"):
         reobj = re.match("\$Id: (.*) (.*) (.*) (.*) (.*) \$", plugin.getVersionInformation())

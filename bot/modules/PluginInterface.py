@@ -1,4 +1,4 @@
-import sys, inspect, imp, operator, util, logging, traceback
+import sys, inspect, imp, operator, util, logging, traceback, pickle
 from lib.path import path
 
 # Vocabulary
@@ -14,17 +14,13 @@ from lib.path import path
 #---------------------------------------------------------------------------------
 class PluginExceptionError(Exception):
     """ Raised when a plugin raises an exception """
-    def __init__(self, plugin, innerException):
-        self.plugin = plugin
+    def __init__(self, pluginWrapper, innerException):
+        self.pluginWrapper = pluginWrapper
         self.innerException = innerException
     def __str__(self):
         return("Plugin " + self.plugin.pluginName + " caused the following exception:\n\n" + str(self.innerException))
 
 class PluginLoadError(Exception):
-    pass
-
-class MissingDependenciesError(Exception):
-    """ Raised when a plugin is missing one or more dependencies """
     pass
 
 #---------------------------------------------------------------------------------
@@ -42,10 +38,10 @@ class Priorities:
     # Decorator for setting the priority of plugin eventhandlers
     @staticmethod
     def prioritized(priority):
-      def decorator(func):
-        func.priority = priority
-        return func
-      return decorator
+        def decorator(func):
+            func.priority = priority
+            return func
+        return decorator
     
     # reads the decorator (if existing) and returns the priority of the function (event-handler)
     # (or PRIORITY_NORMAL if no priority was specified with a decorator)
@@ -53,196 +49,211 @@ class Priorities:
     def getPriority(function):
         return(getattr(function, "priority", Priorities.PRIORITY_NORMAL))
 
-
 #---------------------------------------------------------------------------------
 #  EVENT HANDLER
 #    A callable class that wraps a plugin's event-procedures
 #---------------------------------------------------------------------------------
 class EventHandler:
     """ A callable class that wraps a plugin's event-procedures """
-    def __init__(self, plugin, procedure, eventName):
-        self.plugin = plugin
+    def __init__(self, pluginWrapper, procedure, eventName):
+        self.pluginWrapper = pluginWrapper
         self.procedure = procedure
         self.eventName = eventName
         self.priority = Priorities.getPriority(procedure) #getattr(procedure, "priority", 3)
 
     def __call__(self, *args):
         try:
-            return self.procedure(self.plugin.pluginObject, *args)
+            return self.procedure(self.pluginWrapper.pluginObject, *args)
         except Exception, exception:
-            logging.exception("The plugin %s raised an exception in the eventhandler %s", self.plugin.pluginName, self.eventName)
-            raise PluginExceptionError(self.plugin, exception)
+            logging.exception("The plugin %s raised an exception in the eventhandler %s", self.pluginWrapper.pluginName, self.eventName)
+            raise PluginExceptionError(self.pluginWrapper, exception)
 
 
 
 #---------------------------------------------------------------------------------
 #  PLUGIN
 #---------------------------------------------------------------------------------
-class Plugin:
+class PluginWrapper:
     """ Wraps a dynamically loaded plugin-class. """
 
-    ## CREATION AND DESTRUCTION
-    ##############################
-    
-    def __init__(self, pluginInterface, pluginFile):
-        
-        self.pluginFile = pluginFile
-        self.filepath = pluginFile.filepath
+    ## Creation and destruction
+    def __init__(self, pluginInterface, filepath, enabled = True):
         self.pluginInterface = pluginInterface
+        self.filepath = filepath
+        self.enabled = enabled
         
-        self.module = None       # holds the module loaded from this python file
-        self.pluginObject = None # holds the instance of the plugin class in the file
-        self.pluginClass = None
-        self.pluginName = None
+        self.pluginName = self.filepath.namebase
+        self.module = None       # the module loaded from the python file
+        self.pluginClass = None  # the class named self.pluginName defined in self.module
+        self.pluginObject = None # an instance of the pluginClass
+        
         self.handlers = []       # the event handlers that we register
+        self.dependencies = {}   # dict of classname -> plugin
+        self.dependents = set()  # set of PluginWrappers that have this plugin as a dependency
+        self.dependenciesOnline = False
         
-        self.dependenciesAvailable = False
+        self.pluginInterface.registerPlugin(self.pluginName, self)
+        self.reload()
         
-        self.dependencies = {}  # dict of classname -> plugin
-        self.dependents = set()
-        
-        self.loadPluginObject()
-        self.notifyDependencyChange()
-        
-    def addDependent(self, plugin):
-        self.dependents.add(plugin)
-    def removeDependent(self, plugin):
-        self.dependents.remove(plugin)
-
-    def hasDependency(self, name):
-        return name in self.dependencies or reduce(operator.__or__, [dependency.hasDependency(name) for dependency in self.dependencies.values()], False)
-       
+    def reload(self):
+        self.disposePluginObject()
+        if not self.filepath.exists():
+            # This enters a weird state, ended when the pluginInterface
+            # checks if this plugin has been updated and discovers that the file is missing.
+            self.enabled = False
+        try:
+            self.loadPythonFile()
+        except PluginLoadError:
+            logging.exception("Error when loading plugin file %s", self.filepath)
+            self.enabled = False
+    
     def dispose(self):
-        self.putOffline()
-        self.pluginInterface.unregisterPlugin(self)
+        self.disposePluginObject()
+        self.pluginInterface.unregisterPlugin(self.pluginName, self)
+    
+    def disposePluginObject(self):
+        if self.online():
+            self.putOffline()
+        for wrapper in self.dependencies.values():
+            wrapper.removeDependent(self)
         # remove module from sys.modules so that if/when the plugin is reloaded, 
         # it is not retrieved from the cache, but read from disk
         if self.module:
             del sys.modules[self.module.__name__]
-
-    def notifyDependencyChange(self, changes = {}):
-        "Called when our dependencies have changed"
-        logging.debug("DependencyChange for %s: %s" % (self.pluginName, changes))
-        if not changes:
-            changes = dict(zip( self.dependencyClassNames, [self.pluginInterface.handleDependency(dep) for dep in self.dependencyClassNames]))
-        self.dependencies.update(changes)
-        for plugin in changes.values():
-            plugin.addDependent(self)
-            
-        self.notifyDependencyAvailabilityChange()
-            
-    def notifyDependencyAvailabilityChange(self):
-        "Called when our dependencies have changed their availability"
-        logging.debug("Dependencies changed for plugin %s" % self.pluginName)
-        newAvailability = reduce(operator.__and__, [plugin.online() for plugin in self.dependencies.values()], True)
-        logging.debug("dependencies were: %s. Now they are %s" % (self.dependenciesAvailable, newAvailability))
-        if newAvailability != self.dependenciesAvailable:
-            self.dependenciesAvailable = newAvailability
-            if self.dependenciesAvailable:          
-                self.putOnline()
-            else:
-                self.putOffline()
-
-    ## ACTIVATION AND AVAILABILITY
-    ################################
-        
-    def putOnline(self):
-        "Brings the plugin online again"
-        logging.info("Bringing plugin %s online" % self.pluginName)
-        self.instantiateObject()
-        self.registerEventHandlers()        # register our handlers again
-        for plugin in self.dependents:
-            plugin.notifyDependencyAvailabilityChange()                            
-            
-    def putOffline(self):
-        "Deactivates the plugin"
-        logging.info("Bringing plugin %s offline" % self.pluginName)
-        self.disposePluginObject()
-        self.unregisterEventHandlers()
-        for plugin in self.dependents:
-            plugin.notifyDependencyAvailabilityChange()
-            
-    def online(self):
-        return self.dependenciesAvailable
-
-    # INTERNAL METHODS
-    
-    def registerEventHandlers(self):
-        for handler in self.handlers:
-            self.pluginInterface.registerEventHandler(handler)  
-            logging.debug("Added handler for event %s belonging to the plugin %s", handler.eventName, self.pluginName)
-    
-    def unregisterEventHandlers(self):
-        for handler in self.handlers:
-            self.pluginInterface.unregisterEventHandler(handler)   
-
-    ## PARSING OF PY-FILE
-    
-    def loadPluginObject(self):
-        """dynamically loads the plugin py-file, instantiates the plugin and registers
-        the event handlers. Raises a PluginLoadException if the load wasn't successful"""
-        try:
-            self.loadModule()
-            self.findClass()
-        except:
-            logging.debug("Error during plugin load in the file %s", self.filepath)
-            raise
-        self.pluginInterface.registerPlugin(self.pluginName, self)
-
-    def disposePluginObject(self):
-        logging.debug("disposing %s" % self.pluginName)
-                # if the plugin has a destructor, call it
+        # if the plugin has a destructor, call it
         if self.pluginObject:
             try:
                 self.pluginObject.dispose()
             except:
                 pass
         self.pluginObject = None
+
+    ##  Messages from the plugin interface
+    def checkForUpdate(self):
+        """Checks if there are any updates available for this plugin. Returns True if there were.
+        Raises an exception if the file no longer exists"""
+        if self.filepath.mtime != self.lastModified: # This line raises the exception
+            self.enabled = True
+            self.dependenciesOnline = False
+            self.reload()
+            return True
+
+    def notifyDependencyChange(self, changes):
+        """Called by the PluginInterface to inform us of when one of our dependencies have changed. 
+        changes is a dictionary of pluginName --> PluginWrapper"""
+        self.dependencies.update(changes)
+        for plugin in changes.values():
+            plugin.addDependent(self)
+        self.notifyDependencyStateChange()  # since our dependencies changed, see if they are online.
         
-    def loadModule(self):
+    ##  Plugin state management
+        
+    @util.decorator
+    def changesState(func, self, *args, **kwargs):
+        """Decorator for methods that potentially change the plugin's state. Ensures that the plugin is
+        taken online or offline accordingly"""
+        stateBefore = self.online()
+        func(self, *args, **kwargs)
+        stateAfter = self.online()
+        if stateBefore != stateAfter:
+            if stateAfter:          
+                self.putOnline()
+            else:
+                self.putOffline()
+    
+    def online(self):
+        return self.dependenciesOnline and self.enabled
+    
+    @changesState
+    def setState(self, newState):
+        "Sets whether the plugin is enabled or not"
+        self.enabled = newState
+    
+    @changesState
+    def notifyDependencyStateChange(self):
+        "Checks if our dependencies are online. Called by our dependencies when they change their state"
+        self.dependenciesOnline = reduce(operator.__and__, [plugin.online() for plugin in self.dependencies.values()], True)
+
+    ## INTERNAL METHODS
+    def putOnline(self):
+        "Brings the plugin online again"
+        logging.info("Bringing plugin %s online" % self.pluginName)
+        if not self.pluginObject:
+            self.instantiateObject()
+        for handler in self.handlers:
+            self.pluginInterface.registerEventHandler(handler)  
+        for plugin in self.dependents:
+            plugin.notifyDependencyStateChange()
+            
+    def putOffline(self):
+        "Deactivates the plugin"
+        logging.info("Bringing plugin %s offline" % self.pluginName)
+        for handler in self.handlers:
+            self.pluginInterface.unregisterEventHandler(handler)   
+        for plugin in self.dependents:
+            plugin.notifyDependencyStateChange()
+
+    def addDependent(self, plugin):
+        self.dependents.add(plugin)
+    def removeDependent(self, plugin):
+        self.dependents.remove(plugin)
+    def hasDependency(self, name):
+        return name in self.dependencies.keys() or reduce(operator.__or__, [dependency.hasDependency(name) for dependency in self.dependencies.values()], False)
+
+    ## Pickling helper methods (serialization)
+    def __getstate__(self):
+        """Called by the pickle module for serialization"""
+        # pick the fields that are suitable for serialization
+        state = {"enabled": self.enabled, "pluginInterface": self.pluginInterface, "filepath": self.filepath}
+        return state
+    
+    def __setstate__(self, dict):
+        """Called by the pickle module for deserialization"""
+        PluginWrapper.__init__(self, **dict)
+
+    ## PARSING OF PY-FILE
+
+    def loadPythonFile(self):
+        """ Dynamically loads the plugin py-file, but does not instantiate the pluginObject """
+        self.lastModified = self.filepath.mtime
         try:
             self.module = imp.load_source(self.filepath.namebase, self.filepath)
         except Exception, e:
             logging.exception("Plugin raised exception during load")
             raise PluginLoadError(e)
-
-    def findClass(self):
-        for (itemname, item) in self.module.__dict__.items():             # iterate over all classes
-            if inspect.isclass(item) and itemname[-6:] == "Plugin":         # make sure it's even a plugin
-                self.pluginClass = item                                            # use pluginClass identifier
-                break                                                 # There is only one plugin class per file
-        else:
-            raise PluginLoadError("Can't find plugin class")
-
-        try:                                                          # try to ...
-            self.dependencyClassNames = set(self.pluginClass.getDependencies()) # ... get the dependencies
+        
+        try:
+            self.pluginClass = getattr(self.module, self.pluginName)
+            assert inspect.isclass(self.pluginClass)
+        except:
+            raise PluginLoadError("Can't find plugin class in file %s" % self.filepath.name)
+        
+        try:
+            dependencyNames = set(self.pluginClass.getDependencies())                
         except AttributeError:                                        # if this fails ...
-            self.dependencyClassNames = set()                                  # then it's okay, it just means the plugin doesn't declare any dependencies
+            dependencyNames = set()                                  # then it's okay, it just means the plugin doesn't declare any dependencies
         except TypeError:                                            # if this fails ...
-            self.dependencyClassNames = set()                                  # then it's okay, it just means the plugin doesn't declare getDependencies() as a classmethod        
-        except Exception, e:                                         # Handler for other exceptions raised by plugin
-            raise PluginLoadError("Plugin raised exception when trying to determine dependencies")
-        
-        self.pluginName = self.pluginClass.__name__
-        self.dependencies = dict(zip( self.dependencyClassNames, [self.pluginInterface.handleDependency(dep) for dep in self.dependencyClassNames]))
-        
-        logging.debug("Dependencies: %s" % str(self.dependencies))
-        if self.hasDependency(self.pluginName):
-            raise PluginLoadError("Circular dependency error in %s" % (self.pluginName,))
+            dependencyNames = set()                                  # then it's okay, it just means the plugin doesn't declare getDependencies() as a classmethod                        
+        except Exception, e:
+            logging.exception("Plugin raised exception while trying to determine its dependencies")
+            raise PluginLoadError(e)
         
         # Find all the event handlers
         for (name,funcobj) in self.pluginClass.__dict__.items():
             if name[:2] == "on" and callable(funcobj) :
                 handler = EventHandler(self, funcobj, name)
                 self.handlers.append(handler)
-        logging.debug("Found %i event handlers for plugin %s" % (len(self.handlers), self.pluginName))
-    
+        logging.debug("Found %i event handlers for plugin %s" % (len(self.handlers), self.pluginName))        
+        
+        self.notifyDependencyChange( dict(zip( dependencyNames, [self.pluginInterface.handleDependency(dep) for dep in dependencyNames])) )
+        if self.hasDependency(self.pluginName):
+            raise PluginLoadError("Circular dependency error in %s" % (self.pluginName,))
+
     def instantiateObject(self):
         try:
             #   if a constructor exists and it has two parameters (self, pluginInterface), call it with the pluginInterface as argument
             if  hasattr(self.pluginClass,"__init__") and len(inspect.getargspec(self.pluginClass.__init__)[0]) == 2:
                 self.pluginObject = self.pluginClass(self.pluginInterface)
-                
             else:  #   otherwise, call the argument-less constructor
                 self.pluginObject = self.pluginClass()
         except Exception, e:
@@ -260,73 +271,6 @@ class MissingDependency:
         pass
     def removeDependent(self, plugin):
         pass
-
-class PluginFile:
-    """Represents a *plugin.py file. The main point of this class is to manage the persistent
-    flag that determines if the plugin is enabled or not."""
-    
-    ## PUBLIC INTERFACE
-    def __init__(self, filepath, pluginInterface):
-        self.filepath = filepath
-        self.pluginInterface = pluginInterface
-        self.lastModified = filepath.mtime
-        self.enabled = False
-        self.plugin = None
-        self.setEnable(True)
-        
-    def dispose(self):
-        if self.plugin:
-            self.plugin.dispose()
-        
-    def setEnable(self, arg):
-        """ Sets whether the plugin is enabled or not. enabled plugins
-        process events. Deactivated plugins do not. This is a persistent 
-        property (ie. it's pickled by the pluginInterface)"""
-        if not arg == self.enabled:
-            self.enabled = arg
-            if arg:
-                assert not self.plugin
-                try:
-                    self.loadPlugin()
-                except PluginLoadError:
-                    self.enabled = False
-                    self.plugin = None
-                except Exception:
-                    logging.exception("Unexpected error during plugin load")
-            else:
-                assert self.plugin
-                self.plugin.dispose()
-                self.plugin = None
-    
-    def checkForUpdate(self):
-        """Checks if there are any updates available for this plugin. Returns True if there were.
-        Raises an exception if the file no longer exists"""
-        if self.filepath.mtime != self.lastModified: # This line raises the exception
-            self.setEnable(False)
-            self.setEnable(True)
-            return True
-        
-    def loadPlugin(self):
-        self.plugin = Plugin(self.pluginInterface, self)
-        self.lastModified = self.filepath.mtime        
-        
-    ## PICKLING METHODS
-    def __getstate__(self):
-        """Called by the pickle module for serialization"""
-        state = self.__dict__.copy()
-        state["plugin"] = None  # pick the fields that are suitable for serialization
-        return state
-    
-    def __setstate__(self, dict):
-        """Called by the pickle module for deserialization"""
-        self.__dict__.update(dict)
-        logging.debug("Deserializing plugin %s. Enabled: %s" % (self.filepath.namebase, self.enabled))
-        if not self.filepath.exists():
-            self.enabled = False
-        if self.enabled:
-            self.enabled = False
-            self.plugin = None
-            self.setEnable(True)
 
 #---------------------------------------------------------------------------------
 #  EVENT HANDLER REPOSITORY
@@ -370,27 +314,22 @@ class PluginInterface:
 #---------------------------------------------------------------------------------
     pluginMetaData = path("resources/PluginMetaData.pickle")
     def __init__(self, pluginsDirectory):
-        
-        # Helper methods for pickling
-        def persistent_id(obj):
-            if isinstance(obj, PluginInterface):
-                return "MyPersistentID"
-        def persistent_load(persid):
-            if persid == "MyPersistentID":
-                return self
-            
         self.pluginsDirectory = path(pluginsDirectory)
         if not self.pluginsDirectory.exists():
             raise Exception("The plugins directory: " + pluginsDirectory + " doesn't exist!")        
         
-        self.botcore = None                            
+        self.botcore = None
         self.eventHandlers = {}     # dict of eventName -> EventHandlerRepository
-        self.plugins = {}           # dict of pluginName -> Plugin
-        # persistent dict of filename -> PluginFile
-        self.pluginFiles = util.Archive(self.pluginMetaData, persistent_id, persistent_load)
+        self.pluginWrappers = {}    # dict of pluginName -> PluginWrapper
+        if self.pluginMetaData.exists():
+            up = pickle.Unpickler(self.pluginMetaData.open("r"))
+            up.persistent_load = self.persistent_load
+            up.load()
         
     def dispose(self):
-        self.pluginFiles.sync()
+        p = pickle.Pickler(self.pluginMetaData.open("w"))
+        p.persistent_id = self.persistent_id
+        p.dump(self.pluginWrappers)
 
     def registerInformTarget(self, botcore):
         self.botcore = botcore
@@ -400,39 +339,38 @@ class PluginInterface:
             try:
                 self.eventHandlers[eventname].fireEvent(*args)
             except PluginExceptionError, exception:
-                pluginName = exception.plugin.pluginName
+                pluginName = exception.pluginWrapper.pluginName
                 logging.info("Disabling erraneous plugin: %s", pluginName)
                 if self.botcore:
                     self.botcore.informErrorRemovedPlugin("The plugin %s raised errors and is now disabled" % (pluginName))
-                self.setPluginStateByClassname(pluginName, False)
+                exception.pluginWrapper.setState(False)
 
     def updatePlugins(self, shallNotify=True):
         """ Searches for new, updated and removed plugins 
         shallNotify - true if the informTarget / botcore should be notified about
-                      the changes"""
+                      the changes. Used by BotManager during startup to avoid flooding the channel with changes"""
         logging.debug("Starting to update plugins")
-        pluginsBefore = set(self.plugins.keys())  # for aggregating statistics. Keeps track of what plugins were before we make changes
+        pluginsBefore = set(self.pluginWrappers.keys())  # for aggregating statistics. Keeps track of what plugins were before we make changes
         reloadedPlugins = set()
         # iterate over all our plugins and see if there are any changes
-        for filename, pluginfile in self.pluginFiles.items():
+        for pluginName, pluginWrapper in self.pluginWrappers.items():
             try:
-                if pluginfile.checkForUpdate() : # if there was an update...
-                    logging.info("reloaded the plugin file %s", filename)
-                    reloadedPlugins.add(filename)
+                if pluginWrapper.checkForUpdate() : # if there was an update...
+                    logging.info("reloaded the plugin %s", pluginName)
+                    reloadedPlugins.add(pluginName)
             except OSError, e:
                 # file was not found
-                self.pluginFiles[filename].dispose()
-                del self.pluginFiles[filename]
-                logging.info("The plugin file %s was deleted", filename)
+                self.pluginWrappers[pluginName].dispose()
+                logging.info("The plugin %s was deleted", pluginName)
         # Check if there are any new files
         for file in self.pluginsDirectory.files("*Plugin.py"):
-            if not file.name in self.pluginFiles.keys():
+            if not file.namebase in self.pluginWrappers.keys():
                 logging.info("New plugin file found: %s", file.name)
-                self.pluginFiles[file.name] = PluginFile(file, self)
-                if not self.pluginFiles[file.name].enabled:
-                    self.botcore.informRemovedPluginDuringLoad("The plugin %s raised errors during load time and is now disabled" % (file.name))
+                PluginWrapper(self, file)
+                if not self.pluginWrappers[file.namebase].enabled:
+                    self.botcore.informRemovedPluginDuringLoad("The plugin %s raised errors during load time and is now disabled" % (file.namebase))
 
-        pluginsAfter = set(self.plugins.keys())
+        pluginsAfter = set(self.pluginWrappers.keys())
         loadedPlugins = pluginsAfter.difference(pluginsBefore)
         removedPlugins = pluginsBefore.difference(pluginsAfter)
         # notify the botcore if requested
@@ -442,29 +380,20 @@ class PluginInterface:
             else:
                 raise Exception("ERROR: botcore isn't loaded yet, so I can't inform anyone of that failed plugin!")
 
-    def setPluginStateByFilename(self, pluginFilename, state):
-        """Changes the state of a plugin that is specified by its file name. If state
-        is true, then the plugin will be enabled and process events (if all its dependencies
-        are available)"""
-        if state:
-            logging.debug("Activating pluginfile %s", pluginFilename)
+    def setPluginState(self, pluginName, newState):
+        """Changes the state of a plugin. If state is true, then the plugin
+         will be enabled and process events if all its dependencies are available"""
+        if newState:
+            logging.info("Activating plugin %s", pluginName)
         else:
-            logging.debug("Deactivating pluginfile %s", pluginFilename)
-        self.pluginFiles[pluginFilename].setEnable(state)
+            logging.info("Deactivating plugin %s", pluginName)        
+        self.pluginWrappers[pluginName].setState(newState)
 
-    def setPluginStateByClassname(self, pluginName, state):
-        """Changes the state of a plugin that is specified by its class name. If state
-        is true, then the plugin will be enabled and process events (if all its dependencies
-        are available)"""
-        if state:
-            logging.debug("Activating plugin %s", pluginName)
-        else:
-            logging.debug("Deactivating plugin %s", pluginName)        
-        self.plugins[pluginName].pluginFile.setEnable(state)
-
-    def getPluginByClassname(self, classname):
-        if classname in self.plugins and self.plugins[classname].online():
-            return self.plugins[classname].pluginObject
+    def getPlugin(self, classname):
+        """Returns an instance of a plugin class, given the name of the class.
+        Returns None if the plugin can't be found or is offline"""
+        if classname in self.pluginWrappers and self.pluginWrappers[classname].online():
+            return self.pluginWrappers[classname].pluginObject
         else:
             # Originally intended to raise exception here, since plugins shouldn't
             # ever get execution time when dependencies are down. But versionplugin
@@ -472,43 +401,54 @@ class PluginInterface:
             #raise MissingDependenciesError("Some plugin has an undeclared dependency to '%s', which is currently unavailable" % (classname,))
             return None
 
+    def getPluginWrapper(self, classname):
+        " Returns the pluginWrapper that wraps the specified plugin. Raises KeyError otherwise "
+        return self.pluginWrappers[classname]
+
     def handleDependency(self, pluginName):
-        return self.plugins.get(pluginName, MissingDependency(pluginName))
+        return self.pluginWrappers.get(pluginName, MissingDependency(pluginName))
 
     def getPluginNames(self):
         """ Returns a list of names of all loaded plugins """
-        return self.plugins.keys()
+        return self.pluginWrappers.keys()
 
     def getPlugins(self):
         """ Returns a list of instances of all loaded plugins """
-        return [plugin.pluginObject for plugin in self.plugins.values()]
-    
+        return [wrapper.pluginObject for wrapper in self.pluginWrappers.values() if wrapper.online()]
+            
 #---------------------------------------------------------------------------------
 #      PluginInterface module-internal methods
 #---------------------------------------------------------------------------------  
     def registerEventHandler(self, handler):
-        logging.info("Registering event %s for plugin %s" % (handler.eventName, handler.plugin.pluginName))
+        logging.info("Registering event %s for plugin %s" % (handler.eventName, handler.pluginWrapper.pluginName))
         if not handler.eventName in self.eventHandlers:
             self.eventHandlers[handler.eventName] = EventHandlerRepository()
         self.eventHandlers[handler.eventName].addHandler(handler)
     def unregisterEventHandler(self, handler):
         self.eventHandlers[handler.eventName].removeHandler(handler)
         
-    def registerPlugin(self, pluginName, plugin):
+    def registerPlugin(self, pluginName, pluginWrapper):
         logging.info("Registering the plugin %s" % pluginName)
-        if pluginName in self.plugins:
-            raise PluginLoadError("Plugin Name collision. Both the files %s and %s have plugins names %s", 
-                                    plugin.filepath, self.plugins[pluginName].filepath, pluginName)
-        self.plugins[pluginName] = plugin
-        changes = {pluginName : plugin}
-        for plugin in self.plugins.values():
-            if plugin.hasDependency(pluginName):
-                plugin.notifyDependencyChange(changes)
+        if pluginName in self.pluginWrappers:
+            raise Exception("Tried to Register the same plugin twice")
+        changes = { pluginName : pluginWrapper }
+        for wrapper in self.pluginWrappers.values():
+            if wrapper.hasDependency(pluginName):
+                wrapper.notifyDependencyChange(changes)
+        self.pluginWrappers[pluginName] = pluginWrapper  
 
-    def unregisterPlugin(self, plugin):
-        logging.debug("Unregistering the plugin %s" % plugin.pluginName)
-        del self.plugins[plugin.pluginName]
-        changes = dict( [(plugin.pluginName, MissingDependency(plugin.pluginName))] )
-        for p in self.plugins.values():        # Technically, the Plugin could do this by itself,
+    def unregisterPlugin(self, pluginName, pluginWrapper):
+        logging.debug("Unregistering the plugin %s" % pluginName)
+        del self.pluginWrappers[pluginName]
+        changes = { pluginName : MissingDependency(pluginName) }
+        for p in self.pluginWrappers.values():        # Technically, the PluginWrapper could do this by itself,
             if p.hasDependency(plugin.pluginName):    # but this way seems more symmetrical
                 p.notifyDependencyChange(changes)
+                
+    # Helper methods for pickling
+    def persistent_id(self, obj):
+        if isinstance(obj, PluginInterface):
+            return "MyPersistentID"
+    def persistent_load(self, persid):
+        if persid == "MyPersistentID":
+            return self

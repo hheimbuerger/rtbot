@@ -17,7 +17,7 @@ class InsultPlugin:
 
   def getCanonicalName(self, rawName):
     # retrieve AuthenticationPlugin
-    authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+    authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
     if(authenticationPlugin == None):
       logging.info("ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
       return(rawName)
@@ -26,7 +26,7 @@ class InsultPlugin:
 
   def punish(self, irclib, name):
     # retrieve AuthenticationPlugin
-    authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+    authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
     if(authenticationPlugin == None):
       logging.info("ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of punish()")
       return(False)

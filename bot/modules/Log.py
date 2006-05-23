@@ -117,7 +117,7 @@ debuglog.setLevel(logging.DEBUG)
 debuglog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 rootlog.addHandler(debuglog)
 
-filelog = logging.FileHandler(path("logs/logfile.txt"))
+filelog = CortLogger(path("logs/logfile.txt"))
 filelog.setLevel(logging.INFO)
 filelog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 rootlog.addHandler(filelog)

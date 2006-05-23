@@ -63,7 +63,7 @@ class SeenPlugin:
             
     def getCanonicalName(self, rawName):
         # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterface.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterface.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
             logging.info("ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
             return(rawName)
@@ -73,7 +73,7 @@ class SeenPlugin:
     def getCanonicalUserList(self, irclib):
         rawUserList = irclib.getUserList().getPureList()
         # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterface.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterface.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
             logging.info("ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalUserList()")
             return rawUserList
@@ -141,7 +141,7 @@ if __name__ == "__main__":
             return name
     
     class FakePluginInterface:
-        def getPluginByClassname(self, name):
+        def getPlugin(self, name):
             if name == "AuthenticationPlugin":
                 return AuthenticationPlugin()
 

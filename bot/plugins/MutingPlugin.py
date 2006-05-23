@@ -20,7 +20,7 @@ class MutingPlugin:
 
     def isFriend(self, irclib, name):
         # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
           logging.info("ERROR: MutingPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
           return(False)
@@ -29,7 +29,7 @@ class MutingPlugin:
 
     def getCanonicalName(self, rawName):
         # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
           logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
           return(rawName)
@@ -40,7 +40,7 @@ class MutingPlugin:
         return(self.muteList.keys())
 
     def triggerModeUpdate(self, irclib):
-        authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
           logging.info("ERROR: MutingPlugin didn't succeed at lookup of AuthenticationPlugin during execution of triggerModeUpdate()")
           return(False)
@@ -162,7 +162,7 @@ if __name__ == "__main__":
             irclib.sendChannelMessage("AuthPlugin: updating!")
     
     class PluginInterfaceMock:
-        def getPluginByClassname(self, name):
+        def getPlugin(self, name):
             return(AuthPluginMock())
 
     class IrcLibMock:

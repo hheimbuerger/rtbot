@@ -14,7 +14,7 @@ class BugReplyPlugin:
 
   def getCanonicalName(self, rawName):
     # retrieve AuthenticationPlugin
-    authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+    authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
     if(authenticationPlugin == None):
       logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
       return(rawName)

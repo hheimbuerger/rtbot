@@ -14,7 +14,7 @@ class AuthenticationPlugin:
         return( "$Id$" )
     
     def sendMessage(self, sender, receiver, message, needDeliveryNotification, isDeliveryNotification, instantDelivery = False):
-        mailboxPlugin = self.pluginInterfaceReference.getPluginByClassname("MailboxPlugin")
+        mailboxPlugin = self.pluginInterfaceReference.getPlugin("MailboxPlugin")
         if(mailboxPlugin == None):
             logging.info("ERROR: AuthenticationPlugin didn't succeed at lookup of MailboxPlugin during execution of sendMessage()")
             return(False)
@@ -23,7 +23,7 @@ class AuthenticationPlugin:
             return(True)
 
     def getListOfMutees(self):
-        mutingPlugin = self.pluginInterfaceReference.getPluginByClassname("MutingPlugin")
+        mutingPlugin = self.pluginInterfaceReference.getPlugin("MutingPlugin")
         if(mutingPlugin == None):
             logging.info("ERROR: AuthenticationPlugin didn't succeed at lookup of MutingPlugin during execution of getListOfMutees()")
             return([])

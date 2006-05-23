@@ -30,7 +30,7 @@ class MailboxPlugin:
 
     def isFriend(self, irclib, name):
         # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
           logging.info("ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
           return(None)
@@ -39,7 +39,7 @@ class MailboxPlugin:
 
     def isKnown(self, username):
         # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
         if(authenticationPlugin == None):
           logging.info("ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isKnown()")
           return(None)
@@ -48,7 +48,7 @@ class MailboxPlugin:
 
     def getCanonicalName(self, rawName):
       # retrieve AuthenticationPlugin
-      authenticationPlugin = self.pluginInterfaceReference.getPluginByClassname("AuthenticationPlugin")
+      authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
       if(authenticationPlugin == None):
         logging.info("ERROR: MailboxPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
         return(rawName)
