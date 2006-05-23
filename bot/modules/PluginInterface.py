@@ -68,8 +68,6 @@ class EventHandler:
             logging.exception("The plugin %s raised an exception in the eventhandler %s", self.pluginWrapper.pluginName, self.eventName)
             raise PluginExceptionError(self.pluginWrapper, exception)
 
-
-
 #---------------------------------------------------------------------------------
 #  PLUGIN
 #---------------------------------------------------------------------------------
@@ -163,6 +161,22 @@ class PluginWrapper:
     
     def online(self):
         return self.dependenciesOnline and self.enabled
+    
+    def getStatus(self):
+        if self.pluginObject and hasattr(self.pluginObject, "getVersionInformation"):
+            version = self.pluginObject.getVersionInformation().split()
+            revision = version[2]
+            commit = version[3] + " " + version[4]
+            creator = version[5]
+        else:
+            revision = "unknown"
+            commit = "unknown"
+            creator = "unknown"
+        if self.online():
+            status = "running"
+        else:
+            status = "offline"
+        return (self.pluginName, status, revision, commit, creator)
     
     @changesState
     def setState(self, newState):
@@ -385,11 +399,12 @@ class PluginInterface:
 
     def setPluginState(self, pluginName, newState):
         """Changes the state of a plugin. If state is true, then the plugin
-         will be enabled and process events if all its dependencies are available"""
+         will be enabled and process events if all its dependencies are available
+        Raises KeyError if the plugin is not found"""
         if newState:
             logging.info("Activating plugin %s", pluginName)
         else:
-            logging.info("Deactivating plugin %s", pluginName)        
+            logging.info("Deactivating plugin %s", pluginName)      
         self.pluginWrappers[pluginName].setState(newState)
 
     def getPlugin(self, classname):
@@ -418,7 +433,10 @@ class PluginInterface:
     def getPlugins(self):
         """ Returns a list of instances of all loaded plugins """
         return [wrapper.pluginObject for wrapper in self.pluginWrappers.values() if wrapper.online()]
-            
+    
+    def getStatus(self):
+        return [wrapper.getStatus() for wrapper in self.pluginWrappers.values() ]
+           
 #---------------------------------------------------------------------------------
 #      PluginInterface module-internal methods
 #---------------------------------------------------------------------------------  

@@ -258,6 +258,14 @@ class PluginInterfaceTestCase(unittest.TestCase):
             self.assert_(not pi.getPlugin("BarPlugin"))
         finally:
             RemoveTestFiles()
+            
+    def testGetStatus(self):
+        pi = PluginInterface(path("plugins/"))
+        fakebot = FakeBot()
+        pi.registerInformTarget(fakebot)
+        pi.updatePlugins()
+        print pi.getStatus()
+
 def suite():
   return  unittest.TestSuite((unittest.makeSuite(PluginInterfaceTestCase)))
 

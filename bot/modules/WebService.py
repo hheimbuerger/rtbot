@@ -14,13 +14,24 @@ class WebService(Thread):
         self.server.serve_forever()
 
     def status(self, plugin):
-        return (plugin, ["1.0", "running"])
+        try:
+            return self.botManager.pluginInterface.getPluginWrapper(plugin).getStatus()
+        except KeyError:
+            return "The plugin %s could not be found" % plugin
+    
+    def setPluginState(self, plugin, newState):
+        try:
+            self.botManager.pluginInterface.setPluginState(plugin, newState)
+        except KeyError:
+            return "The plugin %s could not be found" % plugin
 
     def PluginList(self):
         list = self.botManager.pluginInterface.getPluginNames()
         list.sort()
-        #return("Plugins: " + string.join(list, ", "))
-        return(list)
+        return list
+    
+    def pluginStatusList(self):
+        return self.botManager.pluginInterface.getStatus()
 
 
 
