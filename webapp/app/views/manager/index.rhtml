@@ -1,1 +1,5 @@
-manager
+<% @my_dir.each do |file| %>
+    <% if file =~ /^.*?\.py$/ %>
+        <br/><%= file %>
+    <% end %>
+<% end %>

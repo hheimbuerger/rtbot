@@ -11,5 +11,4 @@ module ApplicationHelper
       return false
   end
 
-
 end

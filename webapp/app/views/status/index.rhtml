@@ -1,7 +1,8 @@
 <% if @has_connection %>
+    <p>Plugin listing via XML-RPC:<br/>
 	<% @plugins.each do |plugin| %>
 	    <%= plugin %>,
-	<% end %>
+	<% end %></p>
 <% else %>
-    no connection
+    Can't connect to the bot via XML-RPC. Not running?
 <% end %>

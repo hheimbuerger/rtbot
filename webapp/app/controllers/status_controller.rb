@@ -14,7 +14,7 @@ class StatusController < ApplicationController
       bot = ActionWebService::Client::XmlRpc.new(BotApi, "http://localhost:8000/")
       @plugins = bot.PluginList
       @has_connection = true
-    rescue Errno::ECONNREFUSED
+    rescue Errno::ECONNREFUSED, Errno::EBADF
       @has_connection = false
     end
   end

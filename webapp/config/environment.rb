@@ -48,3 +48,4 @@ end
 # end
 
 # Include your application configuration below
+ActiveRecord::Base.default_timezone = :utc
