@@ -1,5 +1,7 @@
 <% @my_dir.each do |file| %>
     <% if file =~ /^[^.].*?$/ %>
-        <br/><%= link_download 'logs/'+file, file %>
+        <br/><%= file %>
+        <%= link_download 'logs/'+file, '[download]', false %>
+        <%= link_download 'logs/'+file, '[view]', true %>
     <% end %>
 <% end %>

@@ -7,8 +7,11 @@ module FileHelper
         end
     end
 
-    def link_download(file, caption)
-        link_to CGI.escapeHTML(caption), :controller => 'file', :action => 'download',
-                :params => { 'file' => file }
+    def link_download(file, caption, inline)
+        if(inline) then
+            link_to CGI.escapeHTML(caption), :controller => 'file', :action => 'download', :params => { 'file' => file, :disposition => 'inline' }
+        else
+            link_to CGI.escapeHTML(caption), :controller => 'file', :action => 'download', :params => { 'file' => file, :disposition => 'attachment' }
+        end
     end
 end

@@ -53,7 +53,11 @@ class FileController < ApplicationController
             raise MissingFile, 'permission denied' unless permit_file? path
 
             if http_if_modified_since? path
-                send_file path
+                if(@params['disposition'] == 'inline') then
+                    send_file path, :type => 'text/plain', :disposition => 'inline'
+                else
+                    send_file path, :type => 'text/plain', :disposition => 'attachment'
+                end
             else
                 render_text '', '304 Not Modified'
             end
