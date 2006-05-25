@@ -213,6 +213,8 @@ class PluginWrapper:
         self.dependents.remove(plugin)
     def hasDependency(self, name):
         return name in self.dependencies.keys() or reduce(operator.__or__, [dependency.hasDependency(name) for dependency in self.dependencies.values()], False)
+    def getDependencies(self):
+        return self.dependencies.keys()
 
     ## Pickling helper methods (serialization)
     def __getstate__(self):
@@ -244,8 +246,8 @@ class PluginWrapper:
         
         try:
             dependencyNames = set(self.pluginClass.getDependencies())                
-        except (AttributeError, TypeError):                                        # if this fails ...
-            dependencyNames = set()                                  # then it's okay, it just means the plugin doesn't declare any dependencies, or that it doesn't declare getDependencies() as a classmethod
+        except (AttributeError, TypeError):  # if this fails ...
+            dependencyNames = set() # then it's okay, it just means the plugin doesn't declare any dependencies, or that it doesn't declare getDependencies() as a classmethod
         except Exception, e:
             logging.exception("Plugin raised exception while trying to determine its dependencies")
             raise PluginLoadError(e)
@@ -290,31 +292,34 @@ class MissingDependency:
 #    plugin interface.
 #---------------------------------------------------------------------------------
 class EventHandlerRepository:
-  """ Keeps track of all the procedures that handle a specific event """
-  def __init__(self):
-    self.handlers = []
-  def addHandler(self, handler):
-    self.handlers.append(handler)
-    self.sortHandlers()
-  def removeHandler(self, handler):
-    try: self.handlers.remove(handler)
-    except: pass
+    """ Keeps track of all the procedures that handle a specific event """
+    def __init__(self):
+        self.handlers = []
+    def addHandler(self, handler):
+        self.handlers.append(handler)
+        self.sortHandlers()
+    def removeHandler(self, handler):
+        try: self.handlers.remove(handler)
+        except: pass
 
-  # Static function for comparing priorities. This assumes that the handlers
-  # have a priority attribute
-  @staticmethod
-  def compareHandlers(left, right):
-    if   left.priority <  right.priority: return 1
-    elif left.priority == right.priority: return 0
-    else: return -1
+    # Static function for comparing priorities. This assumes that the handlers
+    # have a priority attribute
+    @staticmethod
+    def compareHandlers(left, right):
+        if   left.priority <  right.priority: return 1
+        elif left.priority == right.priority: return 0
+        else: return -1
 
-  def sortHandlers(self):
-    self.handlers.sort(self.compareHandlers)
-  def fireEvent(self, *args):
-    for procedure in self.handlers:
-      # event handler procedures return true to abort processing
-      if procedure(*args):
-        break
+    def sortHandlers(self):
+        self.handlers.sort(self.compareHandlers)
+        
+    def fireEvent(self, *args):
+        logging.debug("firing event")
+        for procedure in self.handlers:
+            logging.debug("firing event %s for plugin %s", procedure.eventName, procedure.pluginWrapper.pluginName)
+            # event handler procedures return true to abort processing
+            if procedure(*args):
+                break
 
 #---------------------------------------------------------------------------------
 #  PLUGIN INTERFACE
@@ -339,7 +344,7 @@ class PluginInterface:
                 up.persistent_load = self.persistent_load
                 up.load()
             except:
-                pass # If we can't load the plugin states, no biggie...        
+                pass # If we can't load the plugin states, no biggie...
         
     def dispose(self):
         p = pickle.Pickler(self.pluginMetaData.open("w"))
@@ -444,6 +449,7 @@ class PluginInterface:
             self.eventHandlers[handler.eventName] = EventHandlerRepository()
         self.eventHandlers[handler.eventName].addHandler(handler)
     def unregisterEventHandler(self, handler):
+        logging.info("Unregistering event %s for plugin %s" % (handler.eventName, handler.pluginWrapper.pluginName))
         self.eventHandlers[handler.eventName].removeHandler(handler)
         
     def registerPlugin(self, pluginName, pluginWrapper):

@@ -8,7 +8,7 @@ class MathEvalPlugin:
 
     def handleMessage(self, msg, replyMessage, replyEmote):
         if((len(msg.split()) > 1) and ((msg.split()[0] == "eval") or (msg.split()[0] == "evalstatement"))):
-            #try:
+            try:
                 exp = msg.split(None, 1)[1]
                 if(len(re.findall("\*\*", exp)) > 1):
                     replyMessage("Sorry, excessive use of power is not allowed.")
@@ -30,8 +30,8 @@ class MathEvalPlugin:
                         replyMessage("That's too long, I won't write all that down...")
                     else:
                         replyMessage("I think '" + exp + "' evaluates to '" + str_result + "', but I'm not all knowing. ;)")
-            #except:
-            #    replyMessage("Too complex to do with mental arithmetics. Am I a computer or what!?")
+            except:
+                replyMessage("Too complex to do with mental arithmetics. Am I a computer or what!?")
 
     def onPrivateMessage(self, irclib, source, msg):
         self.handleMessage(msg, (lambda reply: irclib.sendPrivateMessage(source, reply)), (lambda reply: irclib.sendPrivateEmote(source, reply)))

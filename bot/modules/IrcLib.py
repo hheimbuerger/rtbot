@@ -253,18 +253,21 @@ class LowlevelIrcLib:
             logging.debug("WHOIS: no such nick (%s)" % (nick))
             self.eventTarget.onWhoisResult(nick, None, None, None)
         elif(command == "PRIVMSG"):
-            if(arguments[0] == self.nickname):
+            # IRC nick names are not case sensitive. Neither are channel names
+            if(arguments[0].lower() == self.nickname.lower()):
                 #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
                 if((trailing[:8] == "\x01ACTION ") and (trailing[-1] == "\x01")):
                     self.eventTarget.onPrivateEmote(source, trailing[8:-1])
                 else:
                     self.eventTarget.onPrivateMessage(source, trailing)
-            elif(arguments[0] == self.channel):
+            elif(arguments[0].lower() == self.channel.lower()):
                 #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
                 if((trailing[:8] == "\x01ACTION ") and (trailing[-1] == "\x01")): 
                     self.eventTarget.onChannelEmote(source, trailing[8:-1])
                 else:
                     self.eventTarget.onChannelMessage(source, trailing, arguments[0])
+            else:
+                logging.error("Received a message not meant for me! arguments: %s. source: %s. trailing: %s" % (arguments, source, trailing))
         elif(command == "JOIN"):
             if(source == self.nickname):
                 self.eventTarget.onJoinedChannel()
