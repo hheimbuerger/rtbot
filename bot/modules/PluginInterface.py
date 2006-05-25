@@ -244,10 +244,8 @@ class PluginWrapper:
         
         try:
             dependencyNames = set(self.pluginClass.getDependencies())                
-        except AttributeError:                                        # if this fails ...
-            dependencyNames = set()                                  # then it's okay, it just means the plugin doesn't declare any dependencies
-        except TypeError:                                            # if this fails ...
-            dependencyNames = set()                                  # then it's okay, it just means the plugin doesn't declare getDependencies() as a classmethod                        
+        except (AttributeError, TypeError):                                        # if this fails ...
+            dependencyNames = set()                                  # then it's okay, it just means the plugin doesn't declare any dependencies, or that it doesn't declare getDependencies() as a classmethod
         except Exception, e:
             logging.exception("Plugin raised exception while trying to determine its dependencies")
             raise PluginLoadError(e)
@@ -463,7 +461,7 @@ class PluginInterface:
         del self.pluginWrappers[pluginName]
         changes = { pluginName : MissingDependency(pluginName) }
         for p in self.pluginWrappers.values():        # Technically, the PluginWrapper could do this by itself,
-            if p.hasDependency(plugin.pluginName):    # but this way seems more symmetrical
+            if p.hasDependency(pluginWrapper.pluginName):    # but this way seems more symmetrical
                 p.notifyDependencyChange(changes)
                 
     # Helper methods for pickling

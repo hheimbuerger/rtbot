@@ -100,7 +100,6 @@ class CortLogger(logging.handlers.TimedRotatingFileHandler):
         # filepath should be a path-object
         self.path, self.filename = filepath.splitpath()
         logging.handlers.TimedRotatingFileHandler.__init__(self, self.getCurrentFilename(), "midnight")
-        
     def getCurrentFilename(self):
         return self.path / (time.strftime("%Y%m%d ") + self.filename)
     def doRollover():

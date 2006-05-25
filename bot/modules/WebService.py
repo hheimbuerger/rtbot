@@ -14,6 +14,7 @@ class WebService(Thread):
         self.server.serve_forever()
 
     def status(self, plugin):
+        # returns a tuple of (pluginName, status, revision, commit, creator)
         try:
             return self.botManager.pluginInterface.getPluginWrapper(plugin).getStatus()
         except KeyError:
