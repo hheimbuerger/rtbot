@@ -7,7 +7,7 @@ class SummoningPlugin:
 
     def onChannelMessage(self, irclib, source, message):
         if(message[:len(self.summonCommand)] == self.summonCommand):
-            target = message[len(self.summonCommand)+1:]
+            target = message[len(self.summonCommand)+1]
             if(target in irclib.getUserList().getPureList()):
                 irclib.sendPrivateNotice(target, "You have been summoned by %s!" % (source))
                 irclib.sendChannelEmote("does a ritual dance.")
@@ -22,7 +22,7 @@ class SummoningPlugin:
                 irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
                 irclib.sendChannelEmote("burns some bat guano.")
                 irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
-                irclib.sendRawMsg("KICK %s %s" % (self.channel, target))
+                irclib.sendRawMsg("KICK %s %s" % (irclib.channel, target))
             else:
                 irclib.sendChannelEmote("burns some bat guano.")
                 irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
