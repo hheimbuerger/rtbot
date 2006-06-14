@@ -16,4 +16,8 @@ class Permission < ActiveRecord::Base
     #logger.info("FALSE")
     return(false)
   end
+  
+  def self.getPermissionByHandle(handle)
+    permission = Permission.find(:first, :conditions => ["handle = ?", handle])
+  end
 end

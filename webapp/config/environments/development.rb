@@ -21,3 +21,4 @@ config.action_mailer.raise_delivery_errors = false
 
 # The path to the bot
 BOT_PATH = "F:/Projekte/Allegiance/RTBot/SVN-Sandbox/bot/"
+BOT_URI = "http://localhost:8000/"

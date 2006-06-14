@@ -42,7 +42,8 @@ class User < ActiveRecord::Base
   # If its empty we assume that the user didn't want to change his
   # password and just reset it to the old value.
   def crypt_unless_empty
-    if password.empty?      
+    #print "password: #{password.inspect}\n"
+    if password.empty?
       user = self.class.find(self.id)
       self.password = user.password
     else
@@ -50,10 +51,10 @@ class User < ActiveRecord::Base
     end        
   end  
   
-  validates_uniqueness_of :login, :on => :create
+  validates_uniqueness_of :login
 
-  validates_confirmation_of :password
-  validates_length_of :login, :within => 3..20
-  validates_length_of :password, :within => 5..40
-  validates_presence_of :login, :password
+#  validates_confirmation_of :password
+#  validates_length_of :login, :within => 3..20
+#  validates_length_of :password, :within => 5..40
+#  validates_presence_of :login, :password
 end

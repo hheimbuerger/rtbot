@@ -1,0 +1,7 @@
+<h1>Access denied</h1>
+
+<p>Message: <strong><%= @errormessage %></strong></p>
+<p>Required permission: <strong><%= @required_permission %> ("<%= Permission.getPermissionByHandle(@required_permission).name %>")</strong></p>
+<p>Referrer: <strong><%= @referrer %></strong></p>
+
+<%= render :partial => 'table' %>

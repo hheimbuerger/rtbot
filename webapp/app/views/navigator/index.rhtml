@@ -1,10 +1,11 @@
-      <% if @session[:user] %>
-	      <p><%= link_to "Status", :controller => 'status' %></p>
-	      <p><%= link_to "Exceptions", :controller => 'logged_exception' %></p>
-	      <p><%= link_to "Logs", :controller => 'logs' %></p>
-	      <p><%= link_to "Management", :controller => 'manager' %></p>
-	      <p><%= link_to "Permissions", :controller => 'permission' %></p>
-	      <% if @is_superadmin %>
-       	      <p><%= link_to "Users", :controller => 'users' %></p>
-          <% end %>
+  <% if @session[:user] %>
+      <p><%= link_to "Status", :controller => 'status' %></p>
+      <p><%= link_to "Management", :controller => 'manager' %></p>
+      <p><%= link_to "Sources", :controller => 'source' %></p>
+      <p><%= link_to "Logs", :controller => 'logs' %></p>
+      <p><%= link_to "Exceptions", :controller => 'logged_exception' %></p>
+      <p><%= link_to "Permissions", :controller => 'permission' %></p>
+      <% if @is_superadmin %>
+   	      <p><%= link_to "Users", :controller => 'users' %></p>
       <% end %>
+  <% end %>

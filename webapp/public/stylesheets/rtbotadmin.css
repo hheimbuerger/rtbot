@@ -76,3 +76,23 @@ div.progressBar div.background {
   width: 0%;
 }
 
+.indent0 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+  }
+.indent1 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 30px;
+  }
+.indent2 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 60px;
+  }
+.indent3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 90px;
+  }

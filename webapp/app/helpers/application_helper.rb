@@ -1,14 +1,18 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-  include LoginSystem
+#  include LoginSystem
 
   # check permissions
+#  def has_permission?(permission_handle)
+#    if @session[:user] and authorize?(@session[:user])
+#      permission = Permission.find(:first, :conditions => ["handle = ?", permission_handle])
+#      return(permission.isUserAllowed(@session[:user].id))
+#    end
+#      return false
+#  end
   def has_permission?(permission_handle)
-    if @session[:user] and authorize?(@session[:user])
-      permission = Permission.find(:first, :conditions => ["handle = ?", permission_handle])
-      return(permission.isUserAllowed(@session[:user].id))
-    end
-      return false
+    #print "permission_handle: #{permission_handle} \n"
+    return(ApplicationController.has_permission?(permission_handle, @session))
   end
 
 end

@@ -1,6 +1,14 @@
 class UsersController < ApplicationController
-  before_filter :login_required
+#  before_filter :login_required
   layout 'main'
+  
+  allow_with_permission :action => 'index', :required_permission => 'superadmin'
+  allow_with_permission :action => 'list', :required_permission => 'superadmin'
+  allow_with_permission :action => 'new', :required_permission => 'superadmin'
+  allow_with_permission :action => 'create', :required_permission => 'superadmin'
+  allow_with_permission :action => 'edit', :required_permission => 'superadmin'
+  allow_with_permission :action => 'update', :required_permission => 'superadmin'
+  allow_with_permission :action => 'destroy', :required_permission => 'superadmin'
 
   def index
     #list
@@ -13,41 +21,23 @@ class UsersController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    if(has_permission?("superadmin"))
-      #@user_pages, @users = paginate :users, :per_page => 10
-      @users = User.find_all
-    else
-      redirect_to :controller => 'permission', :action => 'access_denied'
-    end
+    @users = User.find_all
   end
 
-#  def show
-#    @user = User.find(params[:id])
-#    @permissions = Permission.find_all
-#  end
-
   def new
-    if(has_permission?("superadmin"))
-      @user = User.new
-    else
-      redirect_to :controller => 'permission', :action => 'access_denied'
-    end
+    @user = User.new
   end
 
   def create
-    if(has_permission?("superadmin"))
-      @user = User.new(@params[:user])
-  #    @user = User.new(:login => params[:user][:login], :occupation => "Code Artist")
-  
-      if @user.save
-        #@session[:user] = User.authenticate(@user.login, @params[:user][:password])
-        flash[:notice] = 'User was successfully created.'
-        redirect_to :action => 'list'
-      else
-        render :action => 'new'
-      end
+    @user = User.new(@params[:user])
+#    @user = User.new(:login => params[:user][:login], :occupation => "Code Artist")
+
+    if @user.save
+      #@session[:user] = User.authenticate(@user.login, @params[:user][:password])
+      flash[:notice] = 'User was successfully created.'
+      redirect_to :action => 'list'
     else
-      redirect_to :controller => 'permission', :action => 'access_denied'
+      render :action => 'new'
     end
   end
 
@@ -57,13 +47,13 @@ class UsersController < ApplicationController
   end
 
   def update
+    print "params: #{params.inspect}\n"
     @user = User.find(params[:id])
     @permissions = Permission.find_all
+    print "user: #{@user.inspect}\n"
 
     @user.login = params[:login]
-    if(params[:password] != "")
-      @user.password = params[:password]
-    end
+    @user.password = params[:password]    # if no password was entered, @user.password will be set to "" and therefore the password won't be changed due to user::crypt_unless_empty
 
     # save permissions in the database
     @permissions.each do |permission|

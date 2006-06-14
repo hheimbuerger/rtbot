@@ -1,14 +1,3 @@
-<p style="color: green"><%= flash[:notice] %></p>
+<h1>Your permissions</h1>
 
-<table border="1">
-    <tr>
-        <th>Permission</th>
-        <th>Your state</th>
-    </tr>
-    <% @permissions.each do |permission| %>
-        <tr>
-            <td><%= permission.name %> (<%= permission.handle %>)</td>
-            <td><% if permission.isUserAllowed(@session[:user].id) then %><div style="color: green">enabled</div><% else %><div style="color: red">disabled</div><% end %></td>
-        </tr>
-    <% end %>
-</table>
+<%= render :partial => 'table' %>

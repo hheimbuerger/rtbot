@@ -1,20 +1,26 @@
 #require 'application'
 #require 'file_helper'
 
-    class MissingFile < ActionController::ActionControllerError #:nodoc:
-    end
+class MissingFile < ActionController::ActionControllerError #:nodoc:
+end
 
 class FileController < ApplicationController
-  before_filter :login_required, :except => ['filenotfound', 'download']
+  #before_filter :login_required, :except => ['filenotfound', 'download']
   layout 'main'
-    include FileHelper
+  include FileHelper
+  include ApplicationHelper
 
-    #class MissingFile < ActionController::ActionControllerError #:nodoc:
+  # /=============================================
+  # | PERMISSIONS
+  # \=============================================
+  # filenotfound: logged in, any permission set
+  # download: logged in, further permission checks are performed in permit_file()
+  allow_with_permission :action => 'filenotfound', :required_permission => nil
+  allow_with_permission :action => 'download', :required_permission => nil
+
+  #private
+    #def index
     #end
-    
-  private
-    def index
-    end
 
   protected
     def base_path
@@ -23,9 +29,14 @@ class FileController < ApplicationController
     end
 
     def permit_file?(path)
-        has_permission?("viewlogs")
-        #true
-        #@session['user'] and @session['user'].permit_file?(path)
+        print "Permission check for: #{path}\n"
+        if(has_permission?("viewsrc"))
+            return(true)
+        elsif(path =~ /^#{BOT_PATH}logs\/[^\/]*$/)
+            return(has_permission?("viewlogs"))
+        else
+            return(false)
+        end
     end
 
   public

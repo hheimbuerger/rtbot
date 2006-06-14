@@ -3,6 +3,13 @@
 <% end -%>
 
 <table border="1">
+  <thead>
+    <th>state</th>
+    <th>date</th>
+    <th>exception class</th>
+    <th>source</th>
+    <th>error message</th>
+  </thead>
   <% for logged_exception in @logged_exceptions %>
     <tr>
       <td>
@@ -11,7 +18,7 @@
         <% else %>
             fixed
         <% end %>
-      <td><%= link_to logged_exception.timestamp.utc, :action => 'view', :id => logged_exception.id %></td>
+      <td style="white-space:nowrap;"><%= link_to logged_exception.timestamp.utc, :action => 'view', :id => logged_exception.id %></td>
       <td><%= logged_exception.exception_type %></td>
       <td><%= logged_exception.meta_message %></td>
       <td><%= logged_exception.message %></td>

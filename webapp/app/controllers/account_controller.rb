@@ -1,5 +1,14 @@
 class AccountController < ApplicationController
-#  layout  'scaffold'
+
+  # /=============================================
+  # | PERMISSIONS
+  # \=============================================
+  # login: open
+  # switch: open
+  # logoutform: logged in, any permission set
+  # logout: logged in, any permission set
+  allow_with_permission :action => 'logoutform', :required_permission => nil
+  allow_with_permission :action => 'logout', :required_permission => nil
 
   def login
     case @request.method

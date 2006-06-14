@@ -1,3 +1,63 @@
+<script type="text/javascript" langauge="javascript"><!--
+            function makeRequest(url) {
+
+                XHR = false;
+
+                if (window.XMLHttpRequest) { // Mozilla, Safari,...
+                    XHR = new XMLHttpRequest();
+                    if (XHR.overrideMimeType) {
+                        XHR.overrideMimeType('text/plain');
+                    }
+                } else if (window.ActiveXObject) { // IE
+                    try {
+                        XHR = new ActiveXObject("Msxml2.XMLHTTP");
+                    } catch (e) {
+                        try {
+                        XHR = new ActiveXObject("Microsoft.XMLHTTP");
+                        } catch (e) {}
+                    }
+                }
+
+                if (!XHR) {
+                    alert('Giving up :( Cannot create an XMLHTTP instance');
+                    return false;
+                }
+                XHR.onreadystatechange = onNewData;
+                XHR.open('GET', url, true);
+                XHR.send(null);
+
+            }
+
+
+            function onNewData() {
+
+                if (XHR.readyState == 4) {
+                    if (XHR.status == 200) {
+                        //var xmldoc = XHR.responseXML;
+                        //var root_node = xmldoc.getElementsByTagName('root').item(0);
+                        document.getElementById('RealtimeLogOutput').innerHTML = XHR.responseText + document.getElementById('RealtimeLogOutput').innerHTML
+                    } else {
+                        alert('There was a problem with the request.');
+                    }
+                }
+
+            }
+            
+            function updateLog() {
+                makeRequest('/logs/update');
+            }
+            
+            function startInterval() {
+
+                this.timerID = setInterval("updateLog()", 5000);
+                
+            }
+            
+             
+//-->
+</script>
+
+<h1>Logs for download</h1>
 <% @my_dir.each do |file| %>
     <% if file =~ /^[^.].*?$/ %>
         <br/><%= file %>
@@ -5,3 +65,18 @@
         <%= link_download 'logs/'+file, '[view]', true %>
     <% end %>
 <% end %>
+
+<h1>Realtime log</h1>
+
+<p><span style="cursor: pointer; text-decoration: underline"
+         onclick="makeRequest('/logs/register'); startInterval();">
+                Register
+   </span><br/>
+   <span style="cursor: pointer; text-decoration: underline"
+         onclick="updateLog()">
+                Update
+   </span></p>
+        
+<div id="RealtimeLogOutput" style="overflow: scroll; border: 3px solid black; width: 500px; height: 200px">
+[no entries]
+</div>
