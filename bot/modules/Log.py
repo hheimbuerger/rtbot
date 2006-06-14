@@ -2,6 +2,7 @@ import datetime, sys, traceback, threading, os, logging, util, time
 from lib.path import path
 from config import Settings
 from xml.dom.minidom import getDOMImplementation
+import WebService
 if(Settings.database_connection_string):
     import sqlobject
 
@@ -79,14 +80,15 @@ if(Settings.database_connection_string):
         def emit(self, logrecord):
             # We only want exception records
             assert logrecord.exc_info
-            exception = logrecord.exc_info[1]
-            message = logrecord.msg % logrecord.args
-            (type, exception, tb) = logrecord.exc_info
+            (exc_type, exception, tb) = logrecord.exc_info
+            logmessage = logrecord.msg % logrecord.args
             formattedTraceback = traceback.format_exception(exception.__class__.__name__, exception, tb)
+            strTraceback = "".join(formattedTraceback)
+            strErrorMessage = "".join(exception.args)
 
             #LoggedException._connection.debug = True
             sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(Settings.database_connection_string)
-            exc = LoggedException(exception_type=str(exc_type), meta_message=message, message=str(exc_value), traceback=stringTraceback)
+            exc = LoggedException(exception_type=str(exc_type), meta_message=logmessage, message=strErrorMessage, traceback=strTraceback)
     
     DatabaseEmitter = DatabaseHandler()
     DatabaseEmitter.setLevel(logging.ERROR)
@@ -102,13 +104,22 @@ class CortLogger(logging.handlers.TimedRotatingFileHandler):
         logging.handlers.TimedRotatingFileHandler.__init__(self, self.getCurrentFilename(), "midnight")
     def getCurrentFilename(self):
         return self.path / (time.strftime("%Y%m%d ") + self.filename)
-    def doRollover():
+    def doRollover(self):
         "Called when we need to switch files."
         self.stream.close()
         if self.encoding:
             self.stream = codecs.open(self.getCurrentFilename(), 'w', self.encoding)
         else:
             self.stream = open(self.getCurrentFilename(), 'w')
+
+class AjaxWatchLogger(logging.Handler):
+    def emit(self, logrecord):
+        if(WebService.WebService.this):
+            WebService.WebService.this.addLogMessage(logrecord.getMessage())
+
+ajaxlog = AjaxWatchLogger()
+ajaxlog.setLevel(logging.INFO)
+rootlog.addHandler(ajaxlog)
 
 # Standard file logs
 debuglog = CortLogger(path("logs/debuglog.txt"))
