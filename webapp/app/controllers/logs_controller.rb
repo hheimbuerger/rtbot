@@ -39,8 +39,8 @@ class LogsController < ApplicationController
         else
           render :text => messages.join("<br/>") + "<br/>"
         end
-      rescue exceptions.KeyError
-        render :text => "Error: Unknown ticket!<br/>"
+      #rescue exceptions.KeyError
+      #  render :text => "Error: Unknown ticket!<br/>"
       rescue Errno::ECONNREFUSED, Errno::EBADF
         render :text => "Update: Can't connect to the bot via XML-RPC.<br/>"
       end
