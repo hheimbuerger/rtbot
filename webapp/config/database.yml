@@ -29,7 +29,8 @@ test:
 
 production:
   adapter: mysql
-  database: rtbotadmin_production
+  socket: /var/lib/mysql/mysql.sock
+  database: rtbotadmin
   username: rtbotwebapp
   password: f2nSrEeA
   host: localhost
