@@ -30,7 +30,7 @@ test:
 production:
   adapter: mysql
   socket: /var/lib/mysql/mysql.sock
-  database: rtbotadmin
+  database: rtbot
   username: rtbotwebapp
   password: f2nSrEeA
   host: localhost

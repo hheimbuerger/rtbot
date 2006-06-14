@@ -66,11 +66,11 @@ public
   def call
     print params[:type]
     if(params[:type] == 'start') then
-      flash[:results] = `chdir #{BOT_PATH} && python BotManager.py start 2>&1`
+      flash[:results] = `cd #{BOT_PATH} && python BotManager.py start 2>&1`
     elsif(params[:type] == 'restart') then
-      flash[:results] = `chdir #{BOT_PATH} && python BotManager.py restart 2>&1`
+      flash[:results] = `cd #{BOT_PATH} && python BotManager.py restart 2>&1`
     elsif(params[:type] == 'stop') then
-      flash[:results] = `chdir #{BOT_PATH} && python BotManager.py stop 2>&1`
+      flash[:results] = `cd #{BOT_PATH} && python BotManager.py stop 2>&1`
     end
     redirect_to :action => 'index'
   end
