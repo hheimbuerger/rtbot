@@ -18,4 +18,5 @@ config.action_controller.perform_caching             = true
 # config.action_mailer.raise_delivery_errors = false
 
 # The path to the bot
-bot_path = "/home/rtbot/sandbox/"
+BOT_PATH = "/home/rtbot/sandbox/"
+BOT_URI = "http://localhost:8000/"

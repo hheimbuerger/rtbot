@@ -30,6 +30,6 @@ test:
 production:
   adapter: mysql
   database: rtbotadmin_production
-  username: root
-  password: 
+  username: rtbotwebapp
+  password: f2nSrEeA
   host: localhost
