@@ -65,7 +65,7 @@ class EventHandler:
         try:
             return self.procedure(self.pluginWrapper.pluginObject, *args)
         except Exception, exception:
-            logging.exception("The plugin %s raised an exception in the eventhandler %s", self.pluginWrapper.pluginName, self.eventName)
+            logging.exception("The plugin %s raised an exception in the eventhandler %s.", self.pluginWrapper.pluginName, self.eventName)
             raise PluginExceptionError(self.pluginWrapper, exception)
 
 #---------------------------------------------------------------------------------
