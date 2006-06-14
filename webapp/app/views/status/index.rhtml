@@ -1,5 +1,3 @@
-<% if @has_connection %>
-    connection
-<% else %>
-    Can't connect to the bot via XML-RPC. Not running?
-<% end %>
+<h1>Status</h1>
+
+<%= render :partial => 'status' %>

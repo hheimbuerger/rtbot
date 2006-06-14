@@ -34,10 +34,14 @@ class ApplicationController < ActionController::Base
   
   def access_denied!(controller, required_permission)
     #print "controller: #{controller.inspect}\n"
-    flash[:errormessage] = "You're missing the required permissions."
-    flash[:required_permission] = required_permission
-    flash[:referrer] = "#{controller.request.parameters[:controller]}##{controller.request.parameters[:action]}"
-    redirect_to :controller => 'permission', :action => 'access_denied'
+    if(controller.session[:user])
+      flash[:errormessage] = "You're missing the required permissions."
+      flash[:required_permission] = required_permission
+      flash[:referrer] = "#{controller.request.parameters[:controller]}##{controller.request.parameters[:action]}"
+      redirect_to :controller => 'permission', :action => 'access_denied'
+    else
+      redirect_to :controller => 'permission', :action => 'not_logged_in'
+    end
     return(false)
   end  
   

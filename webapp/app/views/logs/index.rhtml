@@ -1,59 +1,84 @@
 <script type="text/javascript" langauge="javascript"><!--
-            function makeRequest(url) {
+    var XHR = false;
+    var isWatching = false;
 
-                XHR = false;
-
-                if (window.XMLHttpRequest) { // Mozilla, Safari,...
-                    XHR = new XMLHttpRequest();
-                    if (XHR.overrideMimeType) {
-                        XHR.overrideMimeType('text/plain');
-                    }
-                } else if (window.ActiveXObject) { // IE
-                    try {
-                        XHR = new ActiveXObject("Msxml2.XMLHTTP");
-                    } catch (e) {
-                        try {
-                        XHR = new ActiveXObject("Microsoft.XMLHTTP");
-                        } catch (e) {}
-                    }
-                }
-
-                if (!XHR) {
-                    alert('Giving up :( Cannot create an XMLHTTP instance');
-                    return false;
-                }
-                XHR.onreadystatechange = onNewData;
-                XHR.open('GET', url, true);
-                XHR.send(null);
-
+    function makeRequest(url) {
+        if (window.XMLHttpRequest) { // Mozilla, Safari,...
+            XHR = new XMLHttpRequest();
+            if (XHR.overrideMimeType) {
+                XHR.overrideMimeType('text/plain');
             }
-
-
-            function onNewData() {
-
-                if (XHR.readyState == 4) {
-                    if (XHR.status == 200) {
-                        //var xmldoc = XHR.responseXML;
-                        //var root_node = xmldoc.getElementsByTagName('root').item(0);
-                        document.getElementById('RealtimeLogOutput').innerHTML = XHR.responseText + document.getElementById('RealtimeLogOutput').innerHTML
-                    } else {
-                        alert('There was a problem with the request.');
-                    }
-                }
-
+        } else if (window.ActiveXObject) { // IE
+            try {
+                XHR = new ActiveXObject("Msxml2.XMLHTTP");
+            } catch (e) {
+                try {
+                XHR = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (e) {}
             }
-            
-            function updateLog() {
-                makeRequest('/logs/update');
-            }
-            
-            function startInterval() {
+        }
 
-                this.timerID = setInterval("updateLog()", 5000);
-                
+        if (!XHR) {
+            alert('Giving up :( Cannot create an XMLHTTP instance');
+            return false;
+        }
+        XHR.onreadystatechange = onNewData;
+        XHR.open('GET', url, true);
+        XHR.send(null);
+    }
+
+    function onNewData() {
+        if (XHR.readyState == 4) {
+            if (XHR.status == 200) {
+                //var xmldoc = XHR.responseXML;
+                //var root_node = xmldoc.getElementsByTagName('root').item(0);
+                processResult(XHR.responseText);
+            } else {
+                alert('There was a problem with the request.');
+                alert(XHR.status);
             }
-            
-             
+        }
+    }
+    
+    function processResult(responseText) {
+        document.getElementById('RealtimeLogOutput').innerHTML = responseText + document.getElementById('RealtimeLogOutput').innerHTML
+        this.timerID = setTimeout("updateLog()", 5000);
+    }
+    
+    function updateLog() {
+        makeRequest('/logs/update');
+    }
+    
+    function startInterval() {
+        this.timerID = setTimeout("updateLog()", 5000);
+    }
+    
+    function startWatching() {
+        isWatching = true;
+        makeRequest('/logs/register');
+        makeRequest('/logs/update');
+        document.getElementById("toggle").firstChild.nodeValue = "Stop watching";
+        startInterval();
+    }
+    
+    function stopWatching() {
+        clearInterval();
+        isWatching = false;
+        document.getElementById("toggle").firstChild.nodeValue = "Start watching";
+        makeRequest('/logs/stop');
+    }
+    
+    function toggleWatching() {
+        if(!isWatching) {
+            startWatching();
+        } else {
+            stopWatching();
+        }
+    }
+    
+    function clearArea() {
+        document.getElementById('RealtimeLogOutput').innerHTML = "";
+    }
 //-->
 </script>
 
@@ -68,14 +93,16 @@
 
 <h1>Realtime log</h1>
 
-<p><span style="cursor: pointer; text-decoration: underline"
-         onclick="makeRequest('/logs/register'); startInterval();">
-                Register
-   </span><br/>
-   <span style="cursor: pointer; text-decoration: underline"
-         onclick="updateLog()">
-                Update
-   </span></p>
+<p>
+    <div style="border: 1px solid black;">
+        <span id="toggle" style="cursor: pointer; text-decoration: underline" onclick="toggleWatching();">
+                Start watching
+        </span>
+        <span id="clear" style="cursor: pointer; text-decoration: underline" onclick="clearArea();">
+                Clear area
+        </span>
+    </div>
+</p>
         
 <div id="RealtimeLogOutput" style="overflow: scroll; border: 3px solid black; width: 500px; height: 200px">
 [no entries]
