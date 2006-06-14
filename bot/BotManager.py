@@ -7,9 +7,9 @@ class BotManager:
     timeoutBeforeReconnecting = 60
     
     def __init__(self):
+        self.status = "Loaded."
         logging.info("----------------------------------------------------------------------")
         logging.info("Starting up RTBot...")
-
         self.settings = config.Settings()
 
     def controller_IRCLibrary(self, action):
@@ -107,6 +107,7 @@ class BotManager:
         self.controller_IRCLibrary("stop")
 
     def run(self):
+        self.status = "Launched."
         self.controller_WebService("start")
         
         logging.debug( "Entering main BotManager loop...")        
@@ -118,6 +119,7 @@ class BotManager:
             except IrcLib.ServerConnectionError, x:
                 logging.exception("Exception: ServerConnectionError during connect!")
             else:
+                self.status = "Connected."
                 try:
                     self.irclib.receiveDataLooped()        # receiveDataLooped() won't return unless the user requested a quit
                     break
@@ -134,14 +136,17 @@ class BotManager:
                     break
 
             # wait x seconds before reconnecting
+            self.status = "Disconnected."
             self.shutdown()
             time.sleep(self.timeoutBeforeReconnecting)
 
+        self.status = "Shutting down."
         logging.info("BotManager.run(): Destructing BotManager...")
         self.shutdown()
         logging.info("Thank you for using RTBot! 'yb")
 
         self.controller_WebService("stop")
+        self.status = "Shut down."
 
     def startModificationsTimer(self):
         self.modificationsTimer = threading.Timer(10.0, self.checkForModifications)
@@ -153,6 +158,9 @@ class BotManager:
         
         # Restart the timer
         self.startModificationsTimer()
+
+    def getState(self):
+        return(self.status)
 
 
 
