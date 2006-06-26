@@ -17,7 +17,7 @@ class SummoningPlugin:
                 irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (target))
                 irclib.sendChannelEmote("fizzles. :(")
         if(message[:len(self.banishCommand)] == self.banishCommand):
-            target = message[len(self.summonCommand)+1:]
+            target = message[len(self.summonCommand):]
             if(target in irclib.getUserList().getPureList()):
                 irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
                 irclib.sendChannelEmote("burns some bat guano.")
