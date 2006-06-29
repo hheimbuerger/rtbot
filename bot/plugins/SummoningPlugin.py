@@ -22,7 +22,7 @@ class SummoningPlugin:
                 irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
                 irclib.sendChannelEmote("burns some bat guano.")
                 irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
-                irclib.sendRawMsg("/kick %s %s" % (irclib.channel, target))
+                irclib.sendRawMsg("KICK %s %s" % (irclib.channel, target))
             else:
                 irclib.sendChannelEmote("burns some bat guano.")
                 irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
