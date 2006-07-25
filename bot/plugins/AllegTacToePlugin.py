@@ -54,7 +54,7 @@ class AllegTacToeGame:
                          "My momma could beat you and she's written in basic!"]
       finalWinConfig = None
       currentMessage = None
-    
+
       def __init__(self, isExpertMode = False):
         self.board = [self.E, self.E, self.E, self.E, self.E, self.E, self.E, self.E, self.E, self.E, self.E, self.E, self.E]
         self.isExpertMode = isExpertMode
@@ -90,7 +90,7 @@ class AllegTacToeGame:
       def isDraw(self):
         numStones = 0
         for field in range(0, 13):
-          if(self.board[field] != self.E):
+          if(not self.fieldIsEmpty(field)):
             numStones += 1
         return(numStones == 13)
     
@@ -98,7 +98,7 @@ class AllegTacToeGame:
         lastEmptyField = -1
         numStones = 0
         for field in range(0, 13):
-          if(self.board[field] == self.E):
+          if(not self.fieldIsEmpty(field)):
             lastEmptyField = field
           else:
             numStones += 1
@@ -124,7 +124,7 @@ class AllegTacToeGame:
         try:
           m = int(move)
           if((m <= 12) and (m >= 0)):
-            if(self.board[m] == self.E):
+            if(self.fieldIsEmpty(m)):
               return((True, ""))
             else:
               return((False, "That field is not empty!"))
@@ -142,21 +142,21 @@ class AllegTacToeGame:
           emptyCount = 0
           computerCount = 0
           for field in winConfig:
-            if(self.board[field] == self.E):
+            if(self.fieldIsEmpty(field)):
               emptyCount += 1
               lastEmptyField = field
             if(self.board[field] == self.T):
               computerCount += 1
           if((computerCount == 2) and (emptyCount == 1)):
             goodMoves.append(lastEmptyField)
-    
+
       def findBlockingMoves(self, goodMoves):
         lastEmptyField = 0
         for winConfig in self.winConfigurations:
           emptyCount = 0
           playerCount = 0
           for field in winConfig:
-            if(self.board[field] == self.E):
+            if(self.fieldIsEmpty(field)):
               emptyCount += 1
               lastEmptyField = field
             if(self.board[field] == self.R):
@@ -177,7 +177,7 @@ class AllegTacToeGame:
               if(isOneFieldAlreadyTaken):
                 continue
               isOneFieldAlreadyTaken = True
-            elif(self.board[currentField] == self.E):
+            elif(self.fieldIsEmpty(currentField)):
               if(isOneFieldStillFree):
                 continue
               isOneFieldStillFree = True
@@ -200,20 +200,20 @@ class AllegTacToeGame:
     
       def findCreateDoubleWindmillMoves(self, goodMoves):
         for possibleNextMove in range(0, 13):
-          if(self.board[possibleNextMove] == self.E):
+          if(self.fieldIsEmpty(possibleNextMove)):
             if(self.getNumberOfPossibleWinConfigs(possibleNextMove) >= 2):
               goodMoves.append(possibleNextMove)
-    
+
       def findRandomMove(self, goodMoves):
         pos = 0
         for i in range(0, int(random.random() * 13)):
           pos += 1
           if(pos > 12): pos = 0
           while(not self.fieldIsEmpty(pos)):
-            pos = pos + 1
+            pos += 1
             if(pos > 12): pos = 0
         goodMoves.append(pos)
-    
+
       def doComputerTurn(self):
         goodMoves = []
         self.findWinMoves(goodMoves)
@@ -228,12 +228,13 @@ class AllegTacToeGame:
               self.currentMessage = self.bitchingPhrases[int(random.random() * len(self.bitchingPhrases))]
         if(len(goodMoves) == 0):
           self.findRandomMove(goodMoves)
+        print goodMoves
         self.board[goodMoves[int(random.random() * len(goodMoves))]] = self.T
     
       def checkIfWon(self):
         for winConfig in self.winConfigurations:
           if(self.board[winConfig[0]] == self.board[winConfig[1]] == self.board[winConfig[2]]):
-            if(self.board[winConfig[0]] != self.E):
+            if(not self.fieldIsEmpty(winConfig[0])):
               self.finalWinConfig = winConfig
               return(True)
         return(False)
@@ -245,21 +246,14 @@ class AllegTacToeGame:
 
 
 if __name__ == "__main__":
-    b = AllegTacToe()
-    for line in b.showBoard():
-      print line
-    while(True):
-      s = ""
-      while(not b.isValidMove(s)[0]):
-        s = raw_input("Your move?: ")
-      res = b.nextTurn(int(s))
-      if(res != ""):
-        for line in b.showBoard():
-          print line
-        print res
-        for line in b.showBoard():
-          print line
-        break
-      for line in b.showBoard():
-        print line
+    class FakeIrcLib:
+        def sendPrivateMessage(self, target, text):
+            print text
+        def sendChannelMessage(self, text):
+            print text
 
+    b = AllegTacToePlugin()
+    b.onChannelMessage(FakeIrcLib(), "source", "play novice")
+    while(True):
+      s = raw_input("Your move?: ")
+      b.onChannelMessage(FakeIrcLib(), "source", s)
