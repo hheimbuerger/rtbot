@@ -225,7 +225,7 @@ class AuthenticationPlugin:
         
         # abort if we're not talking to a friend
         if(not self.isFriend(irclib, source) and not self.getCanonicalName(source) == "Cort"):
-            irclib.sendPrivateMessage(source, "I don't know you, please let me alone!")
+            irclib.sendPrivateMessage(source, "I don't know you, please leave me alone!")
             return
         
         # COMMAND: list

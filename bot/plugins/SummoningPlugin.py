@@ -40,7 +40,7 @@ class SummoningPlugin:
         if(message[:len(self.summonCommand)] == self.summonCommand):
             target = message[len(self.summonCommand)+1:]
             self.summon(irclib, source, target)
-        if(message[:len(self.banishCommand)] == self.banishCommand):
+        elif(message[:len(self.banishCommand)] == self.banishCommand):
             target = message[len(self.banishCommand)+1:]
             if(target.lower() == irclib.nickname.lower()):
                 target = source
