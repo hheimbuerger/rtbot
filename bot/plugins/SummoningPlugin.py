@@ -44,27 +44,10 @@ class SummoningPlugin:
             target = message[len(self.banishCommand)+1:]
             if(target.lower() == irclib.nickname.lower()):
                 target = source
-                if(target in irclib.getUserList().getPureList()):
-                    irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
-                    irclib.sendChannelEmote("burns some bat guano.")
-                    irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
-                    irclib.sendRawMsg("KICK %s %s" % (irclib.channel, target))
+                    self.banish(irclib, source, target)
                     irclib.sendChannelMessage("Oops.")
-                else:
-                    irclib.sendChannelEmote("does a ritual dance.")
-                    irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (target))
-                    irclib.sendChannelEmote("fizzles. :(")
-
             elif(self.isFriend(irclib, source)):
-                if(target in irclib.getUserList().getPureList()):
-                    irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
-                    irclib.sendChannelEmote("burns some bat guano.")
-                    irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
-                    irclib.sendRawMsg("KICK %s %s" % (irclib.channel, target))
-                else:
-                    irclib.sendChannelEmote("does a ritual dance.")
-                    irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (target))
-                    irclib.sendChannelEmote("fizzles. :(")
+                self.banish(irclib, source, target)
             else:
                 irclib.sendChannelMessage("What makes you think that I would accept a command from you? :P")
 
