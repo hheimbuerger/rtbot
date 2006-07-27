@@ -52,7 +52,7 @@ class SummoningPlugin:
                 irclib.sendChannelMessage("What makes you think that I would accept a command from you? :P")
 
                
-    def summon(source, target):
+    def summon(self, source, target):
         if(target in irclib.getUserList().getPureList()):
             irclib.sendPrivateNotice(target, "You have been summoned by %s!" % (source))
             irclib.sendChannelEmote("does a ritual dance.")
@@ -62,7 +62,7 @@ class SummoningPlugin:
             irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (target))
             irclib.sendChannelEmote("fizzles. :(")
         
-    def banish(source, target)
+    def banish(self, source, target):
         if(target in irclib.getUserList().getPureList()):
             irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
             irclib.sendChannelEmote("burns some bat guano.")
