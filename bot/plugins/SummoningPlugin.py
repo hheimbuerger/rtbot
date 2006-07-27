@@ -36,22 +36,6 @@ class SummoningPlugin:
     def getList(self):
         return(self.muteList.keys())
 
-    def onChannelMessage(self, irclib, source, message):
-        if(message[:len(self.summonCommand)] == self.summonCommand):
-            target = message[len(self.summonCommand)+1:]
-            self.summon(irclib, source, target)
-        elif(message[:len(self.banishCommand)] == self.banishCommand):
-            target = message[len(self.banishCommand)+1:]
-            if(target.lower() == irclib.nickname.lower()):
-                target = source
-                    self.banish(irclib, source, target)
-                    irclib.sendChannelMessage("Oops.")
-            elif(self.isFriend(irclib, source)):
-                self.banish(irclib, source, target)
-            else:
-                irclib.sendChannelMessage("What makes you think that I would accept a command from you? :P")
-
-               
     def summon(self, irclib, source, target):
         if(target in irclib.getUserList().getPureList()):
             irclib.sendPrivateNotice(target, "You have been summoned by %s!" % (source))
@@ -65,10 +49,26 @@ class SummoningPlugin:
     def banish(self, irclib, source, target):
         if(target in irclib.getUserList().getPureList()):
             irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
-            irclib.sendChannelEmote("burns some bat guano.")
+	    irclib.sendChannelEmote("burns some bat guano.")
             irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
             irclib.sendRawMsg("KICK %s %s" % (irclib.channel, target))
         else:
             irclib.sendChannelEmote("burns some bat guano.")
             irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
             irclib.sendChannelEmote("fizzles. :(")
+
+
+    def onChannelMessage(self, irclib, source, message):
+        if(message[:len(self.summonCommand)] == self.summonCommand):
+            target = message[len(self.summonCommand)+1:]
+            self.summon(irclib, source, target)
+        elif(message[:len(self.banishCommand)] == self.banishCommand):
+            target = message[len(self.banishCommand)+1:]
+            if(target.lower() == irclib.nickname.lower()):
+	        target = source
+                self.banish(irclib, source, target)
+                irclib.sendChannelMessage("Oops.")
+            elif(self.isFriend(irclib, source)):
+                self.banish(irclib, source, target)
+            else:
+                irclib.sendChannelMessage("What makes you think that I would accept a command from you? :P")
