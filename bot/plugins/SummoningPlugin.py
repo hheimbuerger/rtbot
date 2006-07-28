@@ -72,3 +72,5 @@ class SummoningPlugin:
                 self.banish(irclib, source, target)
             else:
                 irclib.sendChannelMessage("What makes you think that I would accept a command from you? :P")
+                target = source
+                self.banish(irclib, source, target)
