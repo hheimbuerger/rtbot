@@ -91,8 +91,7 @@ class SummoningPlugin:
                 self.summonAll(irclib, source)
             else:
                 irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
-                target = source
-                self.banish(irclib, source, target)
+                self.banish(irclib, "RTBot", source)
         elif(message == self.wisdomCommand):
             self.summonWisdom(irclib)
         
