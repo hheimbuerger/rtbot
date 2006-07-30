@@ -79,15 +79,13 @@ class SummoningPlugin:
         elif(message[:len(self.banishCommand)] == self.banishCommand):
             target = message[len(self.banishCommand)+1:]
             if(target.lower() == irclib.nickname.lower()):
-	        target = source
-                self.banish(irclib, source, target)
+                self.banish(irclib, "RTBot", source)
                 irclib.sendChannelMessage("Oops.")
             elif(self.isFriend(irclib, source)):
                 self.banish(irclib, source, target)
             else:
                 irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
-                target = source
-                self.banish(irclib, source, target)
+                self.banish(irclib, "RTBot", source)
         elif(message == self.summonAllCommand):
             if(self.isFriend(irclib, source)):
                 self.summonAll(irclib, source)
