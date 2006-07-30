@@ -1,6 +1,8 @@
 class SummoningPlugin:
     summonCommand = "Kal Vas Xen"
     banishCommand = "An Vas Xen"
+    summonAllCommand = "An Zu Grav!"
+    wisdomCommand = "In Bet Wis!"
 
     def getVersionInformation(self):
         return("$Id: SummoningPlugin.py 163 2006-07-27 14:28:11Z terralthra $")
@@ -57,6 +59,18 @@ class SummoningPlugin:
             irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
             irclib.sendChannelEmote("fizzles. :(")
 
+    def summonAll(self, irclib, source):
+        irclib.sendChannelMessage("In Uus Xen!")
+        irclib.sendChannelEmote("throws something in the fire, and there is a great flash!") 
+        for i in irclib.getUserList().getPureList():
+            if(self.isFriend(irclib, i)):
+                irclib.sendPrivateNotice(i, "You have been summoned by %s!" % (source))
+
+    def summonWisdom(self, irclib):
+        warWisdomPlugin = self.pluginInterfaceReference.getPlugin("WarWisdomPlugin")
+        irclib.sendChannelEmote("channels the ancient martial spirits.") 
+        warWisdomPlugin.giveWisdom(irclib)
+
 
     def onChannelMessage(self, irclib, source, message):
         if(message[:len(self.summonCommand)] == self.summonCommand):
@@ -71,6 +85,17 @@ class SummoningPlugin:
             elif(self.isFriend(irclib, source)):
                 self.banish(irclib, source, target)
             else:
-                irclib.sendChannelMessage("What makes you think that I would accept a command from you? :P")
+                irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
                 target = source
                 self.banish(irclib, source, target)
+        elif(message == self.summonAllCommand):
+            if(self.isFriend(irclib, source)):
+                self.summonAll(irclib, source)
+            else:
+                irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
+                target = source
+                self.banish(irclib, source, target)
+        elif(message == self.wisdomCommand):
+            self.summonWisdom(irclib)
+        
+  
