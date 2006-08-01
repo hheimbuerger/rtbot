@@ -153,7 +153,10 @@ class LowlevelIrcLib:
 #        assert re.match(r"[-+][bcCdDiklmnNoprstuv]", flags) # available quakenet channel modes
         logging.info("* Mode changed: %s %s-->%s" % (self.channel, target, flags))
         self.sendRawMsg("MODE %s %s %s" % (self.channel, flags, target))
-        
+
+    def kick(self, target, reason):
+        self.sendRawMsg("KICK %s %s :%s" % (self.channel, target, reason))
+
 #    @requirePrivileges
     def unOp(self, name):
         self.setChannelMode("-o", name)
