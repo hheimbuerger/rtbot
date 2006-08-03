@@ -132,7 +132,7 @@ class AllegTacToeGame:
             return((False, ""))
         except:
           return((False, ""))
-    
+
       def fieldIsEmpty(self, field):
         return(self.board[field] == self.E)
     
@@ -205,14 +205,11 @@ class AllegTacToeGame:
               goodMoves.append(possibleNextMove)
 
       def findRandomMove(self, goodMoves):
-        pos = 0
-        for i in range(0, int(random.random() * 13)):
-          pos += 1
-          if(pos > 12): pos = 0
-          while(not self.fieldIsEmpty(pos)):
-            pos += 1
-            if(pos > 12): pos = 0
-        goodMoves.append(pos)
+        possibleResults = []
+        for i in range(0, 14):
+            if(self.fieldIsEmpty(i)):
+                possibleResults.append(i)
+        return(possibleResults[int(random.random() * len(possibleResults))])
 
       def doComputerTurn(self):
         goodMoves = []
@@ -253,7 +250,7 @@ if __name__ == "__main__":
             print text
 
     b = AllegTacToePlugin()
-    b.onChannelMessage(FakeIrcLib(), "source", "play novice")
+    b.onChannelMessage(FakeIrcLib(), "source", "play")
     while(True):
       s = raw_input("Your move?: ")
       b.onChannelMessage(FakeIrcLib(), "source", s)
