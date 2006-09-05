@@ -78,6 +78,18 @@ class HumanBehaviourPlugin:
 		irclib.sendChannelMessage("Ram it! Ram it! RAM IT!!!")
 	elif(msg.lower() == "'gn" or msg.lower() == "`gn"):
 		irclib.sendChannelMessage("Read the Academy, you n00b!")
+	elif(msg.lower().find("lich") != 1):
+            irclib.sendChannelMessage("A lich? TURN UNDEAD!")
+        elif(msg.lower().find("ghost") != 1):
+            irclib.sendChannelMessage("A ghost? TURN UNDEAD!")
+        elif(msg.lower().find("ghast") != 1):
+            irclib.sendChannelMessage("A ghast? TURN UNDEAD!")
+        elif(msg.lower().find("zombie") != 1):
+            irclib.sendChannelMessage("A zombie? TURN UNDEAD!")
+        elif(msg.lower().find("ghoul") != 1):
+            irclib.sendChannelMessage("A ghoul? TURN UNDEAD!")
+        elif(msg.lower().find("skeleton") != 1):
+            irclib.sendChannelMessage("A skeleton? TURN UNDEAD!")
 #	elif(self.removeURLs(msg).lower().find("rtbot") != -1):
 #		if((msg.lower().find("'yh") != -1) or (msg.lower().find("sup") != -1)):
 #			irclib.sendChannelMessage("'yh! I'm fine. How about you?")
