@@ -84,7 +84,10 @@ if(Settings.database_connection_string):
             logmessage = logrecord.msg % logrecord.args
             formattedTraceback = traceback.format_exception(exception.__class__.__name__, exception, tb)
             strTraceback = "".join(formattedTraceback)
-            strErrorMessage = "".join(exception.args)
+            if(type(exception.args[0]) == str):
+                strErrorMessage = exception.args[0]
+            else:
+                strErrorMessage = exception.args[0].args[0]
 
             #LoggedException._connection.debug = True
             sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(Settings.database_connection_string)
