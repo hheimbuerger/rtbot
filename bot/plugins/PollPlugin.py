@@ -36,7 +36,7 @@ class PollPlugin:
             irclib.sendChannelMessage("Poll: %s" % (question))
             for answerID in range(0, len(answers)):
                 irclib.sendChannelMessage("#%i: %s" % (answerID+1, answers[answerID]))
-            irclib.sendChannelMessage("Vote with '!vote <answer-id/>'")
+            irclib.sendChannelMessage("Vote with '!vote <answer-id/>'.")
 
     def onTimer(self, irclib):
         if(self.currentPoll):
@@ -49,14 +49,14 @@ class PollPlugin:
                 irclib.sendChannelMessage("Sorry, there is already a poll running (%i seconds left)." % (self.getRemainingSeconds()))
                 self.printCurrentVote(irclib)
             else:
-                result = re.compile("!poll '(.*?)' (('.*?'\s){2,5})(\d{1,3})").match(message)      #
+                result = re.compile("!poll \"(.*?)\" ((\".*?\"\s){2,5})(\d{1,3})").match(message)      #
                 if(result):
                     #print str(result)
                     question = result.group(1)
                     rawAnswers = result.group(2)
                     timeout = int(result.group(4))
                     #answers = map(self.stripQuotes, re.findall("'.*?'", rawAnswers))
-                    answers = re.findall("'.*?'", rawAnswers)
+                    answers = re.findall("\".*?\"", rawAnswers)
                     #print "Question: %s" % (question)
                     #print "raw answers: %s" % (str(rawAnswers))
                     #print "Answers: %s" % (str(answers))
@@ -65,15 +65,16 @@ class PollPlugin:
                     self.printCurrentVote(irclib)
                     self.startTime = datetime.datetime.now()
                 else:
-                    irclib.sendChannelMessage("Syntax: !poll '<question/>' ['<answer/>'] <timeout in seconds/>")
+                    irclib.sendChannelMessage("Syntax: !poll \"<question/>\" [\"<answer/>\"] <timeout in seconds/>")
         elif((len(message.split()) >= 2) and (message.split()[0] == "!vote")):
-            try:
-                voteID = int(message.split()[1])
-                if(voteID >= 1 and voteID <= len(self.currentPoll[1])):
-                    self.currentVotes[voteID] += 1
-                    irclib.sendChannelMessage("Your vote has been counted, %s." % (source))
-            except ValueError:
-                pass
+            if(self.currentPoll):
+                try:
+                    voteID = int(message.split()[1])
+                    if(voteID >= 1 and voteID <= len(self.currentPoll[1])):
+                        self.currentVotes[voteID] += 1
+                        irclib.sendChannelMessage("Your vote has been counted, %s." % (source))
+                except ValueError:
+                    pass
 
 
 
