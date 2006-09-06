@@ -28,6 +28,7 @@ class LowlevelIrcLib:
         self.eventTarget = None
         self.nickname = None
         self.channel = None
+        self.channelTopic = None
         self.userLists = {}
         self.messageTimer = 0
         self.channelModes = ""
@@ -166,8 +167,11 @@ class LowlevelIrcLib:
             target = self.nickname
         return(self.userLists[self.channel].areAllFlagsSet(target, 'o'))
     
-    def doWhois(self, target):
-        self.sendRawMsg("WHOIS %s %s" % (target, target))
+    def doWho(self, target):
+        self.sendRawMsg("WHO %s" % (target))
+
+    def setChannelTopic(self, topic):
+        self.sendRawMsg("TOPIC %s :%s" % (self.channel, topic))
 
     def registerEventTarget(self, newEventTarget):
         self.eventTarget = newEventTarget
@@ -236,10 +240,24 @@ class LowlevelIrcLib:
             self.receivingNAMESResult = False
             self.userLists[self.channel].rebuildUserList(self.namesBuffer)
             for user in self.userLists[self.channel].getPureList():
-                self.doWhois(user)
+                self.doWho(user)
             self.namesBuffer = []
         elif(command == "433"):     #Nickname is already in use.
             self.changeNick(self.nickname + "_")
+        elif(command == "352"):            # first part of a WHOIS result, 2nd part is channels as 319, 3rd part is server as 312, 4th part is idle time as 317, 5th part is EOL as 318
+            if(len(arguments) >= 5):
+                username = arguments[2]
+                host = arguments[3]
+                server = arguments[4]
+                nick = arguments[5]
+                unknown = arguments[6]
+                userinfo = trailing[2:]
+                self.userLists[self.channel].reportWho(nick, username, host, userinfo)
+                user = self.userLists[self.channel].getUser(nick)
+                if(user):        # the user might have signed off already!
+                    self.eventTarget.onWhoResult(nick, user)
+            else:
+                logging.debug("Error: WHOIS response with less than four arguments!")
         elif(command == "311"):            # first part of a WHOIS result, 2nd part is channels as 319, 3rd part is server as 312, 4th part is idle time as 317, 5th part is EOL as 318
             if(len(arguments) >= 5):
                 nick = arguments[1]
@@ -255,6 +273,11 @@ class LowlevelIrcLib:
             nick = arguments[1]
             logging.debug("WHOIS: no such nick (%s)" % (nick))
             self.eventTarget.onWhoisResult(nick, None, None, None)
+        elif(command == "NOTICE"):
+            # IRC nick names are not case sensitive. Neither are channel names
+            if(arguments[0].lower() == self.nickname.lower()):
+                #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
+                self.eventTarget.onNotice(source, trailing)
         elif(command == "PRIVMSG"):
             # IRC nick names are not case sensitive. Neither are channel names
             if(arguments[0].lower() == self.nickname.lower()):
@@ -275,7 +298,7 @@ class LowlevelIrcLib:
             if(source == self.nickname):
                 self.eventTarget.onJoinedChannel()
             else:
-                self.doWhois(source)
+                self.doWho(source)
                 self.userLists[self.channel].onJoin(source, arguments[0])
                 self.eventTarget.onJoin(source, arguments[0])
             self.requestChannelModesUpdate()
@@ -300,6 +323,11 @@ class LowlevelIrcLib:
             else:
                 self.userLists[self.channel].onKick(source, arguments[1], trailing, arguments[0])
                 self.eventTarget.onKick(source, arguments[1], trailing, arguments[0])
+        elif(command == "TOPIC"):
+            if(arguments[0] == self.channel):
+                self.channelTopic = trailing
+            else:
+                raise IrcError("IrcError: unrecognised incoming TOPIC message!")
         elif(command == "ERROR"):
             #logging.debug("Error ERROR-command in handleIncomingMessage()!")
             raise IrcError("ERROR: ERROR-command in handleIncomingMessage() ('%s')" % (str((source, command, arguments, trailing))))
