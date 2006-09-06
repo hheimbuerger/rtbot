@@ -2,6 +2,7 @@ import re, logging
 from modules import PluginInterface
 
 class HumanBehaviourPlugin:
+  helpMessage = ["You can read up on my commands on this page: http://wiki.edge-of-reality.de/bin/view/Main/RTBotCommands"]
 
   def __init__(self, pluginInterface):
 	self.saidMyNameLastMessage = {}
@@ -39,11 +40,18 @@ class HumanBehaviourPlugin:
 	else:
 	  return(text)
 
-  def onPrivateMessage(self, irclib, source, msg):
-	if((len(msg.split()) > 0) and (msg.split()[0] == "say")):
-		irclib.sendChannelMessage(msg[4:])
-	elif((len(msg.split()) > 0) and (msg.split()[0] == "me")):
-		irclib.sendChannelEmote(msg[3:])
+  @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_HIGH)
+  def onPrivateMessage(self, irclib, source, message):
+    if(message == "help"):
+        for line in HumanBehaviourPlugin.helpMessage:
+            irclib.sendPrivateMessage(source, line)
+        return(True)
+    elif((len(message.split()) > 0) and (message.split()[0] == "say")):
+        irclib.sendChannelMessage(message[4:])
+        return(True)
+    elif((len(message.split()) > 0) and (message.split()[0] == "me")):
+        irclib.sendChannelEmote(message[3:])
+        return(True)
 
   @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_LOW)
   def onChannelMessage(self, irclib, source, msg):

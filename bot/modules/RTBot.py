@@ -4,7 +4,6 @@ import util, logging
 
 
 class RTBot:
-    helpMessage = ["You can read up on my commands on this page: http://wiki.edge-of-reality.de/bin/view/Main/RTBotCommands"]
     pluginTimerTimeout = 10.0
 
     def __init__(self, library, channelname, pluginInterface):
@@ -119,7 +118,7 @@ class RTBot:
         self.pluginInterface.fireEvent("onChangeNick", self.irclib, source, target)
 #        self.deliverMessages(target)
 
-    def onNotice(self, source, target, message):
+    def onNotice(self, source, message):
         logging.info("incoming NOTICE: " + message)
         self.pluginInterface.fireEvent("onNotice", self.irclib, source, message)
 
@@ -127,8 +126,8 @@ class RTBot:
         # ============= DEBUG ===============
         if(message == "list"):
             list = []
-            for (name, data) in self.irclib.getUserList().getRawDictionary().items():
-                list.append((name, data[0]))
+            for (name, data) in self.irclib.getUserList().userList.items():
+                list.append((name, data.mode, data.id))
             self.irclib.sendChannelMessage(list)
             return
         logging.info(source + "-->#: " + message)
@@ -142,9 +141,6 @@ class RTBot:
     def onPrivateMessage(self, source, message):
         logging.info(source + "-->RTBot: " + message)
         self.pluginInterface.fireEvent("onPrivateMessage", self.irclib, source, message)
-        if(message == "help"):
-          for line in self.helpMessage:
-            self.irclib.sendPrivateMessage(source, line)
         elif(message == "quit"):
             logging.debug("received 'quit'")
             self.irclib.sendChannelMessage("'go")
@@ -155,7 +151,7 @@ class RTBot:
         logging.info(source + "-->RTBot: * " + emote)
         self.pluginInterface.fireEvent("onPrivateEmote", self.irclib, source, emote)
 
-    def onWhoisResult(self, nick, username, host, userinfo):
-        logging.info("WHOIS %s: HOST=%s, USERINFO=%s" % (nick, host, userinfo))
-        self.pluginInterface.fireEvent("onWhoisResult", self.irclib, nick, username, host, userinfo)
+    def onWhoResult(self, nick, user):
+        logging.info("WHO %s: USERNAME=%s, HOST=%s, USERINFO=%s" % (nick, user.username, user.host, user.userinfo))
+        self.pluginInterface.fireEvent("onWhoResult", self.irclib, nick, user)
         
