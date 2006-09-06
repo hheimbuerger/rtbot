@@ -141,7 +141,7 @@ class RTBot:
     def onPrivateMessage(self, source, message):
         logging.info(source + "-->RTBot: " + message)
         self.pluginInterface.fireEvent("onPrivateMessage", self.irclib, source, message)
-        elif(message == "quit"):
+        if(message == "quit"):
             logging.debug("received 'quit'")
             self.irclib.sendChannelMessage("'go")
             self.irclib.sendChannelMessage("Ok guys, gotta go. See ya!")
