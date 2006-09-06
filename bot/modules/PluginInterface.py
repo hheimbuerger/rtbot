@@ -67,6 +67,9 @@ class EventHandler:
         except Exception, exception:
             logging.exception("The plugin %s raised an exception in the eventhandler %s.", self.pluginWrapper.pluginName, self.eventName)
             raise PluginExceptionError(self.pluginWrapper, exception)
+            
+    def __str__(self):
+        return("%s handler for %s" % (self.eventName, self.pluginWrapper.pluginName))
 
 #---------------------------------------------------------------------------------
 #  PLUGIN
@@ -114,6 +117,8 @@ class PluginWrapper:
             self.putOffline()
         for wrapper in self.dependencies.values():
             wrapper.removeDependent(self)
+        # remove the handlers from the wrapper
+        self.handlers = []
         # remove module from sys.modules so that if/when the plugin is reloaded, 
         # it is not retrieved from the cache, but read from disk
         if self.module:
@@ -186,7 +191,9 @@ class PluginWrapper:
     @changesState
     def notifyDependencyStateChange(self):
         "Checks if our dependencies are online. Called by our dependencies when they change their state"
-        self.dependenciesOnline = reduce(operator.__and__, [plugin.online() for plugin in self.dependencies.values()], True)
+        something1 = [plugin.online() for plugin in self.dependencies.values()]
+        something2 = reduce(operator.__and__, something1, True)
+        self.dependenciesOnline = something2
 
     ## INTERNAL METHODS
     def putOnline(self):
@@ -259,7 +266,10 @@ class PluginWrapper:
                 self.handlers.append(handler)
         logging.debug("Found %i event handlers for plugin %s" % (len(self.handlers), self.pluginName))        
         
-        self.notifyDependencyChange( dict(zip( dependencyNames, [self.pluginInterface.handleDependency(dep) for dep in dependencyNames])) )
+        something1 = [self.pluginInterface.handleDependency(dep) for dep in dependencyNames]
+        something2 = zip( dependencyNames, something1)
+        something3 = dict( something2 )
+        self.notifyDependencyChange( something3 )
         if self.hasDependency(self.pluginName):
             raise PluginLoadError("Circular dependency error in %s" % (self.pluginName,))
 
@@ -454,7 +464,7 @@ class PluginInterface:
         
     def registerPlugin(self, pluginName, pluginWrapper):
         logging.info("Registering the plugin %s" % pluginName)
-        if pluginName in self.pluginWrappers:
+        if pluginName in self.pluginWrappers.keys():
             raise Exception("Tried to Register the same plugin twice")
         changes = { pluginName : pluginWrapper }
         for wrapper in self.pluginWrappers.values():
