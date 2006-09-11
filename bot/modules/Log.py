@@ -84,10 +84,12 @@ if(Settings.database_connection_string):
             logmessage = logrecord.msg % logrecord.args
             formattedTraceback = traceback.format_exception(exception.__class__.__name__, exception, tb)
             strTraceback = "".join(formattedTraceback)
-            if(type(exception.args[0]) == str):
-                strErrorMessage = exception.args[0]
-            else:
-                strErrorMessage = exception.args[0].args[0]
+            # DEBUG: removed becuase buggy
+            #if(type(exception.args[0]) == str):
+            #    strErrorMessage = exception.args[0]
+            #else:
+            #    strErrorMessage = exception.args[0].args[0]
+            strErrorMessage = "DEBUG! This error message has been removed. It's unclear how to retrieve it. This might help: %s" % (str(exception))
 
             #LoggedException._connection.debug = True
             sqlobject.sqlhub.processConnection = sqlobject.connectionForURI(Settings.database_connection_string)
