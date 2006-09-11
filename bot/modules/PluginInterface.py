@@ -113,8 +113,10 @@ class PluginWrapper:
         self.pluginInterface.unregisterPlugin(self.pluginName, self)
     
     def disposePluginObject(self):
-        if self.online():
-            self.putOffline()
+        #if self.online():
+        # DEBUG: CAN I ALWAYS CALL putOffline()? Because online() will never be true during a reload...
+        self.putOffline()
+            
         for wrapper in self.dependencies.values():
             wrapper.removeDependent(self)
         # remove the handlers from the wrapper
@@ -210,7 +212,7 @@ class PluginWrapper:
         "Deactivates the plugin"
         logging.info("Bringing plugin %s offline" % self.pluginName)
         for handler in self.handlers:
-            self.pluginInterface.unregisterEventHandler(handler)   
+            self.pluginInterface.unregisterEventHandler(handler)
         for plugin in self.dependents:
             plugin.notifyDependencyStateChange()
 
