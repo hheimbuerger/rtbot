@@ -15,28 +15,13 @@ class InsultPlugin:
   def getVersionInformation(self):
     return("$Id$")
 
-  def getCanonicalName(self, rawName):
-    # retrieve AuthenticationPlugin
-    authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-    if(authenticationPlugin == None):
-      logging.info("ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
-      return(rawName)
-    else:
-      return(authenticationPlugin.getCanonicalName(rawName))
-
-  def punish(self, irclib, name):
-    # retrieve AuthenticationPlugin
-    authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-    if(authenticationPlugin == None):
-      logging.info("ERROR: InsultPlugin didn't succeed at lookup of AuthenticationPlugin during execution of punish()")
-      return(False)
-    else:
-      authenticationPlugin.punish(irclib, name)
-      return(True)
-
   def listAll(self):
     for insult in self.insults:
       print insult
+
+  def getInsult(self, nick):
+    selected_insult = self.insults[int(random.random() * len(self.insults))]
+    return(nick + ", I have one thing to tell you: " + selected_insult)
 
   def insult(self, irclib, name):
     irclib.sendChannelMessage(self.getInsult(name))
@@ -45,14 +30,10 @@ class InsultPlugin:
     if((len(message.split()) >= 2) and (message.split()[0] == "insult")):
       name = message[7:]
       if(name.lower().find("bot") != -1):
-          self.insult(irclib, self.getCanonicalName(sender))
-          self.punish(irclib, sender)
+          self.insult(irclib, sender.getCanonicalNick())
+          sender.dataStore.setAttribute("isPunished", True)
       else:
           self.insult(irclib, name)
-
-  def getInsult(self, name):
-    selected_insult = self.insults[int(random.random() * len(self.insults))]
-    return(name + ", I have one thing to tell you: " + selected_insult)
 
 
 

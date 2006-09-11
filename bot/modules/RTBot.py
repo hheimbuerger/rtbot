@@ -66,12 +66,12 @@ class RTBot:
     
     def onConnected(self):
         logging.debug("connected")
-        self.irclib.sendPrivateMessage("Q@CServe.quakenet.org", "AUTH RTBot2 9wPfgFiH")
+        self.irclib.sendRawMsg("PRIVMSG %s :%s" % ("Q@CServe.quakenet.org", "AUTH RTBot2 9wPfgFiH"))
         self.irclib.joinChannel(self.channelname)
 
     def onJoinedChannel(self):
         # give your welcome message
-        self.irclib.sendChannelMessage("Hello, I'm your friendly RT-bot!")
+        self.irclib.sendChannelMessage("Hello, I'm your friendly RTBot!")
         
         # report plugin problems
         if(len(self.storedPluginErrors) > 0):
@@ -85,28 +85,28 @@ class RTBot:
         self.startOrRestartTimer()
 
     def onLeave(self, source, channel, reason):
-        logging.info("* " + source + " left channel " + channel + " (reason: " + reason + ")")
+        logging.info("* " + source.nick + " left channel " + channel + " (reason: " + reason + ")")
         self.pluginInterface.fireEvent("onLeave", self.irclib, source)
 
     def onQuit(self, source, reason):
-        logging.info("* Person left IRC: " + source + " (reason: " + reason + ")")
+        logging.info("* Person left IRC: " + source.nick + " (reason: " + reason + ")")
         self.pluginInterface.fireEvent("onQuit", self.irclib, source, reason)
 
     def onKick(self, source, target, reason, channel):
-        logging.info("* %s was kicked by %s for %s" % (target, source, reason))
+        logging.info("* %s was kicked by %s for %s" % (target.nick, source.nick, reason))
         self.pluginInterface.fireEvent("onKick", self.irclib, source, target, reason)
 
     def onChannelMode(self, source, flags, channel):
-        logging.info("* Channel mode changed: %s-->%s: %s" % (source, channel, flags))
+        logging.info("* Channel mode changed: %s-->%s: %s" % (source.nick, channel, flags))
         self.pluginInterface.fireEvent("onChannelMode", self.irclib, source, flags)
 
     def onUserMode(self, source, targets, flags, channel):
-        logging.info("* Mode changed: " + source + "-->" + str(targets) + "(" + channel + "): " + flags)
+        logging.info("* Mode changed: " + source.nick + "-->" + str(targets) + "(" + channel + "): " + flags)
         self.pluginInterface.fireEvent("onUserMode", self.irclib, source, targets, flags)
 
     # somebody else joins
     def onJoin(self, source, channel):
-        logging.info("* Person joined: " + source)
+        logging.info("* Person joined: " + source.nick)
         self.pluginInterface.fireEvent("onJoin", self.irclib, source)
 
     def onKeyboardInterrupt(self):
@@ -114,32 +114,36 @@ class RTBot:
         self.irclib.quit("'yr")
 
     def onChangeNick(self, source, target):
-        logging.info("* Nick changed: " + source + "-->" + target)
+        logging.info("* Nick changed: " + source + "-->" + target.nick)
         self.pluginInterface.fireEvent("onChangeNick", self.irclib, source, target)
 #        self.deliverMessages(target)
 
     def onNotice(self, source, message):
-        logging.info("incoming NOTICE: " + message)
+        logging.info("incoming NOTICE from %s: %s" % (source.nick, message))
         self.pluginInterface.fireEvent("onNotice", self.irclib, source, message)
+
+    def onExternalNotice(self, sourceNick, message):
+        logging.info("incoming EXTERNAL NOTICE from %s: %s" % (sourceNick, message))
+        self.pluginInterface.fireEvent("onExternalNotice", self.irclib, sourceNick, message)
 
     def onChannelMessage(self, source, message, channel):
         # ============= DEBUG ===============
         if(message == "list"):
             list = []
-            for (name, data) in self.irclib.getUserList().userList.items():
-                list.append((name, data.mode, data.id))
+            for (nick, user) in self.irclib.getUserList().items():
+                list.append((nick, user.mode))
             self.irclib.sendChannelMessage(list)
             return
-        logging.info(source + "-->#: " + message)
+        logging.info(source.nick + "-->#: " + message)
         self.pluginInterface.fireEvent("onChannelMessage", self.irclib, source, message)
         # ============= DEBUG ===============
 
     def onChannelEmote(self, source, emote):
-        logging.info(source + "-->#: * " + emote)
+        logging.info(source.nick + "-->#: * " + emote)
         self.pluginInterface.fireEvent("onChannelEmote", self.irclib, source, emote)
 
     def onPrivateMessage(self, source, message):
-        logging.info(source + "-->RTBot: " + message)
+        logging.info(source.nick + "-->RTBot: " + message)
         self.pluginInterface.fireEvent("onPrivateMessage", self.irclib, source, message)
         if(message == "quit"):
             logging.debug("received 'quit'")
@@ -147,11 +151,38 @@ class RTBot:
             self.irclib.sendChannelMessage("Ok guys, gotta go. See ya!")
             self.irclib.quit("'yr")
 
+    def onExternalPrivateMessage(self, sourceNick, message):
+        logging.info(source.nick + "(EXTERNAL)-->RTBot: " + message)
+        self.pluginInterface.fireEvent("onExternalPrivateMessage", self.irclib, sourceNick, message)
+
     def onPrivateEmote(self, source, emote):
-        logging.info(source + "-->RTBot: * " + emote)
+        logging.info(source.nick + "-->RTBot: * " + emote)
         self.pluginInterface.fireEvent("onPrivateEmote", self.irclib, source, emote)
 
-    def onWhoResult(self, nick, user):
-        logging.info("WHO %s: USERNAME=%s, HOST=%s, USERINFO=%s" % (nick, user.username, user.host, user.userinfo))
-        self.pluginInterface.fireEvent("onWhoResult", self.irclib, nick, user)
+    def onExternalPrivateEmote(self, sourceNick, emote):
+        logging.info(source.nick + "(EXTERNAL)-->RTBot: * " + emote)
+        self.pluginInterface.fireEvent("onExternalPrivateEmote", self.irclib, sourceNick, emote)
+
+    def onChannelTopicChange(self, source, topic):
+        logging.info("TOPIC %s: %s" % (source.nick, topic))
+        self.pluginInterface.fireEvent("onChannelTopicChange", self.irclib, source, topic)
         
+    def onWhoResult(self, user):
+        logging.info("WHO %s: USERNAME=%s, HOST=%s, USERINFO=%s" % (user.nick, user.username, user.host, user.userinfo))
+        self.pluginInterface.fireEvent("onWhoResult", self.irclib, user)
+
+    def onExternalWhoResult(self, nick, username, host, userinfo):
+        logging.info("EXTERNAL WHO %s: USERNAME=%s, HOST=%s, USERINFO=%s" % (nick, username, host, userinfo))
+        self.pluginInterface.fireEvent("onExternalWhoResult", self.irclib, nick, username, host, userinfo)
+
+    def onWhoisResult(self, user):
+        logging.info("WHOIS %s: USERNAME=%s, HOST=%s, USERINFO=%s" % (user.nick, user.username, user.host, user.userinfo))
+        self.pluginInterface.fireEvent("onWhoisResult", self.irclib, user)
+
+    def onExternalWhoisResult(self, nick, username, host, userinfo):
+        logging.info("EXTERNAL WHOIS %s: USERNAME=%s, HOST=%s, USERINFO=%s" % (nick, username, host, userinfo))
+        self.pluginInterface.fireEvent("onExternalWhoisResult", self.irclib, nick, username, host, userinfo)
+
+    def onServerMessage(self, source, message):
+        logging.info("incoming system message NOTICE from %s: %s" % (source, message))
+        # we won't forward this to plugins, they are most probably not yet loaded in this state anyway

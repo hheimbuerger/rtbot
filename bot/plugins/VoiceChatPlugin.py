@@ -5,7 +5,7 @@ class VoiceChatPlugin:
     import csv, os, pickle, exceptions
     
     vcDialects = {}
-    DialectPreferences = {"test":"default"}
+    DialectPreferences = {"test": "default"}
     PreferenceFilename = "resources/VCDialectPreferences.lst"
     
     def __init__(self, pluginInterface):
@@ -32,15 +32,6 @@ class VoiceChatPlugin:
 
     def getVersionInformation(self):
         return("$Id$")
-
-    def getCanonicalName(self, rawName):
-        # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-        if(authenticationPlugin == None):
-            logging.info("ERROR: VoiceChatPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
-            return(rawName)
-        else:
-            return(authenticationPlugin.getCanonicalName(rawName))
 
     # Note: SetVCDialectPreference does not check whether the dialect exists or not.
     def SetVCDialectPreference(self, user, dialect):
@@ -101,7 +92,7 @@ class VoiceChatPlugin:
             messageWords = msg.split()
             command = messageWords[0]
             numTokens = len(messageWords)
-            user = self.getCanonicalName(source)
+            user = source.getCanonicalNick()
         
             # vc 'XXX - either fetch dialect from preference or use default
             if numTokens == 2 and command == "vc":

@@ -27,7 +27,66 @@ Linux:
 
 ===========================================================================================================
 
+Terminology: [needs improvement]
+  - nick: the unique id of a current user in the channel
+  - user: the object to a nick currently in the channel -- users are always associated to nicks but can link to names!
+  - account: an account of a user that can be in the channel or not
+  - name: the unique id of a user that can be in the channel or not -- names are always associated to accounts and aren't linked to nicks (forwards)
+ 
+REMARK: Names should be persistently treated as unique user identifiers. If a user with a known name shows up,
+he's expected to treated as the user who previously had this name. Users switching names is unsupported behaviour
+and doesn't have to be handled by the plugins.
+
+===========================================================================================================
+
+Known user attributes:
+(Documentation of the attributes associated with the user object of a nick.)
+  - timeOfLastWhoAttempt [temporary]: used to give the user a grace period to auth by password or
+                                      hostmask before he's put under MODE control
+  - numberOfWhoAttempts [temporary]: that many times I try to WHO you before I give up trying to get
+                                     a result and just put you under MODE control without a hostmask
+                                     (can happen when you change nicks between me issuing a WHO and me
+                                     retrieving the WHO result)
+  - authedAs: the account name I could auth you to by password or hostmask, the existence of this attribute
+              means the last auth attempt (by password or hostmask) was successful
+  - authedByPassword: the (encrypted) password you gave me, the existence of this attribute means the last
+              auth attempt by password was successful
+  - timeOfLastAuth: (datetime) ...
+  - isPunished: (Boolean) are you currently in punish mode?
+  - isMuted: (Boolean) are you currently muted?
+  - group: (String, but shouldn't be set to a value outside the constants in AuthenticationPlugin::UserAccount)
+           the permission group I could associate you with
+  - passwordSetAuthorization: (dictionary) set when one user grants another to set a password, contains
+                              the keys "timestamp", "account" and "sender"
+
+===========================================================================================================
+
+Event handler signatures:
+
+def onJoin(self, irclib, source):
+def onChangeNick(self, irclib, source, target):
+def onLeave(self, irclib, source):				 	# called *before* user list update!
+def onKick(self, irclib, source, target, reason):	# called *before* user list update!
+def onQuit(self, irclib, source, reason):			# called *before* user list update!
+def onChannelMode(self, irclib, source, flags):
+def onUserMode(self, irclib, source, targets, flags):
+def onNotice(self, irclib, source, message):
+def onChannelMessage(self, irclib, source, message):
+def onChannelEmote(self, irclib, source, emote):
+def onPrivateMessage(self, irclib, source, message):
+def onPrivateEmote(self, irclib, source, emote):
+def onChannelTopicChange(source, irclib, topic):
+def onWhoResult(self, irclib, user):
+def onWhoisResult(self, irclib, user):
+
+===========================================================================================================
+
 The database connection (activated by entering a connection string in Settings.database_connection_string)
 requires MySQLdb (http://sourceforge.net/projects/mysqldb) and SQLObject (http://www.sqlobject.org/). It
 is not necessary for running the bot, though (and deactivated by default).
 
+
+
+
+/notice RTBotTest authenticate Cort tufer
+#RollingThunder.development

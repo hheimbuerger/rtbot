@@ -13,16 +13,7 @@ class HumanBehaviourPlugin:
     
   @classmethod
   def getDependencies(self):
-      return(["AuthenticationPlugin", "InsultPlugin"])
-
-  def getCanonicalName(self, rawName):
-	# retrieve AuthenticationPlugin
-	authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-	if(authenticationPlugin == None):
-	  logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
-	  return(rawName)
-	else:
-	  return(authenticationPlugin.getCanonicalName(rawName))
+      return(["InsultPlugin"])
 
   def insult(self, irclib, name):
 	# retrieve InsultPlugin
@@ -75,7 +66,7 @@ class HumanBehaviourPlugin:
 	elif(msg.lower() == "'yb" or msg.lower() == "`yb"):
 		irclib.sendChannelMessage("'yb")
 	elif(msg.lower() == "'yr" or msg.lower() == "`yr"):
-		irclib.sendChannelMessage("See ya, " + self.getCanonicalName(source) + "!")
+		irclib.sendChannelMessage("See ya, " + source.getCanonicalNick() + "!")
 	elif(msg.lower() == "'ym" or msg.lower() == "`ym"):
 		irclib.sendChannelMessage("'yt")
 	elif(msg.lower() == "'gl" or msg.lower() == "`gl"):
@@ -102,7 +93,7 @@ class HumanBehaviourPlugin:
 #		if((msg.lower().find("'yh") != -1) or (msg.lower().find("sup") != -1)):
 #			irclib.sendChannelMessage("'yh! I'm fine. How about you?")
 #		else:
-#			irclib.sendChannelMessage("Hey " + self.getCanonicalName(source) + ", did you just say my name?")
+#			irclib.sendChannelMessage("Hey " + source.getCanonicalNick() + ", did you just say my name?")
 #			self.saidMyNameLastMessage[source] = True
 #		elif(self.getCanonicalName(source).lower().find("denga") != -1):
 #			irclib.sendChannelEmote("closes his eyes and sings: bla bla bla, bla blaaaaa")

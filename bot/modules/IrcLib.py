@@ -112,36 +112,46 @@ class LowlevelIrcLib:
             for line in self.splitLongMessages(msg):
                 self.sendRawMsg("PRIVMSG %s :\x0310%s" % (self.channel, line))
 
+    # target: User object
     def sendPrivateMessage(self, target, msg):
-        if(str(target).lower() == "none"):
+        if(str(target.nick).lower() == "none"):
             logging.debug(
                 "========================================\n"
                 "TRIED TO PM 'NoNe'!\n"
                 "========================================")
             raise Exception("TRIED TO PM 'NoNe'!")
-        logging.info("%s-->%s: %s" % (self.nickname, target, msg))
+        logging.info("%s-->%s: %s" % (self.nickname, target.nick, msg))
         for line in self.splitLongMessages(msg):
-            self.sendRawMsg("PRIVMSG %s :%s" % (target, line))
+            self.sendRawMsg("PRIVMSG %s :%s" % (target.nick, line))
 
+    # target: User object
     def sendPrivateNotice(self, target, msg):
         for line in self.splitLongMessages(msg):
-            self.sendRawMsg("NOTICE %s :%s" % (target, line))
+            self.sendRawMsg("NOTICE %s :%s" % (target.nick, line))
+
+    # target: nick
+    def sendExternalNotice(self, targetNick, msg):
+        for line in self.splitLongMessages(msg):
+            self.sendRawMsg("NOTICE %s :%s" % (targetNick, line))
 
     def sendChannelEmote(self, emote):
         logging.info("%s-->#: * %s" % (self.nickname, emote))
         self.sendRawMsg("PRIVMSG %s :\x01ACTION %s\x01" % (self.channel, emote))
 
+    # target: User object
     def sendPrivateEmote(self, target, emote):
-        logging.info("%s-->%s: * %s" % (self.nickname, target, emote))
-        self.sendRawMsg("PRIVMSG %s :\x01ACTION %s\x01" % (target, emote))
-        
+        logging.info("%s-->%s: * %s" % (self.nickname, target.nick, emote))
+        self.sendRawMsg("PRIVMSG %s :\x01ACTION %s\x01" % (target.nick, emote))
+
+    # targets: List of strings (nicks)
     def setModes(self, flagModifiers, targets):
-        for startingIndex in range(0, len(targets), 6):
-            currentFlagModifiers = flagModifiers[startingIndex*2:(startingIndex+6)*2]
-            currentTargets = targets[startingIndex:(startingIndex+6)]
-            logging.info("* Mode changed: %s %s" % (currentFlagModifiers, currentTargets))
-            self.sendRawMsg("MODE %s %s %s" % (self.channel, currentFlagModifiers, string.join(currentTargets, " ")))
-            self.userLists[self.channel].onMode(self.nickname, currentTargets, currentFlagModifiers, self.channel)
+        if(self.getUserList()[self.nickname].hasOp()):
+            for startingIndex in range(0, len(targets), 6):
+                currentFlagModifiers = flagModifiers[startingIndex*2:(startingIndex+6)*2]
+                currentTargets = targets[startingIndex:(startingIndex+6)]
+                logging.info("* Mode changed: %s %s" % (currentFlagModifiers, currentTargets))
+                self.sendRawMsg("MODE %s %s %s" % (self.channel, currentFlagModifiers, string.join(currentTargets, " ")))
+                self.userLists[self.channel].onMode(self.nickname, currentTargets, currentFlagModifiers, self.channel)
 
 #    def setUserMode(self, flags, target):
 #        assert re.match(r"[-+][diRwx]", flags) # available quakenet user modes
@@ -155,20 +165,23 @@ class LowlevelIrcLib:
         logging.info("* Mode changed: %s %s-->%s" % (self.channel, target, flags))
         self.sendRawMsg("MODE %s %s %s" % (self.channel, flags, target))
 
+    # target: User object
     def kick(self, target, reason):
-        self.sendRawMsg("KICK %s %s :%s" % (self.channel, target, reason))
+        self.sendRawMsg("KICK %s %s :%s" % (self.channel, target.nick, reason))
 
+    # target: User object
 #    @requirePrivileges
-    def unOp(self, name):
-        self.setChannelMode("-o", name)
+#    def unOp(self, target):
+#        self.setChannelMode("-o", target.nick)
 
-    def isOp(self, target = None):
-        if(target == None):
-            target = self.nickname
-        return(self.userLists[self.channel].areAllFlagsSet(target, 'o'))
+#    def isOp(self, target = None):
+#        if(target == None):
+#            target = self.nickname
+#        return(self.userLists[self.channel].areAllFlagsSet(target, 'o'))
     
+    # target: User object
     def doWho(self, target):
-        self.sendRawMsg("WHO %s" % (target))
+        self.sendRawMsg("WHO %s" % (target.nick))
 
     def setChannelTopic(self, topic):
         self.sendRawMsg("TOPIC %s :%s" % (self.channel, topic))
@@ -220,12 +233,17 @@ class LowlevelIrcLib:
         elif(command == "376"):        # End of /MOTD command
             self.eventTarget.onConnected()
         elif(command == "MODE"):
-            if(len(arguments) > 2):
-                self.userLists[self.channel].onMode(source, arguments[2:], arguments[1], arguments[0])
-                self.eventTarget.onUserMode(source, arguments[2:], arguments[1], arguments[0])
-            else:
+            # if the first character of the target argument is a #, then it's a channel MODE, otherwise a user MODE
+            if(arguments[0][0] == '#' and len(arguments)==2):
                 self.requestChannelModesUpdate()
-                self.eventTarget.onChannelMode(source, arguments[1], arguments[0])
+                self.eventTarget.onChannelMode(self.getUserList()[source], arguments[1], arguments[0])
+            elif((arguments[0] == self.nickname) or (arguments[1] == self.nickname)):
+                # sometimes, servers are MODEing users for registration even before they have joined a channel
+                # we'll ignore those
+                pass
+            else:
+                self.userLists[self.channel].onMode(source, arguments[2:], arguments[1], arguments[0])
+                self.eventTarget.onUserMode(self.getUserList()[source], arguments[2:], arguments[1], arguments[0])
         elif(command == "324"):
             if(len(arguments) > 2):
                 self.channelModes = arguments[2]
@@ -239,7 +257,9 @@ class LowlevelIrcLib:
             # Finished new list
             self.receivingNAMESResult = False
             self.userLists[self.channel].rebuildUserList(self.namesBuffer)
-            for user in self.userLists[self.channel].getPureList():
+            for user in self.userLists[self.channel].values():
+                user.dataStore.setAttribute("timeOfLastWhoAttempt", datetime.datetime.utcnow())
+                user.dataStore.setAttribute("numberOfWhoAttempts", 1)
                 self.doWho(user)
             self.namesBuffer = []
         elif(command == "433"):     #Nickname is already in use.
@@ -253,9 +273,10 @@ class LowlevelIrcLib:
                 unknown = arguments[6]
                 userinfo = trailing[2:]
                 self.userLists[self.channel].reportWho(nick, username, host, userinfo)
-                user = self.userLists[self.channel].getUser(nick)
-                if(user):        # the user might have signed off already!
-                    self.eventTarget.onWhoResult(nick, user)
+                if(self.getUserList().has_key(nick)):        # the user might have left the channel already!
+                    self.eventTarget.onWhoResult(self.getUserList()[nick])
+                else:
+                    self.eventTarget.onExternalWhoResult(nick, username, host, userinfo)
             else:
                 logging.debug("Error: WHOIS response with less than four arguments!")
         elif(command == "311"):            # first part of a WHOIS result, 2nd part is channels as 319, 3rd part is server as 312, 4th part is idle time as 317, 5th part is EOL as 318
@@ -266,66 +287,82 @@ class LowlevelIrcLib:
                 unknown = arguments[4]
                 userinfo = trailing
                 self.userLists[self.channel].reportWhois(nick, username, host, userinfo)
-                self.eventTarget.onWhoisResult(nick, username, host, userinfo)
+                if(self.getUserList().has_key(nick)):        # the user might have left the channel already!
+                    self.eventTarget.onWhoisResult(self.getUserList()[nick])
+                else:
+                    self.eventTarget.onExternalWhoisResult(nick, username, host, userinfo)
             else:
                 logging.debug("Error: WHOIS response with less than four arguments!")
         elif(command == "401"):        # WHOIS: "no such nick"
             nick = arguments[1]
             logging.debug("WHOIS: no such nick (%s)" % (nick))
-            self.eventTarget.onWhoisResult(nick, None, None, None)
+            #self.eventTarget.onWhoisResult(self.getUserList()[nick])
         elif(command == "NOTICE"):
             # IRC nick names are not case sensitive. Neither are channel names
             if(arguments[0].lower() == self.nickname.lower()):
-                #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
-                self.eventTarget.onNotice(source, trailing)
+                # if the notice contains a dot (e.g. underworld.no.quakenet.org) then we assume the message
+                # comes from the IRC server, because at least Quakenet doesn't allow dots in nicknames
+                if(not self.getUserList()):
+                    self.eventTarget.onServerMessage(source, trailing)
+                elif(self.getUserList().has_key(source)):
+                    self.eventTarget.onNotice(self.getUserList()[source], trailing)
+                else:
+                    self.eventTarget.onExternalNotice(source, trailing)
         elif(command == "PRIVMSG"):
             # IRC nick names are not case sensitive. Neither are channel names
             if(arguments[0].lower() == self.nickname.lower()):
                 #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
                 if((trailing[:8] == "\x01ACTION ") and (trailing[-1] == "\x01")):
-                    self.eventTarget.onPrivateEmote(source, trailing[8:-1])
+                    if(self.getUserList().has_key(source)):
+                        self.eventTarget.onPrivateEmote(self.getUserList()[source], trailing[8:-1])
+                    else:
+                        self.eventTarget.onExternalPrivateEmote(source, trailing[8:-1])
                 else:
-                    self.eventTarget.onPrivateMessage(source, trailing)
+                    if(self.getUserList().has_key(source)):
+                        self.eventTarget.onPrivateMessage(self.getUserList()[source], trailing)
+                    else:
+                        self.eventTarget.onExternalPrivateMessage(self.getUserList()[source], trailing)
             elif(arguments[0].lower() == self.channel.lower()):
                 #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
                 if((trailing[:8] == "\x01ACTION ") and (trailing[-1] == "\x01")): 
-                    self.eventTarget.onChannelEmote(source, trailing[8:-1])
+                    self.eventTarget.onChannelEmote(self.getUserList()[source], trailing[8:-1])
                 else:
-                    self.eventTarget.onChannelMessage(source, trailing, arguments[0])
+                    self.eventTarget.onChannelMessage(self.getUserList()[source], trailing, arguments[0])
             else:
                 logging.error("Received a message not meant for me! arguments: %s. source: %s. trailing: %s" % (arguments, source, trailing))
         elif(command == "JOIN"):
             if(source == self.nickname):
                 self.eventTarget.onJoinedChannel()
             else:
-                self.doWho(source)
                 self.userLists[self.channel].onJoin(source, arguments[0])
-                self.eventTarget.onJoin(source, arguments[0])
+                self.doWho(self.userLists[self.channel][source])
+                self.eventTarget.onJoin(self.getUserList()[source], arguments[0])
             self.requestChannelModesUpdate()
         elif(command == "NICK"):
             self.userLists[self.channel].onChangeNick(source, trailing)
-            self.eventTarget.onChangeNick(source, trailing)
+            self.eventTarget.onChangeNick(source, self.getUserList()[trailing])
         elif(command == "PART"):
             if(trailing == None):
+                self.eventTarget.onLeave(self.getUserList()[source], arguments[0], "")
                 self.userLists[self.channel].onLeave(source, arguments[0], "")
-                self.eventTarget.onLeave(source, arguments[0], "")
             else:
+                self.eventTarget.onLeave(self.getUserList()[source], arguments[0], trailing)
                 self.userLists[self.channel].onLeave(source, arguments[0], trailing)
-                self.eventTarget.onLeave(source, arguments[0], trailing)
         elif(command == "QUIT"):
+            self.eventTarget.onQuit(self.getUserList()[source], trailing)
             self.userLists[self.channel].onQuit(source, trailing)
-            self.eventTarget.onQuit(source, trailing)
         elif(command == "KICK"):
             if(arguments[0] == self.channel and arguments[1] == self.nickname):
                 channel = self.channel
                 self.channel = None
                 self.joinChannel(channel)
             else:
+                self.eventTarget.onKick(self.getUserList()[source], self.getUserList()[arguments[1]], trailing, arguments[0])
                 self.userLists[self.channel].onKick(source, arguments[1], trailing, arguments[0])
-                self.eventTarget.onKick(source, arguments[1], trailing, arguments[0])
         elif(command == "TOPIC"):
             if(arguments[0] == self.channel):
                 self.channelTopic = trailing
+                self.eventTarget.onChannelTopicChange(self.getUserList()[source], arguments[0])
             else:
                 raise IrcError("IrcError: unrecognised incoming TOPIC message!")
         elif(command == "ERROR"):

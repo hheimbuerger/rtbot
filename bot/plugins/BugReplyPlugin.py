@@ -3,23 +3,12 @@ import random, logging
 class BugReplyPlugin:
   replies = []
   
-  def __init__(self, pluginInterface):
-    self.pluginInterfaceReference = pluginInterface
-
+  def __init__(self):
     file = open("resources/bug_replies.txt", "r")
     lines = file.readlines()
     file.close()
     for a in lines:
       self.replies.append(a.strip())
-
-  def getCanonicalName(self, rawName):
-    # retrieve AuthenticationPlugin
-    authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-    if(authenticationPlugin == None):
-      logging.info("ERROR: HumanBehaviourPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
-      return(rawName)
-    else:
-      return(authenticationPlugin.getCanonicalName(rawName))
 
   def getVersionInformation(self):
     return("$Id$")
@@ -37,7 +26,7 @@ class BugReplyPlugin:
 
   def getReply(self, name):
     selected_reply = self.replies[int(random.random() * len(self.replies))]
-    return(self.getCanonicalName(name) + ", " + selected_reply)
+    return(name.getCanonicalNick() + ", " + selected_reply)
 
 if __name__ == "__main__":
   replies = BugReplyPlugin()

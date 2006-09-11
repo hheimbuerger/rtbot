@@ -1,25 +1,104 @@
 import string
+import UserDict
+import re
 #from modules import LogLib
 
 
 
-class UserList:
+
+
+class UserDataStore:
     def __init__(self):
-        self.shouldBeUpToDate = False
-        self.userList = {}
+        self.attributes = {}
+        
+    def hasAttribute(self, key):
+        return(self.attributes.has_key(key))
+        
+    def getAttribute(self, key):
+        return(self.attributes[key])
+    
+    def getAttributeDefault(self, key, default=None):
+        try:
+            return(self.attributes[key])
+        except KeyError:
+            return(default)
+
+    def setAttribute(self, key, value):
+        self.attributes[key] = value
+
+    # ignored if the key doesn't exist
+    def removeAttribute(self, key):
+        if(self.attributes.has_key(key)):
+            del self.attributes[key]
+
+
+
+
+
+class User:
+    lastAssignedID = 0
+    
+    def __init__(self, nick, mode = ""):
+        User.lastAssignedID += 1
+        self.id = User.lastAssignedID
+        self.nick = nick
+        self.mode = mode
+        self.username = None
+        self.host = None
+        self.userinfo = None
+        self.dataStore = UserDataStore()
+        
+    def getCanonicalNick(self):
+        # (\S+?)(?:\[.*?\]|\|.*?|_{1,2})
+        pattern =(r"^"          # nothing in front of this
+                  r"(\S+?)"     # username, followed by
+                  r"(?:\[.*?\]" # [....] or
+                  r"|\|.*?"     # |..... or
+                  r"|_{1,2})"   # _ or __
+                  r"$")         # nothing after this
+        result = re.match(pattern, self.nick)
+        if(result):
+            return(result.group(1))
+        else:
+            return(self.nick)
+
+    # Boolean: has the user been authed (group is irrelevant)?
+    def isAuthed(self):
+        return(self.dataStore.getAttributeDefault("authedAs", "") != "")
+    
+    # Boolean: has the user been authed as an admin?
+    def isAdmin(self):
+        return(self.isAuthed() and self.dataStore.getAttribute("group") == "admin")
+    
+    def getName(self):
+        return(self.dataStore.getAttributeDefault("authedAs"))
+    
+    def hasOp(self):
+        return(self.mode.find("o") != -1)
+    
+    def hasVoice(self):
+        return(self.mode.find("v") != -1)
+    
+
+
+
+
+class UserList(UserDict.IterableUserDict):
+    def __init__(self):
+        self.data = {}
 
 
 
     # ==========================================================================
     # for the IRCLib:
     def onLeave(self, source, channel, reason):
-        del self.userList[source]
+        del self.data[source]
 
     def onQuit(self, source, reason):
-        del self.userList[source]
+        del self.data[source]
 
     def onKick(self, source, target, reason, channel):
-        del self.userList[target]
+        del self.data[target]
 
     def onMode(self, source, targets, flagstring, channel):
         currentMode = '+'
@@ -33,88 +112,136 @@ class UserList:
                 #LogLib.log.add(LogLib.LOGLVL_DEBUG, str(currentTargetIndex))
                 #LogLib.log.add(LogLib.LOGLVL_DEBUG, str(targets))
                 #LogLib.log.add(LogLib.LOGLVL_DEBUG, str(targets[currentTargetIndex]))
-                #LogLib.log.add(LogLib.LOGLVL_DEBUG, str(self.userList[targets[currentTargetIndex]]))
+                #LogLib.log.add(LogLib.LOGLVL_DEBUG, str(self.data[targets[currentTargetIndex]]))
                 if(currentTargetIndex < len(targets)):
                     if currentMode == '+':
-                        if(not char in self.userList[targets[currentTargetIndex]][0]):
-                            self.userList[targets[currentTargetIndex]][0] += char
+                        if(not char in self.data[targets[currentTargetIndex]].mode):
+                            self.data[targets[currentTargetIndex]].mode += char
                             currentTargetIndex += 1
                     else:
-                        if(char in self.userList[targets[currentTargetIndex]][0]):
-                            self.userList[targets[currentTargetIndex]][0] = string.join([x for x in self.userList[targets[currentTargetIndex]][0] if x!=char], "")
+                        if(char in self.data[targets[currentTargetIndex]].mode):
+                            self.data[targets[currentTargetIndex]].mode = string.join([x for x in self.data[targets[currentTargetIndex]].mode if x!=char], "")
                             currentTargetIndex += 1
 
     def onJoin(self, source, channel):
-        self.userList[source] = ["", None, None, None]
+        self.data[source] = User(source)
 
     def onChangeNick(self, source, target):
-        self.userList[target] = self.userList[source]
-        del self.userList[source]
-        
+        self.data[target] = self.data[source]
+        self.data[target].nick = target
+        del self.data[source]
+
     def rebuildUserList(self, namesBuffer):
-        self.userList = {}
+        self.data = {}
         for list in namesBuffer:
-            for user in list.split(" "):
-                if(user[0] == "@"):
-                    self.userList[user[1:]] = ["o", None, None, None]
-                elif(user[0] == "+"):
-                    self.userList[user[1:]] = ["v", None, None, None]
+            for name in list.split(" "):
+                if(name[0] == "@"):
+                    self.data[name[1:]] = User(name[1:], "o")
+                elif(name[0] == "+"):
+                    self.data[name[1:]] = User(name[1:], "v")
                 else:
-                    self.userList[user] = ["", None, None, None]
+                    self.data[name] = User(name)
 
     def reportWhois(self, nick, username, host, userinfo):
-        if(nick in self.userList):
-            self.userList[nick][1] = username
-            self.userList[nick][2] = host
-            self.userList[nick][3] = userinfo
+        if(nick in self.data):
+            self.data[nick].username = username
+            self.data[nick].host = host
+            self.data[nick].userinfo = userinfo
 
+    def reportWho(self, nick, username, host, userinfo):
+        if(nick in self.data):
+            self.data[nick].username = username
+            self.data[nick].host = host
+            self.data[nick].userinfo = userinfo
 
+    # ===========================================================================================
+    # NEW ACCESS FUNCTIONS
+    # ===========================================================================================
+    
+    # Boolean:
+    def isOnline(self, nick):
+        return(self.data.has_key(nick))
+        
+    # String or Exception:
+#    def findByNick(self, nick):
+#        if()
+    
+    # String or None:
+#    def findByNickDefault(self, nick, default = None):
+#        pass
+    
+    # String or Exception
+    def findByName(self, name):
+        user = self.findByNameDefault(name)
+        if(user):
+            return(user)
+        else:
+            raise KeyError("UserList::findByNick(): Couldn't find a user who has authed as '%s'." % (name))
+    
+    # String or None:
+    def findByNameDefault(self, name, default = None):
+        for (nick, user) in self.data.items():
+            authedAs = user.dataStore.getAttributeDefault("authedAs")
+            if(authedAs and authedAs == name):
+                return(user)
+        return(None)
 
 
 
     # ==========================================================================
     # for the plugins:
-    def getFlags(self, user):
-        return(self.userList[user][0])
+    #def getFlags(self, user):
+    #    return(self.data[user].mode)
     
     
     
-    def getAuthData(self, nick):
-        if(nick in self.userList):
-            (flags, username, host, userinfo) = self.userList[nick]
-            return(username, host, userinfo)
-        else:
-            return(None, None, None)
-
     
+#    def getAuthData(self, nick):
+#        if(nick in self.data):
+#            return(self.data[nick].username, self.data[nick].host, self.data[nick].userinfo)
+#        else:
+#            return(None, None, None)
+            
+            
     
-    def areAllFlagsSet(self, user, flags):
-        if(user in self.userList):
-            for flag in flags:
-                if(not (flag in self.userList[user][0])):
-                    return(False)
-            return(True)
-        else:        # WARNING: areAllFlagsSet also returns False if the person is not known
-            return(False)
+#    def getUser(self, nick):
+#        if(self.data.has_key(nick)):
+#            return(self.data[nick])
+#        else:
+#            return(None)
 
 
 
-    def getDictionaryWithFlags(self):        # returns {"abc" ==> 'o', "def" ==> 'v', "ghi" ==> ''}
-        result = {}
-        for (user, (flags, username, host, userinfo)) in self.userList.items():
-            result[user] = flags
-        return(result)
-    
-    
-    
-    def getPureList(self):           # returns ["abc", "def", "ghi"]
-        result = []
-        for (user, (flags, username, host, userinfo)) in self.userList.items():
-            result.append(user)
-        return(result)
+#    def areAllFlagsSet(self, user, flags):
+#        if(user in self.data):
+#            for flag in flags:
+#                if(not (flag in self.data[user].mode)):
+#                    return(False)
+#            return(True)
+#        else:        # WARNING: areAllFlagsSet also returns False if the person is not known
+#            return(False)
 
-        
-        
-    def getRawDictionary(self):
-        return(self.userList)
+
+
+#    def getDictionaryWithFlags(self):        # returns {"abc" ==> 'o', "def" ==> 'v', "ghi" ==> ''}
+#        result = {}
+#        for (name, user) in self.data.items():
+#            result[name] = user.mode
+#        return(result)
     
+    
+    
+#    def getPureList(self):           # returns ["abc", "def", "ghi"]
+#        return(self.data.keys())
+
+
+    
+#    def getIdByNick(self, nick):
+#        if(self.data.has_key(nick)):
+#            return(self.data[nick].id)
+#        else:
+#            return(0)
+
+
+
+

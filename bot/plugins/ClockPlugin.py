@@ -24,9 +24,9 @@ class ClockPlugin:
 
         # initialise
         self.loadTimezones()
-        
 
-    
+
+
     def dispose(self):
         if(self.isRefreshRunning):
             self.isRefreshRunning = False
@@ -194,7 +194,7 @@ class ClockPlugin:
         self.refreshFinishedEvent = threading.Event()
         self.isRefreshRunning = True
         thread.start_new_thread(self.refreshTimezones, ())
-        
+
 
 
     def getTime(self, modifier, basetime = False):        # basetime==False-->current time, otherwise basetime has to be a datetime.datetime

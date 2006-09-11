@@ -25,19 +25,6 @@ class RespectahPlugin:
     def getVersionInformation(self):
         return("$Id: RespectahPlugin.py 260 2006-05-23 22:37:56Z Ksero $")
 
-    @classmethod
-    def getDependencies(self):
-        return(["AuthenticationPlugin"])
-
-    def isFriend(self, irclib, name):
-        # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-        if(authenticationPlugin == None):
-          logging.info("ERROR: RespectahPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
-          return(False)
-        else:
-          return(authenticationPlugin.isFriend(irclib, name))
-
     def printCurrentList(self, irclib, user, attribute):
         if(self.data.has_key(user)):
             if(self.data[user].has_key(attribute)):
@@ -55,19 +42,27 @@ class RespectahPlugin:
     
     def setValue(self, user, attribute, target, op):
         currentValue = self.data.setdefault(user, {}).setdefault(attribute, {}).setdefault(target, 0)
-        self.data[user][attribute][target] = currentValue + op
+        if(currentValue + op == 0):
+            del self.data[user][attribute][target]
+            if(len(self.data[user][attribute]) == 0):
+                del self.data[user][attribute]
+                if(len(self.data[user]) == 0):
+                    del self.data[user]
+        else:
+            self.data[user][attribute][target] = currentValue + op
         self.saveList()
 
     def getValue(self, user, attribute, target, op):
         return(self.data.get(user, {}).get(attribute, {}).get(target, 0))
 
     def onChannelMessage(self, irclib, source, message):
-        auth = self.isFriend(irclib, source)
-        if(auth):
+        if(source.isAuthed()):
+            name = source.dataStore.getAttribute("authedAs")
+            
             # "list respect"
             if((len(message.split()) >= 2) and (message.split()[0] == "list")):
                 attribute = message.split()[1]
-                self.printCurrentList(irclib, auth, attribute)
+                self.printCurrentList(irclib, name, attribute)
 
             # "self.respect(something)++"
             result = RespectahPlugin.commandRE.search(message)
@@ -76,13 +71,13 @@ class RespectahPlugin:
                 attribute = result.group(2)
                 target = result.group(3)
                 operation = result.group(4)
-                if((object == auth) or (object == "self")):
+                if((object == name) or (object == "self")):
                     if(operation == "++"):
                         op = +1
                     else:
                         op = -1
-                    self.setValue(auth, attribute, target, op)
-                    irclib.sendChannelMessage("%s's current %s for %s is %i." % (auth, attribute, target, self.getValue(auth, attribute, target, op)))
+                    self.setValue(name, attribute, target, op)
+                    irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
             
 
 

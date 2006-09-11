@@ -5,19 +5,31 @@ import string
 class MinerLoadCalculationPlugin:
 
     def __init__(self):
-        self.cores = ["DN", "EoR", "A+", "PC2"]
+        self.cores = {"DN": "00.04.50 Alpha",
+                      "EoR": "6a",
+                      "A+": "15b7",
+                      "PC2": "019",
+                      "GoDII": "2",
+                      "RPS": "5.5",
+                      "SW": "a103"}
 
         self.baseHeliumConstant = {}
         self.baseHeliumConstant["DN"] = 1500.0
         self.baseHeliumConstant["EoR"] = 1500.0
         self.baseHeliumConstant["A+"] = 1500.0
         self.baseHeliumConstant["PC2"] = 1500.0
+        self.baseHeliumConstant["GoDII"] = 1500.0
+        self.baseHeliumConstant["RPS"] = 1500.0
+        self.baseHeliumConstant["SW"] = 1500.0
 
         self.defaultMinerCapacity = {}
         self.defaultMinerCapacity["DN"] = 90.0
         self.defaultMinerCapacity["EoR"] = 90.0
         self.defaultMinerCapacity["A+"] = 90.0
         self.defaultMinerCapacity["PC2"] = 90.0
+        self.defaultMinerCapacity["GoDII"] = 90.0
+        self.defaultMinerCapacity["RPS"] = 90.0
+        self.defaultMinerCapacity["SW"] = 90.0
 
         self.mapSectors = {}
         self.mapSectors["star"] = 12
@@ -38,8 +50,9 @@ class MinerLoadCalculationPlugin:
         self.minerCapacityModifier["DN"].append(("Rixian", 1.0))
         self.minerCapacityModifier["DN"].append(("Technoflux", 0.55))
         self.minerCapacityModifier["EoR"] = []
-        self.minerCapacityModifier["EoR"].append(("Belters", 0.6))
+        self.minerCapacityModifier["EoR"].append(("Belters", 0.5))
         self.minerCapacityModifier["EoR"].append(("Bios", 1.0))
+        self.minerCapacityModifier["EoR"].append(("Effix", 1.7))
         self.minerCapacityModifier["EoR"].append(("Ga'Taraan", 0.8))
         self.minerCapacityModifier["EoR"].append(("Gigacorp", 1.25))
         self.minerCapacityModifier["EoR"].append(("Iron Coalition", 0.85))
@@ -57,6 +70,26 @@ class MinerLoadCalculationPlugin:
         self.minerCapacityModifier["PC2"].append(("Bios", 1.0))
         self.minerCapacityModifier["PC2"].append(("Gigacorp", 1.25))
         self.minerCapacityModifier["PC2"].append(("Iron Coalition", 0.9))
+        self.minerCapacityModifier["GoDII"] = []
+        self.minerCapacityModifier["GoDII"].append(("Belters", 0.8))
+        self.minerCapacityModifier["GoDII"].append(("Bios", 1.0))
+        self.minerCapacityModifier["GoDII"].append(("Dreghklar", 0.75))
+        self.minerCapacityModifier["GoDII"].append(("Gigacorp", 1.25))
+        self.minerCapacityModifier["GoDII"].append(("Iron Coalition", 0.75))
+        self.minerCapacityModifier["GoDII"].append(("Rixian", 1.0))
+        self.minerCapacityModifier["SW"] = []
+        self.minerCapacityModifier["SW"].append(("Empire", 1.25))
+        self.minerCapacityModifier["SW"].append(("Rebels", 1.0))
+        self.minerCapacityModifier["RPS"] = []
+        self.minerCapacityModifier["RPS"].append(("Belters", 0.8))
+        self.minerCapacityModifier["RPS"].append(("Bios", 1.0))
+        self.minerCapacityModifier["RPS"].append(("Dreghklar", 0.4))
+        self.minerCapacityModifier["RPS"].append(("Ga'Taraan", 1.0))
+        self.minerCapacityModifier["RPS"].append(("Gigacorp", 1.25))
+        self.minerCapacityModifier["RPS"].append(("IC Rookies", 1.5))
+        self.minerCapacityModifier["RPS"].append(("Iron Coalition", 0.75))
+        self.minerCapacityModifier["RPS"].append(("Rixian", 1.0))
+        self.minerCapacityModifier["RPS"].append(("Technoflux", 0.5))
 
         self.moneySettings = {}
         self.moneySettings["low"] = 0.75
@@ -84,8 +117,8 @@ class MinerLoadCalculationPlugin:
                 if(len(msg.split()) >= 5):
                     # determine selected core
                     core = msg.split()[1]
-                    if(not (core in self.cores)):
-                        irclib.sendChannelMessage("Error: <core> has to be one of these: %s" % (string.join(self.cores, ", ")))
+                    if(not (core in self.cores.keys())):
+                        irclib.sendChannelMessage("Error: <core> has to be one of these: %s" % (string.join(self.cores.keys(), ", ")))
                         return
 
                     # calculate base miner capacity and base helium
@@ -149,7 +182,7 @@ class MinerLoadCalculationPlugin:
                         factionMinerCapacity = defaultMinerCapacity * factionCapacityModifier
                         minerLoadsPerRock = round(hePerRock / factionMinerCapacity, 2)
                         output.append("%s: %s" % (factionName, str(round(minerLoadsPerRock, 2))))
-                    irclib.sendChannelMessage("The miner loads per rock are: %s" % (string.join(output, ", ")))
+                    irclib.sendChannelMessage("The miner loads per rock on %s %s (%s/%s/%s) are: %s" % (core, self.cores[core], mapDefinitionString, moneySettingsString, resourceSettingsString, string.join(output, ", ")))
                 else:
                     # if no parameter specified: print syntax
                     irclib.sendChannelMessage("Syntax: minercalc <core> <map name / number of sectors> <money setting> <resource setting>")

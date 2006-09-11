@@ -9,7 +9,7 @@ class VersionPlugin:
         return("$Id$")
   
     def getCoreVersion(self):
-        return("5.0")
+        return("5.1")
     
     def getVersionOutput(self):
         result = "Core version: " + self.getCoreVersion()

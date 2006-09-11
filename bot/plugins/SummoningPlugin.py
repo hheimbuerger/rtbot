@@ -7,91 +7,66 @@ class SummoningPlugin:
     def getVersionInformation(self):
         return("$Id: SummoningPlugin.py 163 2006-07-27 14:28:11Z terralthra $")
 
-    def __init__(self, pluginInterface):
-        self.muteList = {}
-        self.pluginInterfaceReference = pluginInterface
-        self.revolutionStartingTime = None
-        self.revolutionists = []
-
     @classmethod
     def getDependencies(self):
-        return(["AuthenticationPlugin"])
+        return(["WarWisdomPlugin"])
 
-    def isFriend(self, irclib, name):
-        # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-        if(authenticationPlugin == None):
-          logging.info("ERROR: SummoningPlugin didn't succeed at lookup of AuthenticationPlugin during execution of isFriend()")
-          return(False)
-        else:
-          return(authenticationPlugin.isFriend(irclib, name))
+    def __init__(self, pluginInterface):
+        self.pluginInterfaceReference = pluginInterface
 
-    def getCanonicalName(self, rawName):
-        # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterfaceReference.getPlugin("AuthenticationPlugin")
-        if(authenticationPlugin == None):
-          logging.info("ERROR: SummoningPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
-          return(rawName)
-        else:
-          return(authenticationPlugin.getCanonicalName(rawName))
-    
-    def getList(self):
-        return(self.muteList.keys())
-
-    def summon(self, irclib, source, target):
-        if(target in irclib.getUserList().getPureList()):
-            irclib.sendPrivateNotice(target, "You have been summoned by %s!" % (source))
+    def summon(self, irclib, sourceNick, targetNick):
+        if(irclib.getUserList().has_key(targetNick)):
+            irclib.sendPrivateNotice(irclib.getUserList()[targetNick], "You have been summoned by %s!" % (sourceNick))
             irclib.sendChannelEmote("does a ritual dance.")
-            irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (target))
+            irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (targetNick))
         else:
             irclib.sendChannelEmote("does a ritual dance.")
-            irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (target))
+            irclib.sendChannelMessage("Oh, great %s, from the depths of idling, we summon thee!" % (targetNick))
             irclib.sendChannelEmote("fizzles. :(")
-        
-    def banish(self, irclib, source, target):
-        if(target in irclib.getUserList().getPureList()):
-            irclib.sendPrivateNotice(target, "You feel your soul exorcized by %s" %(source))
-	    irclib.sendChannelEmote("burns some bat guano.")
-            irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
-            irclib.kick(target, "poof")
+
+    def banish(self, irclib, sourceNick, targetNick):
+        if(irclib.getUserList().has_key(targetNick)):
+            irclib.sendPrivateNotice(irclib.getUserList()[targetNick], "You feel your soul exorcized by %s" % (sourceNick))
+            irclib.sendChannelEmote("burns some bat guano.")
+            irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (targetNick))
+            irclib.kick(irclib.getUserList()[targetNick], "poof")
         else:
             irclib.sendChannelEmote("burns some bat guano.")
-            irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (target))
+            irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (targetNick))
             irclib.sendChannelEmote("fizzles. :(")
 
-    def summonAll(self, irclib, source):
+    def summonAll(self, irclib, sourceNick):
         irclib.sendChannelMessage("In Uus Xen!")
         irclib.sendChannelEmote("throws something in the fire, and there is a great flash!") 
-        for i in irclib.getUserList().getPureList():
-            if(self.isFriend(irclib, i)):
-                irclib.sendPrivateNotice(i, "You have been summoned by %s!" % (source))
+        for user in irclib.getUserList().values():
+            if(user.isAdmin()):
+                irclib.sendPrivateNotice(user, "You have been summoned by %s!" % (sourceNick))
 
     def summonWisdom(self, irclib):
         warWisdomPlugin = self.pluginInterfaceReference.getPlugin("WarWisdomPlugin")
         irclib.sendChannelEmote("channels the ancient martial spirits.") 
         warWisdomPlugin.giveWisdom(irclib)
 
-
     def onChannelMessage(self, irclib, source, message):
         if(message[:len(self.summonCommand)] == self.summonCommand):
-            target = message[len(self.summonCommand)+1:]
-            self.summon(irclib, source, target)
+            targetNick = message[len(self.summonCommand)+1:]
+            self.summon(irclib, source.nick, targetNick)
         elif(message[:len(self.banishCommand)] == self.banishCommand):
-            target = message[len(self.banishCommand)+1:]
-            if(target.lower() == irclib.nickname.lower()):
-                self.banish(irclib, "RTBot", source)
+            targetNick = message[len(self.banishCommand)+1:]
+            if(targetNick.lower() == irclib.nickname.lower()):
+                self.banish(irclib, irclib.nickname, source.nick)
                 irclib.sendChannelMessage("Oops.")
-            elif(self.isFriend(irclib, source)):
-                self.banish(irclib, source, target)
+            elif(source.isAdmin()):
+                self.banish(irclib, source.nick, targetNick)
             else:
                 irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
-                self.banish(irclib, "RTBot", source)
+                self.banish(irclib, irclib.nickname, source.nick)
         elif(message == self.summonAllCommand):
-            if(self.isFriend(irclib, source)):
-                self.summonAll(irclib, source)
+            if(source.isAdmin()):
+                self.summonAll(irclib, source.nick)
             else:
                 irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
-                self.banish(irclib, "RTBot", source)
+                self.banish(irclib, irclib.nickname, source.nick)
         elif(message == self.wisdomCommand):
             self.summonWisdom(irclib)
         

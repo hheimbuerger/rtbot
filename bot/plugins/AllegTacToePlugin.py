@@ -1,6 +1,7 @@
 import random, logging
 
 class AllegTacToePlugin:
+    gameKey = "AllegTacToeGame"
 
     def getVersionInformation(self):
         return("$Id$")
@@ -10,31 +11,38 @@ class AllegTacToePlugin:
 
     def onChannelMessage(self, irclib, source, msg):
       if((msg == "play") or (msg == "play novice")):
-          logging.debug("play")
           if((len(msg.split()) >= 2) and (msg.split()[1] == "novice")):
             irclib.sendChannelMessage("Okay, here we go (easy mode):")
-            self.games[source] = AllegTacToeGame(False)
+            expertMode = False
           else:
             irclib.sendChannelMessage("Okay, here we go (expert mode):")
-            self.games[source] = AllegTacToeGame(True)
+            expertMode = True
+
+          # create the game
+          game = AllegTacToeGame(expertMode)
+          source.dataStore.setAttribute(AllegTacToePlugin.gameKey, game)
+          
           #logging.debug("board:" + string.join(self.games[source].showBoard(), "\n"))
-          for line in self.games[source].showBoard():
+          for line in game.showBoard():
               irclib.sendChannelMessage(line)
-      elif(source in self.games):
-          logging.debug("move")
-          (isValid, error) = self.games[source].isValidMove(msg)
-          if(isValid):
-              logging.debug("valid move")
-              res = self.games[source].nextTurn(int(msg))
-              logging.debug("next board")
-              for line in self.games[source].showBoard():
-                  irclib.sendChannelMessage(line)
-              if(res != ""):
-                  irclib.sendChannelMessage(res)
-                  del self.games[source]
+      elif(source.dataStore.getAttributeDefault(AllegTacToePlugin.gameKey)):
+          if(msg == "#resign"):
+              irclib.sendChannelMessage("HQ (all): %s's proposal to resign has passed. (1 for)" % (source.getCanonicalNick()))
+              irclib.sendChannelMessage("HQ (all): Team CleverAI has won by outlasting all other sides.")
+              source.dataStore.removeAttribute(AllegTacToePlugin.gameKey)
           else:
-              if(error != ""):
-                irclib.sendChannelMessage(error)
+              game = source.dataStore.getAttributeDefault(AllegTacToePlugin.gameKey)
+              (isValid, error) = game.isValidMove(msg)
+              if(isValid):
+                  res = game.nextTurn(int(msg))
+                  for line in game.showBoard():
+                      irclib.sendChannelMessage(line)
+                  if(res != ""):
+                      irclib.sendChannelMessage(res)
+                      source.dataStore.removeAttribute(AllegTacToePlugin.gameKey)
+              else:
+                  if(error != ""):
+                    irclib.sendChannelMessage(error)
 
 
 class AllegTacToeGame:

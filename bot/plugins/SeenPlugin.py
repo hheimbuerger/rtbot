@@ -1,5 +1,5 @@
 # Keeps track of the last time people were in the channel
-import pickle, os, datetime, exceptions, logging
+import pickle, os, datetime, exceptions, logging, re
 from modules import PluginInterface
 
 class SeenRecord:
@@ -60,64 +60,63 @@ class SeenPlugin:
             file.close()
         except:
             lastSeenTimes = {}
-            
-    def getCanonicalName(self, rawName):
-        # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterface.getPlugin("AuthenticationPlugin")
-        if(authenticationPlugin == None):
-            logging.info("ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalName()")
-            return(rawName)
-        else:
-            return(authenticationPlugin.getCanonicalName(rawName))
 
     def getCanonicalUserList(self, irclib):
-        rawUserList = irclib.getUserList().getPureList()
-        # retrieve AuthenticationPlugin
-        authenticationPlugin = self.pluginInterface.getPlugin("AuthenticationPlugin")
-        if(authenticationPlugin == None):
-            logging.info("ERROR: SeenPlugin didn't succeed at lookup of AuthenticationPlugin during execution of getCanonicalUserList()")
-            return rawUserList
-        else:
-            return [authenticationPlugin.getCanonicalName(rawName) for rawName in rawUserList]
+        userList = irclib.getUserList().values()
+        return [user.getCanonicalNick() for user in userList]
         
     
     def getVersionInformation(self):
         return("$Id$")
         
+    def getCanonicalNick(self, nick):
+        # (\S+?)(?:\[.*?\]|\|.*?|_{1,2})
+        pattern =(r"^"          # nothing in front of this
+                  r"(\S+?)"     # username, followed by
+                  r"(?:\[.*?\]" # [....] or
+                  r"|\|.*?"     # |..... or
+                  r"|_{1,2})"   # _ or __
+                  r"$")         # nothing after this
+        result = re.match(pattern, nick)
+        if(result):
+            return(result.group(1))
+        else:
+            return(nick)
+
     # Maybe we should limit how many people we keep track of? At first I thought
     # I'd use the buddy-list, but then I thought that would be too restrictive...
     # Maybe if we have > 512 entries, remove the oldest?
-    def handleUserLeft(self, source, message):
-        self.lastSeenTimes[self.getCanonicalName(source).lower()] = SeenRecord(message)
+    def handleUserLeft(self, canonicalSourceNick, message):
+        self.lastSeenTimes[canonicalSourceNick.lower()] = SeenRecord(message)
         self.saveList()
         
     def onLeave(self, irclib, source):
-        self.handleUserLeft(source, "leaving channel")
+        self.handleUserLeft(source.getCanonicalNick(), "leaving channel")
     def onQuit(self, irclib, source, reason):
-        self.handleUserLeft(source, "leaving IRC: " + reason)
+        self.handleUserLeft(source.getCanonicalNick(), "leaving IRC: " + reason)
     def onKick(self, irclib, source, target, reason):
-        self.handleUserLeft(source, "getting kicked by " + source + " for " + reason)
-    def onChangeNick(self, irclib, source, target):
-        self.handleUserLeft(source, "changing nick to " + target)
+        self.handleUserLeft(source.getCanonicalNick(), "getting kicked by " + source.nick + " for " + reason)
+    def onChangeNick(self, irclib, sourceNick, target):
+        self.handleUserLeft(self.getCanonicalNick(sourceNick), "changing nick to " + target.nick)
 
     @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_NORMAL)
     def onChannelMessage(self, irclib, source, message):
         words = message.split()
         if len(words) == 2 and words[0] == "seen":
-            name = self.getCanonicalName(words[1]).lower()
-            source = self.getCanonicalName(source).lower()
-            if name == source:
+            targetNick = self.getCanonicalNick(words[1]).lower()
+            sourceNick = source.getCanonicalNick().lower()
+            if sourceNick == targetNick:
                 irclib.sendChannelMessage("I see you very well, sai!") # bonus-points for recognizing the quote / reference  // Ksero
             else:
-                users = self.getCanonicalUserList(irclib)
-                if name == "rtbot":
-                    irclib.sendChannelMessage("#mute " + source + "@jesters :P")
-                elif name in users:
-                    irclib.sendChannelMessage("Ummm... " + name + " is right here, yo? Whatcha talkin' bout, boy?")
-                elif name in self.lastSeenTimes:
-                    irclib.sendChannelMessage(name + " was last seen " + str(self.lastSeenTimes[name]))
+                nicksInChannel = self.getCanonicalUserList(irclib)
+                if targetNick == irclib.nickname.lower():
+                    irclib.sendChannelMessage("#mute " + sourceNick + "@jesters :P")
+                elif targetNick in nicksInChannel:
+                    irclib.sendChannelMessage("Ummm... " + targetNick + " is right here, yo? Whatcha talkin' bout, boy?")
+                elif targetNick in self.lastSeenTimes:
+                    irclib.sendChannelMessage(targetNick + " was last seen " + str(self.lastSeenTimes[targetNick]))
                 else:
-                    irclib.sendChannelMessage("I've never seen anybody called " + name)
+                    irclib.sendChannelMessage("I've never seen anybody called " + targetNick)
             return(True)
 
 #Unit-test
