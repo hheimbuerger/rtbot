@@ -214,10 +214,10 @@ class AllegTacToeGame:
 
       def findRandomMove(self, goodMoves):
         possibleResults = []
-        for i in range(0, 14):
+        for i in range(0, 13):
             if(self.fieldIsEmpty(i)):
                 possibleResults.append(i)
-        return(possibleResults[int(random.random() * len(possibleResults))])
+        goodMoves.append(possibleResults[int(random.random() * len(possibleResults))])
 
       def doComputerTurn(self):
         goodMoves = []
@@ -233,9 +233,8 @@ class AllegTacToeGame:
               self.currentMessage = self.bitchingPhrases[int(random.random() * len(self.bitchingPhrases))]
         if(len(goodMoves) == 0):
           self.findRandomMove(goodMoves)
-        print goodMoves
         self.board[goodMoves[int(random.random() * len(goodMoves))]] = self.T
-    
+
       def checkIfWon(self):
         for winConfig in self.winConfigurations:
           if(self.board[winConfig[0]] == self.board[winConfig[1]] == self.board[winConfig[2]]):

@@ -7,51 +7,75 @@ class NickWatchPlugin:
         self.pluginInterfaceReference = pluginInterface
         self.recheckTimeoutSeconds = 60
         self.lastCheck = datetime.datetime.now()
-        self.watchList = []
+        self.possiblyActiveWatchers = False
 
     def getVersionInformation(self):
         return("$Id: NickWatchPlugin.py 202 2006-03-25 23:14:16Z cortex $")
 
     def onTimer(self, irclib):
-        deltatime = datetime.datetime.now() - self.lastCheck
-        if((deltatime.days != 0) or (deltatime.seconds > self.recheckTimeoutSeconds)):
-            self.sendChecks(irclib)
-            self.lastCheck = datetime.datetime.now()
+        if(self.possiblyActiveWatchers):
+            deltatime = datetime.datetime.now() - self.lastCheck
+            if((deltatime.days != 0) or (deltatime.seconds > self.recheckTimeoutSeconds)):
+                self.sendChecks(irclib)
+                self.lastCheck = datetime.datetime.now()
 
     def sendChecks(self, irclib):
-        for (watcher, nickToWatch) in self.watchList:
-            irclib.doWhois(nickToWatch)
-            #print "Sent WHOIS about %s." % (nickToWatch)
-
-    def addToWatchList(self, watcher, nickToWatch):
-        self.watchList.append((watcher, nickToWatch))
-        #print "Added %s to the watchList of %s." % (nickToWatch, watcher)
-
-    def changeWatcher(self, source, target):
-        for (watcher, nickToWatch) in self.watchList:
-            if(watcher == source):
-                self.watchList.remove((source, nickToWatch))
-                self.watchList.append((target, nickToWatch))
-                #print "Changed entry for %s to %s." % (source, target)
+        anyActiveWatchers = False
+        for user in irclib.getUserList().values():
+            watchedNicks = user.dataStore.getAttributeDefault("watchedNicks", [])
+            if(len(watchedNicks) > 0):
+                for nick in watchedNicks:
+                    irclib.doExternalWhois(nick)
+                anyActiveWatchers = True
+        self.possiblyActiveWatchers = anyActiveWatchers
 
     def reportUnusedNick(self, irclib, watcher, nickToWatch):
         irclib.sendPrivateNotice(watcher, "The nick %s you asked for is now free for taking." % (nickToWatch))
-        self.watchList.remove((watcher, nickToWatch))
-        #print "Reported %s to %s." % (nickToWatch, watcher)
 
-    def onWhoisResult(self, irclib, nick, username, host, userinfo):
-        for (watcher, nickToWatch) in self.watchList:
-            if(nickToWatch == nick):
+    def watch(self, watcher, nickToWatch):
+        self.possiblyActiveWatchers = True
+        currentlyWatchedNicks = watcher.dataStore.getAttributeDefault("watchedNicks", [])
+        currentlyWatchedNicks.append(nickToWatch)
+        watcher.dataStore.setAttribute("watchedNicks", currentlyWatchedNicks)
+
+    def handleWhoisResult(self, irclib, nick, username, host, userinfo):
+        for user in irclib.getUserList().values():
+            watchedNicks = user.dataStore.getAttributeDefault("watchedNicks", [])
+            if(nick.lower() in watchedNicks):
                 if((username == None) and (host == None) and (userinfo == None)):
-                    self.reportUnusedNick(irclib, watcher, nickToWatch)
+                    self.reportUnusedNick(irclib, user, nick.lower())
+                    watchedNicks.remove(nick.lower())
+                    if(len(watchedNicks) == 0):
+                        user.dataStore.removeAttribute("watchedNicks")
+                    else:
+                        user.dataStore.setAttribute("watchedNicks", watchedNicks)
 
-    def onChangeNick(self, irclib, source, target):
-        self.changeWatcher(source, target)
+    def onWhoisResult(self, irclib, user):
+        self.handleWhoisResult(irclib, user.nick, user.username, user.host, user.userinfo)
+    
+    def onExternalWhoisResult(self, irclib, nick, username, host, userinfo):
+        self.handleWhoisResult(irclib, nick, username, host, userinfo)
 
     def onChannelMessage(self, irclib, source, message):
         if((len(message.split()) >= 2) and (message.split()[0] == "!nickwatch")):
-            name = message.split()[1]
-            self.addToWatchList(source, name)
+            watchedNicks = source.dataStore.getAttributeDefault("watchedNicks", [])
+            nick = message.split()[1]
+            if(nick.lower() in watchedNicks):
+                irclib.sendChannelMessage("I'm already watching that nick for you!")
+            else:
+                self.watch(source, nick.lower())
+                irclib.sendChannelMessage("Okay, I'll watch the availability of the nick '%s' for you." % (nick))
+        elif(message == "!watchednickslist"):
+            anyNicksWatched = False
+            for user in irclib.getUserList().values():
+                watchedNicks = user.dataStore.getAttributeDefault("watchedNicks", [])
+                if(len(watchedNicks) > 0):
+                    irclib.sendChannelMessage("%s is watching the nick(s): %s" % (source.nick, ", ".join(watchedNicks)))
+                    anyNicksWatched = True
+            if(not anyNicksWatched):
+                irclib.sendChannelMessage("I'm currently not watching any nicks.")
+                
+
 
 
 
