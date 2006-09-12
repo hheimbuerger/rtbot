@@ -183,6 +183,18 @@ class LowlevelIrcLib:
     def doWho(self, target):
         self.sendRawMsg("WHO %s" % (target.nick))
 
+    # target: nick
+    def doExternalWho(self, targetNick):
+        self.sendRawMsg("WHO %s" % (targetNick))
+
+    # target: User object
+    def doWhois(self, target):
+        self.sendRawMsg("WHOIS %s" % (target.nick))
+
+    # target: nick
+    def doExternalWhois(self, targetNick):
+        self.sendRawMsg("WHOIS %s" % (targetNick))
+
     def setChannelTopic(self, topic):
         self.sendRawMsg("TOPIC %s :%s" % (self.channel, topic))
 
@@ -296,7 +308,7 @@ class LowlevelIrcLib:
         elif(command == "401"):        # WHOIS: "no such nick"
             nick = arguments[1]
             logging.debug("WHOIS: no such nick (%s)" % (nick))
-            #self.eventTarget.onWhoisResult(self.getUserList()[nick])
+            self.eventTarget.onExternalWhoisResult(nick, None, None, None)
         elif(command == "NOTICE"):
             # IRC nick names are not case sensitive. Neither are channel names
             if(arguments[0].lower() == self.nickname.lower()):
