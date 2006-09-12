@@ -10,7 +10,7 @@ class MailboxPlugin:
         self.loadMails()
         
     def getVersionInformation(self):
-        return("$Id$")
+        return("$Id: MailboxPlugin.py 260 2006-05-23 22:37:56Z Ksero $")
 
     @classmethod
     def getDependencies(self):

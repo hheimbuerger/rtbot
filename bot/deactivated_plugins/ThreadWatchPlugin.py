@@ -42,7 +42,7 @@ class ThreadWatchPlugin:
 
 
     def getVersionInformation(self):
-        return("$Id$")
+        return("$Id: ThreadWatchPlugin.py 214 2006-03-26 21:03:03Z cortex $")
 
 
 
