@@ -255,7 +255,10 @@ class LowlevelIrcLib:
                 pass
             else:
                 self.userLists[self.channel].onMode(source, arguments[2:], arguments[1], arguments[0])
-                self.eventTarget.onUserMode(self.getUserList()[source], arguments[2:], arguments[1], arguments[0])
+                if(self.getUserList().has_key(source)):
+                    self.eventTarget.onUserMode(self.getUserList()[source], arguments[2:], arguments[1], arguments[0])
+                else:
+                    self.eventTarget.onExternalUserMode(source, arguments[2:], arguments[1], arguments[0])
         elif(command == "324"):
             if(len(arguments) > 2):
                 self.channelModes = arguments[2]
@@ -333,7 +336,7 @@ class LowlevelIrcLib:
                     if(self.getUserList().has_key(source)):
                         self.eventTarget.onPrivateMessage(self.getUserList()[source], trailing)
                     else:
-                        self.eventTarget.onExternalPrivateMessage(self.getUserList()[source], trailing)
+                        self.eventTarget.onExternalPrivateMessage(source, trailing)
             elif(arguments[0].lower() == self.channel.lower()):
                 #print "|%s|%s|%s|%s|" % (trailing, trailing[:8], trailing[-1], trailing[8:-1])
                 if((trailing[:8] == "\x01ACTION ") and (trailing[-1] == "\x01")): 

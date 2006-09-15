@@ -104,6 +104,10 @@ class RTBot:
         logging.info("* Mode changed: " + source.nick + "-->" + str(targets) + "(" + channel + "): " + flags)
         self.pluginInterface.fireEvent("onUserMode", self.irclib, source, targets, flags)
 
+    def onExternalUserMode(self, sourceNick, targets, flags, channel):
+        logging.info("* Mode changed: " + sourceNick + "-->" + str(targets) + "(" + channel + "): " + flags)
+        self.pluginInterface.fireEvent("onExternalUserMode", self.irclib, sourceNick, targets, flags)
+
     # somebody else joins
     def onJoin(self, source, channel):
         logging.info("* Person joined: " + source.nick)
@@ -152,7 +156,7 @@ class RTBot:
             self.irclib.quit("'yr")
 
     def onExternalPrivateMessage(self, sourceNick, message):
-        logging.info(source.nick + "(EXTERNAL)-->RTBot: " + message)
+        logging.info(sourceNick + "(EXTERNAL)-->RTBot: " + message)
         self.pluginInterface.fireEvent("onExternalPrivateMessage", self.irclib, sourceNick, message)
 
     def onPrivateEmote(self, source, emote):
@@ -160,7 +164,7 @@ class RTBot:
         self.pluginInterface.fireEvent("onPrivateEmote", self.irclib, source, emote)
 
     def onExternalPrivateEmote(self, sourceNick, emote):
-        logging.info(source.nick + "(EXTERNAL)-->RTBot: * " + emote)
+        logging.info(sourceNick + "(EXTERNAL)-->RTBot: * " + emote)
         self.pluginInterface.fireEvent("onExternalPrivateEmote", self.irclib, sourceNick, emote)
 
     def onChannelTopicChange(self, source, topic):
