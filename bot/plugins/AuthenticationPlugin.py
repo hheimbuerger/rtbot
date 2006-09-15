@@ -476,6 +476,7 @@ class AuthenticationPlugin:
                     account.setPassword(arguments[1])
                     self.accountList.save()
                     irclib.sendPrivateMessage(source, "The password has been set on the account '%s'." % (name))
+                    irclib.sendPrivateMessage(source, "You can now authenticate anytime by sending me a notice with the content 'authenticate <name/> </password/>', e.g. by typing \"/notice RTBot authenticate %s mysecretpassword\"." % (name))
                     return    # need to return here to prevent the "don't know you" message
 
         # abort if we're not talking to a friend, set sourceUser otherwise
@@ -487,8 +488,15 @@ class AuthenticationPlugin:
 
         # COMMAND: list
         if(command == "list" and len(arguments) == 0):
-            list = self.accountList.keys()
-            irclib.sendPrivateMessage(source, "The following persons are my friends: " + ", ".join(list))
+            listAdmins = sorted([name for (name, account) in self.accountList.items() if account.group == UserAccount.GROUP_ADMIN])
+            listVisitors = sorted([name for (name, account) in self.accountList.items() if account.group == UserAccount.GROUP_RETURNINGVISITOR])
+            listOthers = sorted([name for (name, account) in self.accountList.items() if (account.group != UserAccount.GROUP_ADMIN and account.group != UserAccount.GROUP_RETURNINGVISITOR)])
+            if(len(listAdmins) > 0):
+                irclib.sendPrivateMessage(source, "The following persons are in the group 'admins': %s" % (", ".join(listAdmins)))
+            if(len(listVisitors) > 0):
+                irclib.sendPrivateMessage(source, "The following persons are in the group 'visitors': %s" % (", ".join(listVisitors)))
+            if(len(listOthers) > 0):
+                irclib.sendPrivateMessage(source, "The following persons are not in a group: %s" % (", ".join(listOthers)))
             irclib.sendPrivateMessage(source, 'Say "list <name>" to display the known authentication information.')
 
         elif(command == "list" and len(arguments) == 1):
@@ -497,10 +505,16 @@ class AuthenticationPlugin:
                 irclib.sendPrivateMessage(source, "Of %s, I have the following authentication expressions:" % (name))
                 account = self.accountList[name]
                 self.pmAuthInformationList(irclib, source, account)
-                if(account.encryptedPassword):
-                    irclib.sendPrivateMessage(source, 'This account does have a password set.')
+                hasPasswortSetString = ""
+                if(not account.encryptedPassword):
+                    hasPasswortSetString = "not "
+                if(account.group == UserAccount.GROUP_ADMIN):
+                    groupString = "a member of the group 'admins'"
+                elif(account.group == UserAccount.GROUP_RETURNINGVISITOR):
+                    groupString = "a member of the group 'visitors'"
                 else:
-                    irclib.sendPrivateMessage(source, 'This account does not have a password set.')
+                    groupString = "not a member of a group"
+                irclib.sendPrivateMessage(source, 'This account does %shave a password set and is %s.' % (hasPasswortSetString, groupString))
                 irclib.sendPrivateMessage(source, 'Say "add <name> <username-RE> <host-RE> <userinfo-RE>" to add authentication information to that user. The RE-syntax can be looked up on http://docs.python.org/lib/re-syntax.html')
             else:
                 irclib.sendPrivateMessage(source, "That person is not on my list!")
