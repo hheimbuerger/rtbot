@@ -61,8 +61,11 @@ Known user attributes:
 
 ===========================================================================================================
 
+Plugin Development:
+
 Event handler signatures:
 
+## From IrcLib: ##
 def onJoin(self, irclib, source):
 def onChangeNick(self, irclib, source, target):
 def onLeave(self, irclib, source):				 	# called *before* user list update!
@@ -78,6 +81,23 @@ def onPrivateEmote(self, irclib, source, emote):
 def onChannelTopicChange(source, irclib, topic):
 def onWhoResult(self, irclib, user):
 def onWhoisResult(self, irclib, user):
+
+## From HTTPServer: ##
+## From RPCServer: ##
+
+Brave New Bot (aka. RTBot Revolution aka. NYI aka ToDo):
+The plugin contract:
+* plugins declare their dependencies in a static method called getDependencies. This should return a list of strings that are the names of other plugin python modules. (eg. ["BarPlugin", "FooPlugin"]
+* the plugins can't do anything with these dependencies in the constructor (__init__)
+* after construction, the method/event onInitialise is called/fired if it exists. By this time, the plugin is guaranteed to have attributes corresponding to its dependencies injected. These attributes will have the same names as their modules, except that the first letter will be lower-case to follow the coding style. (eg. self.BarPlugin, self.FooPlugin)
+* In addition, each plugin is guaranteed to have attributes corresponding to base modules:
+    - irclib
+    - httpserver
+    - rpcserver
+    - accountmanager
+    - pluginInterface
+* before being unloaded, the method dispose will be called on the plugin
+* if an exception is raised during plugin execution, all plugins between the point of raising and the pluginInterface will be disabled for further investigation
 
 ===========================================================================================================
 
