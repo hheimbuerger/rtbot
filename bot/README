@@ -6,8 +6,8 @@ projects broke that promise already? :D)
 Path structure:
 /					Contains the BotManager.py, the starting code for the bot.
 /debugging_pluins	Various plugins that aren't used in the production environment but for testing.
-/exceptions (*)		XML files that are dumped for every exception detected in the repository. The
-					filename contains the date, time and a running number per bot session.
+/exceptions (*)		XML files that are dumped for every exception raised by a plugin. The
+					filename consists of the date and time and a running number per bot session.
 /lib				3rd party modules necessary for running the bot.
 /logs (*)			The logs created by the bot.
 /modules			Core modules of the bot.
@@ -15,6 +15,12 @@ Path structure:
 /resources			Various resources needed by various plugins. Also used as a storage area for plugins.
 
 (*) = Please do not commit the contents of these directories to the repository.
+
+===========================================================================================================
+
+The database connection (activated by entering a connection string in Settings.database_connection_string)
+requires MySQLdb (http://sourceforge.net/projects/mysqldb) and SQLObject (http://www.sqlobject.org/) installed
+to Python. It is not necessary for running the bot, though (and deactivated by default).
 
 ===========================================================================================================
 
@@ -65,48 +71,81 @@ Plugin Development:
 
 Event handler signatures:
 
+## generic: ##
+def dispose(self):					# also called when a plugin crashes
+
 ## From IrcLib: ##
-def onJoin(self, irclib, source):
-def onChangeNick(self, irclib, source, target):
-def onLeave(self, irclib, source):				 	# called *before* user list update!
-def onKick(self, irclib, source, target, reason):	# called *before* user list update!
-def onQuit(self, irclib, source, reason):			# called *before* user list update!
-def onChannelMode(self, irclib, source, flags):
-def onUserMode(self, irclib, source, targets, flags):
-def onNotice(self, irclib, source, message):
-def onChannelMessage(self, irclib, source, message):
-def onChannelEmote(self, irclib, source, emote):
-def onPrivateMessage(self, irclib, source, message):
-def onPrivateEmote(self, irclib, source, emote):
-def onChannelTopicChange(source, irclib, topic):
-def onWhoResult(self, irclib, user):
-def onWhoisResult(self, irclib, user):
+def onJoin(self, source):
+def onChangeNick(self, source, target):
+def onLeave(self, source):				 	# called *before* user list update!
+def onKick(self, source, target, reason):	# called *before* user list update!
+def onQuit(self, source, reason):			# called *before* user list update!
+def onChannelMode(self, source, flags):
+def onUserMode(self, source, targets, flags):
+def onNotice(self, source, message):
+def onChannelMessage(self, source, message):
+def onChannelEmote(self, source, emote):
+def onPrivateMessage(self, source, message):
+def onPrivateEmote(self, source, emote):
+def onChannelTopicChange(source, topic):
+def onWhoResult(self, user):
+def onWhoisResult(self, user):
 
 ## From HTTPServer: ##
+?
+
 ## From RPCServer: ##
+?
+
+Plugin lifecycle:
+
+* online?
+* enabled?
+* when unloaded? when loaded?
+
+===========================================================================================================
 
 Brave New Bot (aka. RTBot Revolution aka. NYI aka ToDo):
 The plugin contract:
-* plugins declare their dependencies in a static method called getDependencies. This should return a list of strings that are the names of other plugin python modules. (eg. ["BarPlugin", "FooPlugin"]
-* the plugins can't do anything with these dependencies in the constructor (__init__)
-* after construction, the method/event onInitialise is called/fired if it exists. By this time, the plugin is guaranteed to have attributes corresponding to its dependencies injected. These attributes will have the same names as their modules, except that the first letter will be lower-case to follow the coding style. (eg. self.BarPlugin, self.FooPlugin)
+* plugins declare their dependencies in a static method called getDependencies. This should return a list
+  of strings that are the names of other plugin python modules. (eg. ["BarPlugin", "FooPlugin"])
+* the plugins can't use these dependencies in the constructor (__init__)
+* after construction, the method/event onInitialise is called/fired if it exists. By this time, the plugin
+  is guaranteed to have attributes corresponding to its dependencies injected. These attributes will have
+  the same names as their modules, except that the first letter will be lower-case to follow the coding
+  style. (eg. self.barPlugin, self.fooPlugin)
 * In addition, each plugin is guaranteed to have attributes corresponding to base modules:
     - irclib
     - httpserver
     - rpcserver
     - accountmanager
     - pluginInterface
-* before being unloaded, the method dispose will be called on the plugin
-* if an exception is raised during plugin execution, all plugins between the point of raising and the pluginInterface will be disabled for further investigation
+* before being unloaded, the method dispose will be called on the plugin -- even if the plugin is
+  unloaded because it raised an exception (exceptions raised in the dispose() method will be ignored!)
+* if an exception is raised during plugin execution, all plugins between the point of raising and the
+  pluginInterface will be disabled for further investigation
 
 ===========================================================================================================
 
-The database connection (activated by entering a connection string in Settings.database_connection_string)
-requires MySQLdb (http://sourceforge.net/projects/mysqldb) and SQLObject (http://www.sqlobject.org/). It
-is not necessary for running the bot, though (and deactivated by default).
+PluginInterface - public interface:
+
+* __init__(pluginDirectoryPath, metaDataFilename): None
+* heartbeat(): list of tuples of ?
+    called approximately every 10s to check the plugins for updates/additions/removals -- returns
+    a list of events about everything that happened
+* getPlugin(pluginName): instance
+    used to retrieve a plugin object, shouldn't normally be used
+* getPluginNames(): list of strings
+    user to retrieve a list of all plugin names (including disabled and offline ones)
+* getPluginState(pluginName): tuple of ?
+    used to retrieve the state of a plugin (disabled? offline? why? dependencies missing? which ones?
+    deactivated after crash? when? last loaded/updated when?)
+* enablePlugin(pluginName): None (Boolean?)
+    enable the plugin, maybe return False if the plugin is not online, i.e. the enabling failed (crashed
+    or missing dependencies)
+* disablePlugin(pluginName): None
+    disable the plugin (unload it?)
+* reloadPlugin(pluginName): None (Boolean?)
+    to force a reload of a plugin
 
 
-
-
-/notice RTBotTest authenticate Cort tufer
-#RollingThunder.development
