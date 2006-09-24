@@ -10,10 +10,10 @@ class HighLowSolverPlugin:
 
     @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_LOW)
 
-    int ceiling = 1
-    int floor = 1
-    int guess = 1
-    bool isPlaying = False
+    ceiling = 1
+    floor = 1
+    guess = 1
+    isPlaying = False
 
     def computeGuess(self, ceiling, floor)
         return( ((ceiling - floor)/2) + floor)
