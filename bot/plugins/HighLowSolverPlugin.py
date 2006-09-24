@@ -13,12 +13,12 @@ class HighLowSolverPlugin:
     self.guess = 1
     self.isPlaying = False
 
-    def computeGuess(self)
-	self.guess = ((self.ceiling - self.floor)/2) + self.floor)
+    def computeGuess(self):
+	self.guess = (((self.ceiling - self.floor)/2) + self.floor)
 	
 
     def onChannelMessage(self, irclib, source, msg):
-        reResult = re.compile("hl\son\s(\d+)").search(msg.lower()))
+        reResult = re.compile("hl\son\s(\d+)").search(msg.lower())
         if(reResult):
             isPlaying = True
             irclib.sendChannelMessage("I've got this one.")
@@ -30,7 +30,7 @@ class HighLowSolverPlugin:
 		reResult2 = re.compile("([^>]+)\> (HIGHER)|(LOWER)").search(msg.lower())
 		if(reResult2.groups()[1]):
 		    self.floor = self.guess
-		elif(reResult2.groups()[2]:
+		elif(reResult2.groups()[2]):
 		    self.ceiling = self.guess
 		    self.computeGuess()
 		    irclib.sendChannelMessage("num %s", guess)
