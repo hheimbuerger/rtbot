@@ -31,7 +31,7 @@ class HumanBehaviourPlugin:
 	else:
 	  return(text)
 
-  @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_HIGH)
+#  @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_HIGH)
   def onPrivateMessage(self, irclib, source, message):
     if(message == "help"):
         for line in HumanBehaviourPlugin.helpMessage:
