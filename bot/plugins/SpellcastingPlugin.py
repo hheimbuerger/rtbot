@@ -6,7 +6,7 @@ class SpellcastingPlugin:
     wisdomCommand = "In Bet Wis!"
 
     def getVersionInformation(self):
-        return("$Id: SummoningPlugin.py 163 2006-07-27 14:28:11Z terralthra $")
+        return("$Id: SpellcastingPlugin.py 163 2006-07-27 14:28:11Z terralthra $")
 
     @classmethod
     def getDependencies(self):
