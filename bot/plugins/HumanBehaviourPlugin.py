@@ -5,8 +5,8 @@ class HumanBehaviourPlugin:
   helpMessage = ["You can read up on my commands on this page: http://wiki.edge-of-reality.de/bin/view/Main/RTBotCommands"]
 
   def __init__(self, pluginInterface):
-	self.saidMyNameLastMessage = {}
-	self.pluginInterfaceReference = pluginInterface
+      self.saidMyNameLastMessage = {}
+      self.pluginInterfaceReference = pluginInterface
 
   def getVersionInformation(self):
 	return("$Id$")
