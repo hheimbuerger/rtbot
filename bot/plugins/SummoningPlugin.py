@@ -1,4 +1,5 @@
 class SummoningPlugin:
+    helpCommand = "!listspells"
     summonCommand = "Kal Vas Xen"
     banishCommand = "An Vas Xen"
     summonAllCommand = "An Zu Grav!"
@@ -69,5 +70,13 @@ class SummoningPlugin:
                 self.banish(irclib, irclib.nickname, source.nick)
         elif(message == self.wisdomCommand):
             self.summonWisdom(irclib)
+        elif(message == self.helpCommand)):
+            irclib.sendChannelMessage("I can currently cast:")
+            irclib.sendChannelMessage("Summon <target>: Kal Vas Xen <target>")
+            irclib.sendChannelMessage("Summon all: An Zu Grav!")
+            irclib.sendChannelMessage("Channel wisdom: In Bet Wis!")
+            irclib.sendChannelMessage("Banish <target>: An Vas Xen <target>")
+            irclib.sendChannelMessage("Remember, spelling, capitalization, and punctuation count."
         
   
+
