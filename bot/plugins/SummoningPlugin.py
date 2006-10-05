@@ -76,7 +76,8 @@ class SummoningPlugin:
             irclib.sendChannelMessage("Summon all: An Zu Grav!")
             irclib.sendChannelMessage("Channel wisdom: In Bet Wis!")
             irclib.sendChannelMessage("Banish <target>: An Vas Xen <target>")
-            irclib.sendChannelMessage("Remember, spelling, capitalization, and punctuation count."
+            irclib.sendChannelMessage("Remember, spelling, capitalization, and punctuation count.")
+
         
   
 
