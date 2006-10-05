@@ -70,7 +70,7 @@ class SummoningPlugin:
                 self.banish(irclib, irclib.nickname, source.nick)
         elif(message == self.wisdomCommand):
             self.summonWisdom(irclib)
-        elif(message == self.helpCommand)):
+        elif(message == self.helpCommand):
             irclib.sendChannelMessage("I can currently cast:")
             irclib.sendChannelMessage("Summon <target>: Kal Vas Xen <target>")
             irclib.sendChannelMessage("Summon all: An Zu Grav!")
