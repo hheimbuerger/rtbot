@@ -1,5 +1,5 @@
 class SummoningPlugin:
-    helpCommand = "!listspells"
+    helpCommand = "listspells"
     summonCommand = "Kal Vas Xen"
     banishCommand = "An Vas Xen"
     summonAllCommand = "An Zu Grav!"
