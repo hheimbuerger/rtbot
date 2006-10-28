@@ -195,8 +195,7 @@ class ClockPlugin:
     def doTimezoneRefresh(self):
         self.refreshFinishedEvent = threading.Event()
         self.isRefreshRunning = True
-        #thread.start_new_thread(self.refreshTimezones, ())
-        self.refreshTimezones()
+        thread.start_new_thread(self.refreshTimezones, ())
 
 
 
