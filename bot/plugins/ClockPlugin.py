@@ -9,6 +9,7 @@ import StringIO
 import threading
 import thread
 import datetime
+import logging
 
 
 
@@ -21,6 +22,7 @@ class ClockPlugin:
         self.citiesSource = {"host": "www.timeanddate.com", "path": "/worldclock/", "file": "full.html"}
         self.zonesSource = {"host": "www.timeanddate.com", "url": "/library/abbreviations/timezones/"}
         self.isRefreshRunning = False
+        self.hasRefreshFailed = False
 
         # initialise
         self.loadTimezones()
@@ -76,89 +78,99 @@ class ClockPlugin:
     def refreshTimezones(self):
         # runs in a new thread but can be terminated by setting isRefreshRunning to False
         newTimezones = {}
+        lastUrlParsed = "[init]"
     
-        # find cities
-        (status, page, location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+self.citiesSource["file"])
-        numCities = 0
-        for (url, city) in re.compile("<a href=\"(city.html\?n=.*?)\">(.*?)</a>").findall(page):
-          numCities += 1
-          #if(numCities == 21):
-          #  break
-          
-          # terminate if asked for
-          if(not self.isRefreshRunning):
-              return
-
-          # get the city's page and extract it's timezone information
-          (city_status, city_page, city_location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+url)
-          fullname = self.decodeHTMLCharacterEntities(re.compile("<span class=\"biggest\">(.*?)</span>", re.DOTALL).search(city_page).group(1))
-          timezone_string = re.compile("<tr class=\"d1\"><th>UTC/GMT Offset</th><td id=\"tz1\"><table border=\"0\" cellpadding=\"2\" cellspacing=\"0\">(.*?)</table></td></tr>", re.DOTALL).search(city_page).group(1)
+        try:
+            # find cities
+            (status, page, location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+self.citiesSource["file"])
+            numCities = 0
+            for (url, city) in re.compile("<a href=\"(city.html\?n=.*?)\">(.*?)</a>").findall(page):
+              numCities += 1
+              #if(numCities == 21):
+              #  break
+              
+              lastUrlParsed = url
+              #print "Parsing %s..." % (url)
+              
+              # terminate if asked for
+              if(not self.isRefreshRunning):
+                  return
     
-          # terminate if asked for
-          if(not self.isRefreshRunning):
-              return
-
-          # try to find a "Current time zone offset" text (i.e. town in summertime)
-          result1 = re.compile("Current time zone offset:.*?UTC/GMT ([-+]\d\d?) hour", re.DOTALL).search(timezone_string)
-          if(result1):
-              offset = result1.group(1)
+              # get the city's page and extract it's timezone information
+              (city_status, city_page, city_location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+url)
+              fullname = self.decodeHTMLCharacterEntities(re.compile("<span class=\"biggest\">(.*?)</span>", re.DOTALL).search(city_page).group(1))
+              timezone_string = re.compile("<tr class=\"d1\"><th>UTC/GMT Offset</th><td id=\"tz1\"><table border=\"0\" cellpadding=\"2\" cellspacing=\"0\">(.*?)</table>", re.DOTALL).search(city_page).group(1)
+        
+              # terminate if asked for
+              if(not self.isRefreshRunning):
+                  return
     
-          # try to find a "Standard time zone" text (i.e. town in summertime)
-          else:
-              result2 = re.compile("Standard time zone:.*?UTC/GMT ([-+]\d\d?(:\d\d)?) hour", re.DOTALL).search(timezone_string)
-              if(result2):
-                  offset = result2.group(1)
-
-          # try to find a "Standard time zone: No UTC/GMT offset" text (i.e. town in summertime)
+              # try to find a "Current time zone offset" text (i.e. town in summertime)
+              result1 = re.compile("Current time zone offset:.*?UTC/GMT ([-+]\d\d?) hour", re.DOTALL).search(timezone_string)
+              if(result1):
+                  offset = result1.group(1)
+        
+              # try to find a "Standard time zone" text (i.e. town in summertime)
               else:
-                  result3 = re.compile("Standard time zone:.*?No UTC/GMT offset", re.DOTALL).search(timezone_string)
-                  if(result3):
-                      offset = "+0"
+                  result2 = re.compile("Standard time zone:.*?UTC/GMT ([-+]\d\d?(:\d\d)?) hour", re.DOTALL).search(timezone_string)
+                  if(result2):
+                      offset = result2.group(1)
+    
+              # try to find a "Standard time zone: No UTC/GMT offset" text (i.e. town in summertime)
                   else:
-                      print "Error: $$$%s$$$" % (timezone_string)
+                      result3 = re.compile("Standard time zone:.*?No UTC/GMT offset", re.DOTALL).search(timezone_string)
+                      if(result3):
+                          offset = "+0"
+                      else:
+                          print "Error: $$$%s$$$" % (timezone_string)
+        
+              # try to find a "Time zone abbreviation"
+              result4 = re.compile("Time zone abbreviation:</td><td>(.*?)</td>", re.DOTALL).search(timezone_string)
+              if(result4):
+                  timezone = string.strip(re.compile("<.*?>").sub("", result4.group(1)))
+              elif(offset == "+0"):
+                  timezone = "UTC - Coordinated Universal Time"
+              else:
+                  timezone = "no timezone abbreviation"
+        
+              #print "|%s|%s|%s|" % (fullname, offset, timezone_abbrev)
+              decodedTimezone = self.decodeHTMLCharacterEntities(timezone)
+              normalisedOffset = self.normaliseOffset(offset)
+              newTimezones[fullname] = (normalisedOffset, decodedTimezone)
+              
+              #print "New timezone: %s, %s (%s)" % (fullname, normalisedOffset, decodedTimezone)
     
-          # try to find a "Time zone abbreviation"
-          result4 = re.compile("Time zone abbreviation:</td><td>(.*?)</td>", re.DOTALL).search(timezone_string)
-          if(result4):
-              timezone = string.strip(re.compile("<.*?>").sub("", result4.group(1)))
-          elif(offset == "+0"):
-              timezone = "UTC - Coordinated Universal Time"
-          else:
-              timezone = "no timezone abbreviation"
+            # find timezones
+            numZones = 0
+            (status, page, location) = self.getPage(self.zonesSource["host"], self.zonesSource["url"])
+            lastUrlParsed = self.zonesSource["host"]+self.zonesSource["url"]
+            for (fullname, timezone, dummy1, offset, dummy3) in re.compile("<td><a href=\".*?\">(.*?)</a></td><td>(.*?)</td><td>.*?</td><td>UTC(\s([+-]\s\d\d?(:\d\d)?) hours?)?</td>").findall(page):
+              numZones += 1
+              
+              # terminate if asked for
+              if(not self.isRefreshRunning):
+                  return
     
-          #print "|%s|%s|%s|" % (fullname, offset, timezone_abbrev)
-          decodedTimezone = self.decodeHTMLCharacterEntities(timezone)
-          normalisedOffset = self.normaliseOffset(offset)
-          newTimezones[fullname] = (normalisedOffset, decodedTimezone)
-          
-          #print "New timezone: %s, %s (%s)" % (fullname, normalisedOffset, decodedTimezone)
-
-        # find timezones
-        numZones = 0
-        (status, page, location) = self.getPage(self.zonesSource["host"], self.zonesSource["url"])
-        for (fullname, timezone, dummy1, offset, dummy3) in re.compile("<td><a href=\".*?\">(.*?)</a></td><td>(.*?)</td><td>.*?</td><td>UTC(\s([+-]\s\d\d?(:\d\d)?) hours?)?</td>").findall(page):
-          numZones += 1
-          
-          # terminate if asked for
-          if(not self.isRefreshRunning):
-              return
-
-          decodedTimezone = self.decodeHTMLCharacterEntities(timezone)
-          #print "|%s|%s|%s|" % (fullname, decodedTimezone, offset)
-          if(offset == ""):
-            newTimezones[fullname] = ("+0000", "%s - %s" % (fullname, decodedTimezone))
-          else:
-            normalisedOffset = self.normaliseOffset(offset[0] + offset[2:])
-            newTimezones[fullname] = (normalisedOffset, "%s - %s" % (fullname, decodedTimezone))
-
-    #    for zone in self.timezones.keys():
-    #      print "|%s|%s|%s|" % (zone, self.timezones[zone][0], self.timezones[zone][1])
-        # write the CSV
-        file = open(self.timezoneFilename, "wb")
-        writer = csv.writer(file)
-        for zone in newTimezones.keys():
-          writer.writerow((zone, newTimezones[zone][0], newTimezones[zone][1]))
-        file.close()
+              decodedTimezone = self.decodeHTMLCharacterEntities(timezone)
+              #print "|%s|%s|%s|" % (fullname, decodedTimezone, offset)
+              if(offset == ""):
+                newTimezones[fullname] = ("+0000", "%s - %s" % (fullname, decodedTimezone))
+              else:
+                normalisedOffset = self.normaliseOffset(offset[0] + offset[2:])
+                newTimezones[fullname] = (normalisedOffset, "%s - %s" % (fullname, decodedTimezone))
+    
+        #    for zone in self.timezones.keys():
+        #      print "|%s|%s|%s|" % (zone, self.timezones[zone][0], self.timezones[zone][1])
+            # write the CSV
+            file = open(self.timezoneFilename, "wb")
+            writer = csv.writer(file)
+            for zone in newTimezones.keys():
+              writer.writerow((zone, newTimezones[zone][0], newTimezones[zone][1]))
+            file.close()
+        except Exception, e:
+            logging.debug("Exception!: %s" % (str(e)))
+            logging.debug("Last URL parsed: %s" % (lastUrlParsed))
+            self.refreshFailed = True
 
         self.refreshFinishedEvent.set()
 
@@ -185,10 +197,14 @@ class ClockPlugin:
 
     def onTimer(self, irclib):
         if(self.isRefreshRunning and self.refreshFinishedEvent.isSet()):
-            self.loadTimezones()
-            irclib.sendChannelMessage("Phew! That was some hard work, but I updated the timezones! '4")
-            self.isRefreshRunning = False
-            return
+            if(self.hasRefreshFailed):
+                irclib.sendChannelMessage("Refreshing the timezones has failed. The problem has been logged.")
+                self.isRefreshRunning = False
+                self.hasRefreshFailed = False
+            else:
+                self.loadTimezones()
+                irclib.sendChannelMessage("Phew! That was some hard work, but I updated the timezones! '4")
+                self.isRefreshRunning = False
 
 
 
@@ -196,6 +212,7 @@ class ClockPlugin:
         self.refreshFinishedEvent = threading.Event()
         self.isRefreshRunning = True
         thread.start_new_thread(self.refreshTimezones, ())
+        #self.refreshTimezones()
 
 
 
