@@ -92,7 +92,7 @@ class ClockPlugin:
           # get the city's page and extract it's timezone information
           (city_status, city_page, city_location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+url)
           fullname = self.decodeHTMLCharacterEntities(re.compile("<span class=\"biggest\">(.*?)</span>", re.DOTALL).search(city_page).group(1))
-          timezone_string = re.compile("<tr class=\"d1\"><th>UTC/GMT Offset</th><td><table border=\"0\" cellpadding=\"2\" cellspacing=\"0\">(.*?)</table>.</td></tr>", re.DOTALL).search(city_page).group(1)
+          timezone_string = re.compile("<tr class=\"d1\"><th>UTC/GMT Offset</th><td id=\"tz1\"><table border=\"0\" cellpadding=\"2\" cellspacing=\"0\">(.*?)</table></td></tr>", re.DOTALL).search(city_page).group(1)
     
           # terminate if asked for
           if(not self.isRefreshRunning):
@@ -130,6 +130,8 @@ class ClockPlugin:
           decodedTimezone = self.decodeHTMLCharacterEntities(timezone)
           normalisedOffset = self.normaliseOffset(offset)
           newTimezones[fullname] = (normalisedOffset, decodedTimezone)
+          
+          #print "New timezone: %s, %s (%s)" % (fullname, normalisedOffset, decodedTimezone)
 
         # find timezones
         numZones = 0
@@ -193,7 +195,8 @@ class ClockPlugin:
     def doTimezoneRefresh(self):
         self.refreshFinishedEvent = threading.Event()
         self.isRefreshRunning = True
-        thread.start_new_thread(self.refreshTimezones, ())
+        #thread.start_new_thread(self.refreshTimezones, ())
+        self.refreshTimezones()
 
 
 
