@@ -29,7 +29,7 @@ class EventNotificationPlugin:
         self.lastUpdate = datetime.datetime.now()
 
     def getVersionInformation(self):
-        return("$Id: EventNotificationPlugin.py 199 2006-03-25 23:10:53Z cortex $")
+        return("$Id$")
   
     def getPage(self, host, url):
         conn = httplib.HTTPConnection(host)
