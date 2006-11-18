@@ -2,6 +2,7 @@ import httplib
 import xml.dom.minidom
 import datetime
 import re
+import socket
 
 
 
@@ -17,19 +18,29 @@ class EventNotificationPlugin:
     updateTimeoutSeconds = 60*60
     dateExtractionRE = "(?P<year>\d\d\d\d)-(?P<month>\d\d)-(?P<day>\d\d) 00:00:00"
     infotextUnfoldingRE = "(?P<hour>\d\d)(?P<minute>\d\d) UTC(: (?P<info>.*))?"
+    topicEventSplitterL = "|-"
+    topicEventSplitterR = "-|"
+    channelTopicSplittingRE = "^(?P<prologue>.*?)" + re.escape(topicEventSplitterL) + "(?P<currentEvent>.*?)" + re.escape(topicEventSplitterR) + "(?P<epilogue>.*?)$"
     reminderTimeoutSeconds = [12*60*60, 6*60*60, 3*60*60, 2*60*60, 1*60*60, 45*60, 30*60, 15*60, 10*60, 5*60, 3*60, 60, 0]    # has to be ordered from longest time-delta to shortest time-delta
     detectionThreshold = 15
+    datetimeFormat = "%Y-%m-%d %H:%M UTC"
+
+
 
     def __init__(self):
         #self.pluginInterface = pluginInterface
         self.calendarSource = {"host": "www.teamportal.net", "url": "/RollingThunder/XML/calendar.php"}
         self.expectedVersion = "1"
         self.eventList = []
-        self.updateEventList()
-        self.lastUpdate = datetime.datetime.now()
+        self.lastUpdate = None
+        self.channelTopicUpdateScheduled = True
+
+
 
     def getVersionInformation(self):
         return("$Id$")
+
+
   
     def getPage(self, host, url):
         conn = httplib.HTTPConnection(host)
@@ -40,6 +51,8 @@ class EventNotificationPlugin:
         conn.close()
         #LogLib.log.add(False, str((r1.status, data, r1.getheader("Location"))))
         return((r1.status, data, r1.getheader("Location")))
+
+
 
     def updateEventList(self):
         calendarItemList = []
@@ -77,7 +90,7 @@ class EventNotificationPlugin:
                 if(infotextUnfoldingResult.group('info')):
                     calendarItem["info"] = infotextUnfoldingResult.group('info')
                 else:
-                    calendarItem["info"] = "[no additional info]"
+                    calendarItem["info"] = "no additional info"
             else:
                 calendarItem["datetime"] = datetime.datetime(year = int(dateExtractionResult.group('year')),
                                                              month = int(dateExtractionResult.group('month')),
@@ -118,7 +131,12 @@ class EventNotificationPlugin:
 
         # sort the list by date
         self.eventList.sort(cmp = lambda x,y: cmp(x["datetime"], y["datetime"]))
-            
+        
+        # trigger channel topic update
+        self.channelTopicUpdateScheduled = True
+
+
+
     def secondsToString(self, seconds):
         values = {}
         values["weeks"] = seconds / (60*60*24*7)
@@ -136,25 +154,41 @@ class EventNotificationPlugin:
                 elif(values[magnitude] == 1): stringElements.append("1 %s" % (magnitude[:-1]))
             return("in " + ", ".join(stringElements))
 
-    def showNextEvent(self, irclib):
+
+
+    def getNextEvent(self):
         if(len(self.eventList) > 0):
             now = datetime.datetime.utcnow()
             for event in self.eventList:
                 if(event["datetime"] > now):
-                    timeToEvent = event["datetime"]-now
-                    deltaSeconds = timeToEvent.days * 60*60*24 + timeToEvent.seconds
-                    irclib.sendChannelMessage("Next upcoming event: %s (%s) %s" % (event["event"], event["info"], self.secondsToString(deltaSeconds)))
-                    return
+                    return((event["event"], event["info"], event["datetime"]))
+        else:
+            return(None)
+
+
+
+    def showNextEvent(self, irclib):
+        nextEvent = self.getNextEvent()
+        if(nextEvent):
+            (event, info, date) = nextEvent
+            now = datetime.datetime.utcnow()
+            timeToEvent = date-now
+            deltaSeconds = timeToEvent.days * 60*60*24 + timeToEvent.seconds
+            irclib.sendChannelMessage("Next upcoming event: %s (%s) %s" % (event, info, self.secondsToString(deltaSeconds)))
         else:
             irclib.sendChannelMessage("No scheduled events.")
+
+
 
     def listAllEvents(self, irclib):
         if(len(self.eventList) > 0):
             irclib.sendChannelMessage("Known events:")
             for event in self.eventList:
-                irclib.sendChannelMessage("%s UTC: %s (%s)" % (str(event["datetime"]), event["event"], event["info"]))
+                irclib.sendChannelMessage("%s: %s (%s)" % (event["datetime"].strftime(EventNotificationPlugin.datetimeFormat), event["event"], event["info"]))
         else:
             irclib.sendChannelMessage("No scheduled events.")
+
+
 
     def listUpcomingEvents(self, irclib):
         if(len(self.eventList) > 0):
@@ -168,11 +202,49 @@ class EventNotificationPlugin:
         else:
             irclib.sendChannelMessage("No scheduled events.")
 
+
+
+    def updateChannelTopicIfNecessary(self, irclib):
+        # expand the current channel topic
+        if(irclib.channelTopic):
+            reResult = re.compile(EventNotificationPlugin.channelTopicSplittingRE).match(irclib.channelTopic)
+            if(reResult):
+                prologue = reResult.group("prologue")
+                currentEvent = reResult.group("currentEvent")
+                epilogue = reResult.group("epilogue")
+            
+                # generate the event text
+                nextEvent = self.getNextEvent()
+                if(nextEvent):
+                    (event, info, date) = nextEvent
+                    eventText = " Next event: %s on %s " % (event, date.strftime(EventNotificationPlugin.datetimeFormat))
+                else:
+                    eventText = " No scheduled event. "
+                
+                # if the event text isn't already there, update the channel topic
+                if(currentEvent != eventText):
+                    newChannelTopic = "%s%s%s%s%s" % (prologue, EventNotificationPlugin.topicEventSplitterL, eventText, EventNotificationPlugin.topicEventSplitterR, epilogue)
+                    irclib.setChannelTopic(newChannelTopic)
+
+            # this has been handled now
+            self.channelTopicUpdateScheduled = False                
+
+
+
+    def onChannelTopicChange(self, irclib, source, newTopic):
+        self.updateChannelTopicIfNecessary(irclib)
+
+
+
     def onTimer(self, irclib):
         # update if necessary
-        deltatime = datetime.datetime.now() - self.lastUpdate
-        if((deltatime.days != 0) or (deltatime.seconds > EventNotificationPlugin.updateTimeoutSeconds)):
-            self.updateEventList()
+        if(self.lastUpdate):
+            deltatime = datetime.datetime.now() - self.lastUpdate
+        if((not self.lastUpdate) or (deltatime.days != 0) or (deltatime.seconds > EventNotificationPlugin.updateTimeoutSeconds)):
+            try:
+                self.updateEventList()
+            except socket.error, exc:
+                irclib.sendChannelMessage("WARNING: EventNotificationPlugin couldn't retrieve events, presumably the website is down. Error message: '%s'" % (exc.args[1]))
             self.lastUpdate = datetime.datetime.now()
 
         # notify if necessary
@@ -191,6 +263,14 @@ class EventNotificationPlugin:
                     del(event["notifications"][0])
                 else:
                     break
+
+            if(len(event["notifications"]) == 0):
+                self.channelTopicUpdateScheduled = True
+                
+        if(self.channelTopicUpdateScheduled):
+            self.updateChannelTopicIfNecessary(irclib)
+
+
     
     def onChannelMessage(self, irclib, source, message):
 #        if(message == "calendar /debug"):
