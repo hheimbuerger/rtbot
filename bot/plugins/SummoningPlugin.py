@@ -6,7 +6,7 @@ class SummoningPlugin:
     wisdomCommand = "In Bet Wis!"
 
     def getVersionInformation(self):
-        return("$Id: SummoningPlugin.py 163 2006-07-27 14:28:11Z terralthra $")
+        return("$Id: SummoningPlugin.py 353 2006-12-18 11:38:11Z terralthra $")
 
     @classmethod
     def getDependencies(self):
