@@ -72,7 +72,7 @@ class HumanBehaviourPlugin:
 	elif(msg.lower() == "'gl" or msg.lower() == "`gl"):
 		irclib.sendChannelMessage("'gc")
 	elif(msg.lower() == "'go" or msg.lower() == "`go"):
-		irclib.sendChannelMessage("Sleep well, " + source + "!")
+		irclib.sendChannelMessage("Sleep well, " + source.getCanonicalNick() + "!")
 	elif(msg.lower() == "'ac" or msg.lower() == "`ac"):
 		irclib.sendChannelMessage("Ram it! Ram it! RAM IT!!!")
 	elif(msg.lower() == "'gn" or msg.lower() == "`gn"):
