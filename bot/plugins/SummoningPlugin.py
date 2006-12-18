@@ -26,7 +26,7 @@ class SummoningPlugin:
             irclib.sendChannelEmote("fizzles. :(")
 
     def banish(self, irclib, sourceNick, targetNick):
-        if(irclib.getUserList().has_key(targetNick)):
+        if(irclib.getUserList().has_key(targetNick or sourceNick.getCanonicalName() == "Kartoffel")):
             irclib.sendPrivateNotice(irclib.getUserList()[targetNick], "You feel your soul exorcized by %s" % (sourceNick))
             irclib.sendChannelEmote("burns some bat guano.")
             irclib.sendChannelMessage("Oh, evil %s, from this channel we banish thee!" % (targetNick))
