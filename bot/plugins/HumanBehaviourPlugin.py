@@ -5,8 +5,8 @@ class HumanBehaviourPlugin:
   helpMessage = ["You can read up on my commands on this page: http://wiki.edge-of-reality.de/bin/view/Main/RTBotCommands"]
 
   def __init__(self, pluginInterface):
-      self.saidMyNameLastMessage = {}
-      self.pluginInterfaceReference = pluginInterface
+	self.saidMyNameLastMessage = {}
+	self.pluginInterfaceReference = pluginInterface
 
   def getVersionInformation(self):
 	return("$Id$")
@@ -31,7 +31,11 @@ class HumanBehaviourPlugin:
 	else:
 	  return(text)
 
-#  @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_HIGH)
+  def onQuit(self, irclib, source, reason):
+      if(reason == "*.net *.split"):
+          irclib.sendChannelMessage("A Netsplit? TURN UNDEAD!")
+
+  @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_HIGH)
   def onPrivateMessage(self, irclib, source, message):
     if(message == "help"):
         for line in HumanBehaviourPlugin.helpMessage:
