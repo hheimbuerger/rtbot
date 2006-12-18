@@ -59,7 +59,7 @@ class SummoningPlugin:
                 irclib.sendChannelMessage("Oops.")
             elif(source.isAdmin()):
                 self.banish(irclib, source.nick, targetNick)
-            elif(source.getCanonicalName() == "Kartoffel" ):
+            elif(source.getCanonicalNick() == "Kartoffel" ):
                 irclib.sendChannelMessage("Wurf-mergency!")
                 self.banish(irclib, source.nick, targetNick)
             else:
