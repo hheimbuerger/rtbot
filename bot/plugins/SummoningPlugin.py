@@ -60,9 +60,9 @@ class SummoningPlugin:
             elif(source.isAdmin()):
                 self.banish(irclib, source.nick, targetNick)
             elif(source.getCanonicalNick() == "Kartoffel" ):
-                if(targetNick[:len(3)] == "Wurf" ):
+                if(targetNick[:len("Wurf")] == "Wurf" ):
                     irclib.sendChannelMessage("Wurf-mergency!")
-                elif(targetNick[:len(5)] == "Drizzo" ):
+                elif(targetNick[:len("Drizzo")] == "Drizzo" ):
                     irclib.sendChannelMessage("You can't beat him on EoR, and you can't beat him here.")
                 else:
                     irclib.sendChannelMessage("So what if he's not an Op? He's got a trout!")
