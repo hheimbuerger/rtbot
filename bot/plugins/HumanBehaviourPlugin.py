@@ -93,6 +93,8 @@ class HumanBehaviourPlugin:
             irclib.sendChannelMessage("A ghoul? TURN UNDEAD!")
         elif(msg.lower().find("skeleton") >= 0):
             irclib.sendChannelMessage("A skeleton? TURN UNDEAD!")
+        elif(msg.lower().find("slut") >= 0):
+            irclib.sendChannelMessage("A slut? TURN UNWED!")
 #	elif(self.removeURLs(msg).lower().find("rtbot") != -1):
 #		if((msg.lower().find("'yh") != -1) or (msg.lower().find("sup") != -1)):
 #			irclib.sendChannelMessage("'yh! I'm fine. How about you?")
