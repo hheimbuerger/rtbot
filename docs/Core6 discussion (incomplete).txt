@@ -1,0 +1,537 @@
+Session Start (irc.quakenet.eu.org:#RollingThunder.development): Sun Sep 17 19:50:30 2006
+[19:50] *** #RollingThunder.development: @Cort
+[19:50] *** #RollingThunder.development was created on Sun Sep 17 19:50:25 2006.
+[19:50] *** Ksero has joined #RollingThunder.development.
+[19:50] *** Mode change "+o Ksero" for channel #RollingThunder.development by Cort.
+[19:51] Cort: okay, let's assume we keep the current structure
+[19:51] Cort: this whole reloading process is very complex
+[19:51] Cort: lots of calls
+[19:52] Ksero: ... and it's not obvious when different functions are called, or exactly what they do
+[19:52] Cort: yeah
+[19:52] Cort: did you check the differences between rev. 267 and rev. 314?
+[19:53] Ksero: Not that thoroughly
+[19:53] Cort: it's not much, just about ten lines
+[19:53] Cort: the reload bug seems to have simply been that the event handlers were removed from the repository, but never inside the plugin
+[19:53] Cort: so each reload added another handler to be called
+[19:54] Ksero: yeah... it was a simple logic error. But it was hard to find
+[19:54] Cort: the other problem was that disposePluginObject() only puts a plugin offline if it's online
+[19:54] Cort: but in some of the calls previous to every dPO(), the dependencies were removed, I think
+[19:55] Cort: thereby implicitly putting it offline
+[19:55] Cort: so putOffline() was never called on a reload
+[19:55] Cort: something like that, was a month or two ago, and I never totally understood it, so I can't remember all details
+[19:58] Ksero: diagram coming up...
+[20:00] Ksero: (Link: http://www.cyd.liu.se/~anddo052/alleg/Enlightenment.PNG)http://www.cyd.liu.se/~anddo052/alleg/Enlightenment.PNG
+[20:00] Ksero: Hmmm... I think it requires some more labels and comments
+[20:01] Cort: if you put Initiation to the upper left, there are no crossings :)
+[20:01] Cort: we also need a "ReloadPlugin" command
+[20:01] Cort: can you add that right away?
+[20:02] Cort: and a notifyDependencyChange can fire on a deactivated plugin too, can't it?
+[20:02] Ksero: I'm going to figure out this first
+[20:03] Cort: or is it reloaded and dependencies checked after being enabled?
+[20:04] Ksero: Hmmm... yeah, I think notifyDependencyChange is called for disabled plugins
+[20:04] Cort: While you're working on that, let me type a completely unrelated idea that I'm going to mark with '2'
+[20:04] Cort: 2: Actually... is it that unrelated?
+[20:04] Cort: 2: Could we replace dependencies altogether?
+[20:05] Cort: 2: With a system where plugins can declare public methods
+[20:05] Cort: 2: that are shared in some 'CollaborationRepository'
+[20:06] Ksero: ... and plugins would declare dependencies to certain of these public methods?
+[20:06] Cort: True, this doesn't make a dependency mechanism unnecessary.
+[20:06] Cort: Didn't think of that.
+[20:07] Cort: I dunno, I'm still thinking about all this...
+[20:07] Cort: To open another can of worms: I've also been thinking about 'module plugins'.
+[20:07] Cort: Core functionality that is plugged in.
+[20:08] Cort: But doesn't directly communicate with a user.
+[20:08] Cort: Just supplying features to plugins.
+[20:09] Ksero: why can't we handle such plugins under the current system?
+[20:10] Cort: hmm
+[20:10] Cort: true, plugins can fire new events
+[20:10] Cort: here's another idea:
+[20:11] Cort: let's assume we could easily instantiate two PIs
+[20:11] Cort: oh man
+[20:11] Cort: I need to think a lot more about all this stuff first.
+[20:11] Cort: Let me tell you want I'd like to do in the future that I can't do right now:
+[20:14] Cort: 1. I'm very pleased by the new AuthPlugin. But accounts are still internal to it. If other plugins want to save data with a user account, they either need to depend on the AuthPlugin in this ugly way via the pluginReference given in the constructor, or they need to store a separate database and rely on the authentication name to be a unique key. They also need to handle accounts being deleted and all that stuff then.
+[20:14] Cort: Here, I'm tending towards the idea you mentioned once.
+[20:14] Cort: Having a central repository of plugin data.
+[20:14] Ksero: yay :D
+[20:15] Cort: :)
+[20:15] Cort: 2. I'd like to allow plugins to easily share files via an HTTP server and to offer XML-RPC methods.
+[20:16] Cort: at the same time I want to decouple the whole core more
+[20:16] Cort: IrcLib should be completely independent of the bot concept.
+[20:16] Cort: I'd like to write an IRC client based on IrcLib for example.
+[20:16] Ksero: right
+[20:17] Cort: the PI should also be competely independent of the bot concept
+[20:17] Cort: the UserList, that stores the current avatars in the channel, already has way too much RTBot-specific stuff, imho
+[20:17] Cort: I tried my best to prevent that, but every other solution would have been a mess.
+[20:18] Cort: I've been working on the current concept for at least two weeks in my head.
+[20:18] Cort: this WebService module is at a weird place
+[20:18] Cort: and it's interaction with the log is horrible
+[20:19] Cort: I'd really like to restructure the whole core
+[20:19] Cort: how the modules interact with each other
+[20:19] Cort: I just don't have an idea how.
+[20:19] Cort: I actually don't even really know *what* I want.
+[20:19] Ksero: But you know that you're unhappy with what you have :D
+[20:19] Cort: yep
+[20:19] Ksero: yeah... I know the feeling
+[20:19] Cort: well, not unhappy
+[20:20] Cort: it's a great piece of work
+[20:20] Cort: but it could be a lot better
+[20:20] Cort: like... we talked about sourceforging it one day
+[20:20] Cort: I wouldn't want to do that in the current state
+[20:20] Ksero: I don't know... I mean it's a tinkering project... you add a little bit here... add a little bit there...
+[20:20] Cort: I'm not the man for tinkering projects. :)
+[20:20] Cort: I'm always looking for the one perfect clear structure. :)
+[20:21] Ksero: Yeah... I'm also somewhat of a perfectionist
+[20:21] Cort: The new UserList and AuthPlugin is a huge improvement.
+[20:21] Cort: Definitely the right direction.
+[20:21] Ksero: I'm somewhat afraid that it makes me a slower coder
+[20:21] Cort: It does. At least in my case. :)
+[20:21] Cort: But in a project like this, it fortunately doesn't matter that much.
+[20:22] Ksero: At the same time, I'm a bit impressed with your "Just Do It" mentality... Sometimes I tend to read too much documentation and write too clever code
+[20:22] Ksero: like reduce... etc
+[20:22] Cort: Consider how awesome it would be if you could take RTBot's code and create a plugin-powered IRC client in like a couple of hours.
+[20:22] Cort: Just by reordering the modules.
+[20:23] Cort: Where did a show a "Just Do It" mentality?
+[20:23] Cort: I*
+[20:25] Ksero: Hmmm... let's see...
+[20:26] Cort: I'm very "just do it" about plugins, yeah. But just because they have been thoroughly designed for this mentality.
+[20:26] Cort: And Python is high-level enough to make me not care about performance.
+[20:26] Cort: Have to iterate about something? So what, it's just one line, two at most.
+[20:27] Cort: That's also the nice part about this being an IRC bot. There's never something time-critical.
+[20:27] Cort: You can always prefer readability/maintainability over performance.
+[20:28] Ksero: I've also thought about generating documentation using pydoc or something
+[20:28] Ksero: from docstrings
+[20:28] Ksero: never done something like that, but it should be fairly simple
+[20:29] Cort: Yeah, it's lacking documentation, that's true. But I never considered API documentation very useful, especially when you have direct access to the devs. I still want to write that howto to plugin development, though.
+[20:30] Ksero: Yeah... it wouldn't be very useful for us... but if it is to be published...?
+[20:31] Cort: You mean published outside Alleg?
+[20:31] Ksero: yeah... sourceforged
+[20:32] Cort: Then yes. But right now, chances are very low that somebody but us two will start working on the core. Unless Fac suddenly becomes unemployed... ;)
+[20:32] Cort: So I'd by far prefer to make it easier to get into writing plugins.
+[20:32] Ksero: True
+[20:32] Cort: Denga, Serp, Fac, Terra, Bunny, there's a lot of potential. :)
+[20:34] * Cort starts drawing diagrams too
+[20:35] Ksero: What do you use?
+[20:36] Cort: I'm a lamer. I will use OOo-Draw now. :)
+[20:36] Cort: never got into UML tools
+[20:36] Cort: they all suck
+[20:36] Cort: besides, my mind doesn't work in UML
+[20:36] Cort: UML never felt intuitive for me.
+[20:36] Ksero: The problem is when they impose too much structure
+[20:36] Cort: And I tried hard to force it to.
+[20:36] Ksero: I mean code generation from UML...?
+[20:37] Ksero: UML should be used for over-arching design sketches... Not the nitty-gritty details
+[20:37] Cort: yeah
+[20:37] Ksero: or at least that's my opinion now
+[20:37] Ksero: I haven't really worked on a "huge" enterprisey project
+[20:37] Ksero: might be different there
+[20:40] Ksero: Now I use UML Pad... it's almost perfect... just a bit too much structure.
+[20:41] Ksero: I used a little java application called violet before... Hmmm... why was it that I stopped using violet?
+[20:56] Cort: carefully marked as v0.1...
+[20:56] Cort: (Link: http://share.edge-of-reality.de/RTBot/Bot%20Structure.pdf)http://share.edge-of-reality.de/RTBot/Bot%20Structure.pdf
+[20:56] Cort: that's what I'd like to see
+[20:56] *** You are now known as Cort[SG].
+[20:57] Cort[SG]: emphasis on the arrows
+[20:57] Cort[SG]: actually, emphasis on where there *aren't* any arrows ;)
+[20:57] *** -RTBot- You have been summoned by hockster!
+[23:20] Ksero: Oh, and I want BotCore to go away. Some parts can be merged with BotManager, others (Hello, I'm your friendly RTBot!) can go into a plugin. 
+[23:21] Ksero: (Link: http://www.cyd.liu.se/~anddo052/alleg/rtbot.PNG)http://www.cyd.liu.se/~anddo052/alleg/rtbot.PNG
+[23:21] Cort: Yes, I've been thinking about that too.
+[23:21] Cort: BotManager = BotCore
+[23:21] Cort: except for the unix daemon parts
+[23:21] Cort: that's a simple detail though
+[23:21] Cort: as they only depend on each
+[23:22] Cort: nah
+[23:22] Cort: as they handle two parts of the same stuff
+[23:27] Ksero: Why can't userlist be a plugin?
+[23:27] Cort: It's an integral part of the IrcLib.
+[23:27] Cort: Could be just as well moved into the same file.
+[23:27] Ksero: aha
+[23:28] Cort: browse through the readme
+[23:28] Cort: the terms nick/user/name/account are very important now
+[23:28] Cort: UserList handles the nick/user part, AuthPlugin the name/account part.
+[23:31] Cort: btw., the PI also needs to be more configurable
+[23:31] Cort: paths and files, for example
+[23:36] Cort: a) what do you think about forcing Plugins to be subclassed from a plugin baseclass?
+[23:37] Cort: less flexibility and simplicity in writing plugins, but it would be easier to pass the references, like the one to the PI and to the IrcLib
+[23:37] Ksero: easier? how? it's not like we're programming in C++ ;)
+[23:39] Ksero: We can draw a virtual parent class "Plugin" in our diagrams that says something about how a plugin should behave and look
+[23:40] Cort: true
+[23:40] Cort: well, that's my original "reference injection" idea then :)
+[23:41] Cort: question is:
+[23:41] Cort: can we guarantee that IrcLib, PI and whatever never change during the execution of a plugin
+[23:41] Ksero: Yeah... I've been thinking about that too
+[23:41] Ksero: one way would be to dispose of the plugin object as soon as it doesn't have its dependencies
+[23:42] Cort: that was the original reason for passing them as parameters
+[23:42] Ksero: and then reconstruct it when they are available
+[23:42] Cort: but it's kinda ugly
+[23:42] Cort: that's already what's currently happening (should happen) when the bot leaves the channel
+[23:44] Ksero: Okay... then do we send messages to plugins about when their dependencies change?
+[23:44] Cort: you're talking about calling methods in the PluginWrapper?
+[23:45] *** -RTBot- You have successfully authenticated as user Cort!
+[23:45] Cort: or do you really mean catchable, processable messages?
+[23:45] Ksero: no, calling methods on the pluginobject
+[23:45] Cort: why?
+[23:45] Ksero: to inform it when its dependencies change
+[23:45] Ksero: if you don't want to dispose of the object when the...
+[23:45] Ksero: when its dependencies are lost or destroyed or whatever
+[23:46] Ksero: or are we talking about entirely different things now?
+[23:47] Cort: I'm talking about nothing and not yet sure what you are talking about. :)
+[23:47] Cort: I want to dispose the object.
+[23:47] Ksero: okay
+[23:47] Cort: I definitely don't want to let the plugin devs handle the whole 'currently not in channel' stuff, if that is your idea.
+[23:48] Ksero: or, say, "the AuthPlugin just died, so my reference to it is broken"
+[23:48] Cort: we can't get rid of plugins having access to other plugins, right? :(
+[23:49] Ksero: Hmmm... move authplugin to core modules?
+[23:49] Ksero: How about defining plugins as something that doesn't depend on other plugins?
+[23:49] Cort: Muting does Insulting
+[23:50] Cort: Summoning does WarWisdoming
+[23:50] Ksero: Ok, then no. We can't get rid of that
+[23:50] Cort: can we simplify it?
+[23:51] Ksero: but we can dispose of objects when their references to their dependencies die
+[23:51] Cort: so if Muting uses Insulting
+[23:51] Ksero: I thought about sending a proxy-object that, by overloading special methods, could pretend to be anything
+[23:51] Cort: and Insulting goes away...
+[23:52] Cort: that would be an idea
+[23:52] Ksero: and then that proxy-object could point to different objlect
+[23:52] Cort: there's this general __call__ method
+[23:52] Cort: generic*
+[23:52] Ksero: and the __getattr__
+[23:52] Cort: yup
+[23:52] Cort: well
+[23:53] Cort: let's assume the whole bot is single-threaded
+[23:53] Cort: (and I'm planning to make it)
+[23:54] Cort: couldn't we then just inject references to plugins that are declared a dependency?
+[23:54] Cort: i.e.
+[23:54] Cort: Muting declares a dependency to Insulting via getDependencies()
+[23:54] Cort: now when Muting is loaded, we inject a variable called "referenceInsultPlugin" or something
+[23:55] Cort: so we basically guarantee a plugin:
+[23:56] Cort: "when you are loaded, you have a valid IrcLIb reference and a valid reference to all plugins you're depending on"
+[23:56] Cort: whenever one of these become invalid, we remove the plugin too
+[23:57] Cort: the proxy-object would then still be useful, but just for a small detail: to catch exceptions from the plugin they are raised in, and not from the plugin that called the other plugin that raised the exception
+[23:57] Ksero: Hmmm... that could work... you were injecting imports before, weren't you?
+[23:57] Cort: no, right now we're using some method you came up with
+[23:57] Cort: umm...
+[23:57] Cort: what was it again
+[23:57] Ksero: No, the proxy objects would be useful if someone removes the authPlugin and upgrades it to a never version
+[23:58] Ksero: just call proxyObject -> setObject(newAuth)
+[23:58] Cort: mmmh
+[23:58] Cort: wouldn't that be dangerous?
+[23:58] Ksero: Why?
+[23:58] Cort: shouldn't the main object be reloaded then, too?
+[23:58] Cort: well, it's a matter of definion
+[23:58] Ksero: you mean the plugin that is dependent on authplugin?
+[23:58] Cort: but many plugins reset data when they are reloaded
+[23:59] Ksero: Hmmm... true...
+[23:59] Ksero: if it's dependent on having the authplugin in a certain state
+[23:59] Cort: like: the ATTPlugin saves the current game in member variables
+[23:59] Cort: because there's really no good reason to serialise them
+[23:59] Cort: exactly!
+[23:59] Cort: but well, we could say: never expect a certain state
+[23:59] Ksero: And that isn't too... limiting?
+[23:59] Cort: it's a question of design, not of technical limitations, really
+[00:00] Cort: that was my question :)
+[00:00] Cort: [23:58] Cort: wouldn't that be dangerous?
+ [23:58] Ksero: Why?
+[00:00] Cort: ;)
+[00:00] Cort: Detail. Back to the topic at hand: can we inject?
+[00:00] Cort: And if so, why did we decide against it last time?
+[00:00] Ksero: I don't know
+[00:00] Ksero: but I think it should be doable somehow
+[00:01] Ksero: actually, I wanted to be able to evaluate/run all the plugins without having to work my way around those implicit imports
+[00:01] * Cort starts testing
+[00:01] Ksero: when you automagically imported math and string
+[00:01] Cort: true
+[00:01] Cort: well, we wouldn't inject imports
+[00:01] Cort: would we?
+[00:01] Ksero: I hope not!
+[00:02] Cort: we're just talking about injecting an IrcLib reference
+[00:02] Cort: and plugin references
+[00:02] Cort: can we somehow create a method to mock those for unit tests?
+[00:02] Cort: the IrcLib in particular?
+[00:02] Cort: +way
+[00:02] Cort: -way
+[00:02] Ksero: to test plugins?
+[00:02] Ksero: Hmmm...
+[00:03] Ksero: probably easier to say once we figure out how to actually injecting those references
+[00:03] Ksero: -ing
+[00:11] Cort: hmm, not that easy...
+[00:15] Cort: DUH!
+[00:15] Cort: ROFL
+[00:15] Cort: class A:
+   pass
+ 
+ a = A()
+ a.irclibReference = theIrclib
+ 
+ Done.
+[00:16] Ksero: so then we decide that plugins can't use dependencies in their constructors?
+[00:17] Cort: mmmh
+[00:17] Cort: dammit, shut up already ;)
+[00:17] Ksero: :)
+[00:17] Cort: everytime something seems to work...
+[00:17] Cort: well, we can still give them a "onEnable" event
+[00:17] Cort: hey!
+[00:17] Cort: hah!
+[00:18] Cort: Gotcha!
+[00:18] Cort: Right now, the constructor doesn't get an irclib reference either!
+[00:18] Cort: and accessing other plugins in the constructor... well... don't think that's something that should restrict us
+[00:19] Cort: thePlugin = PluginClass()
+ thePlugin.irclib = theIrclib
+ thePlugin.fireEvent("onInitialise")
+[00:28] Ksero: Brave New Bot (aka. RTBot Revolution)
+[00:28] Ksero: * plugins declare their dependencies in a static method called getDependencies. This should return a list of strings that are the names of other plugin python modules. (eg. ["BarPlugin", "FooPlugin"]
+[00:28] Ksero: * the plugins can't do anything with these dependencies in the constructor (__init__)
+[00:28] Ksero: * after construction, the method/event onInitialise is called/fired if it exists. By this time, the plugin is guaranteed to have attributes corresponding to its dependencies injected. These attributes will have the same names as their modules. (eg. self.BarPlugin, self.FooPlugin)
+[00:31] Cort: static method -> class method
+[00:31] Cort: (yeah yeah)
+[00:31] Cort: can we stick to the Java guidelines with the naming style?
+[00:31] Cort: self.barPlugin or self.referenceBarPlugin
+[00:31] Cort: the 'reference' sucks, but I'd prefer to have something inserted there
+[00:32] Cort: although
+[00:32] Cort: dunno
+[00:32] Cort: self.barPlugin is cool too
+[00:32] Cort: * in addition to that, each plugin is guaranteed to have attributes corresponding to base modules:
+[00:32] Cort:    - irclib
+[00:32] Cort:    - httpserver
+[00:32] Cort:    - rpcserver
+[00:32] Cort:    - accountmanager
+[00:32] Cort: let me think through if that works
+[00:33] Ksero: oh, and Python is a bit weird in that... staticmethod is a method that can be called without an instance
+[00:33] Ksero: classmethod is a method which is called on an instance
+[00:33] Cort: right, there was a difference
+[00:34] Cort: and we need a staticmethod because...
+[00:34] * Cort thinks
+[00:34] Cort: doesn't matter, but makes more sense, yes
+[00:34] Ksero: because I used to think that plugins could need to use their dependencies in their constructors
+[00:34] Ksero: hence I couldn't construct them before I knew about their dependencies
+[00:35] Cort: you still need to do that!
+[00:35] Cort: because you need to know what they depend on before they can be instantiated!
+[00:36] Ksero: Ah, well... splitting hairs... doesn't matter
+[00:36] Cort: btw., what do you think of a destructor event?
+[00:36] Cort: right now, plugin are saving their data on each change
+[00:36] Cort: instead of onUnload
+[00:36] Ksero: pluginobject.dispose() is called right now
+[00:36] Cort: then again, it's a bit risky
+[00:37] Cort: is that reliable?
+[00:37] Cort: right, I remember that we were talking about it
+[00:37] Cort: is it also called if an exception is raised?
+[00:37] Ksero: I don't care what happens... I ignore any exception
+[00:41] Cort: mmmh
+[00:42] Cort: could we have a list of 'event sources'?
+[00:42] Cort: IrcLib being one
+[00:42] Cort: on par with the HTTPServer and the RPCServer
+[00:43] Cort: a list that is iterated over
+[00:43] Ksero: other plugins?
+[00:43] *** -> -RTBot- authenticate Cort tufer
+[00:43] *** -RTBot- You have successfully authenticated as user Cort!
+[00:43] *** -RTBot- This authentication will expire if you don't join the channel in the next 15 seconds.
+[00:44] Cort: no, other modules
+[00:44] Ksero: no, I mean couldn't other plugins send events?
+[00:44] Cort: mmh
+[00:45] Cort: I don't yet know what for, but sounds cool :)
+[00:45] Ksero: :)
+[00:45] Cort: actually, that would be another solution for dependencies
+[00:45] Cort: right?
+[00:45] Cort: you said that before...
+[00:45] Ksero: Yeah... but it's pretty much one-way communication
+[00:47] Ksero: ... but then we could have a telnet server plugin. And when the user sends the terminate command, it raises the "quit" event, which is handled...
+[00:48] Ksero: I don't know.
+[00:48] Cort: well...
+[00:48] Cort: servers daemons are modules, not plugins
+[00:48] Ksero: Anyways... it sounds cool and it's not any work to let plugins raise events
+[00:48] Cort: the plugins would still need a reference to pluginInterface, though
+[00:48] Cort: VersionPlugin
+[00:49] Cort: StatusPlugin
+[00:49] Cort: HelpPagePlugin (which is going to collect snippets of help data from all plugins and then serving it on the HTTP server)
+[00:49] Ksero: yeah, I added pluginInterface to the list, but I feel that adding individual plugins would tie it a bit too close, woludn't it?
+[00:49] Cort: yes, absolutely
+[00:49] Ksero: Ahh... that's a nice idea
+[00:49] Cort: but if we extract the AccountManager from AuthPlugin...
+[00:50] Cort: and then add a DataStore to the accounts like the users already have it...
+[00:50] Ksero: Anyways, with this injection there's also no need for the proxyobject.
+[00:50] Cort: ... except for catching the right error messages, no?
+[00:51] Cort: well, it would report the wrong module but the right code line
+[00:51] Cort: so I guess it's fine
+[00:51] Ksero: though... that would lead to the faulty module still loaded
+[00:51] Ksero: +being
+[00:52] Cort: right! good catch!
+[00:52] Cort: but the question is
+[00:52] Cort: no wait, it would report the right class, wouldn't it?
+[00:52] Cort: does PI deactivate the plugin that threw the exception?
+[00:52] Ksero: Hmmm... 
+[00:53] Cort: or the plugin reported in the exception object?
+[00:53] Cort: prolly the former
+[00:53] Cort: but don't we have the data to do the latter?
+[00:53] Cort: I still don't understand Exception objects.
+[00:53] Cort: That's also the problem with the DatabaseEmitter
+[00:54] Cort: everytime I debug it, this exception.args is something different
+[00:54] Cort: sometimes it's just a string
+[00:54] Cort: sometimes it's a list of one string
+[00:54] Cort: sometimes it's a list of many strings
+[00:54] Cort: sometimes it's a list of lists of strings
+[00:54] Ksero: weird
+[00:57] Ksero: Hmmm... I'll have to think about how to handle those nested plugin errors
+[00:59] Ksero: For example, say that one plugin requires an integer argument. Another plugin sends a string, and an assertion exception is raised
+[01:07] Ksero: Am I getting into too many details here?
+[01:09] Cort: nope, let me think
+[01:09] Cort: that will cause an exception in the outer plugin, I think
+[01:09] Cort: and that's correct
+[01:09] Cort: actually, no
+[01:09] Ksero: ... but if we intercept that exception in the proxy
+[01:09] Cort: Python doesn't know what type is expected, duh
+[01:10] Cort: yeah, you're right
+[01:10] Cort: tbh, the best solution would be to disable both :)
+[01:10] Ksero: exactly
+[01:10] Ksero: or the entire call stack, if it is nested deeply (gotta think ahead ;) )
+[01:11] Cort: yep, sure
+[01:12] Cort: next request: in the case of the HTTP/RPCServer, it might actually be useful to allow EventEmitters to specify a target plugin
+[01:12] Cort: what do you think about that?
+[01:13] Cort: like: you register at the server for a specific call
+[01:13] Cort: then wait for the event
+[01:13] Cort: or do you have a better suggestion how to handle that?
+[01:13] Ksero: for performance?
+[01:13] Cort: nah
+[01:13] Ksero: Because we could just route the events through the plugin interface in the normal fashion
+[01:14] Cort: but in many cases, the target needs to subscribe beforehand anyway
+[01:14] Ksero: those who want the even tdefine onHTTPServerconnectionThingy
+[01:14] Cort: let's take the RPC server
+[01:14] Cort: a plugin says: "Please add a new RPC method for me, I want to respond on "triggerMe(int)"
+[01:15] Cort: it's just counter-intuitive to broadcast that to all plugins, don't you think?
+[01:16] Ksero: So... could the RPC Server keep track of its own events / target plugins?
+[01:16] Cort: maybe it should
+[01:16] Cort: maybe not
+[01:16] Cort: maybe it should just return an ID for that method
+[01:16] Cort: and the plugin then checks for the ID
+[01:16] Cort: this brings a couple of problems anyway
+[01:17] Cort: like unloaded/crashed plugins
+[01:17] Cort: we really need to either call dispose() always or have a special crashIntercept() event
+[01:19] Ksero: yeah... I added that to the contract. dispose should always be called
+[01:20] Cort: So... are we really going to do all this? Or just talking about it? I don't mean now... just eventually. :)
+[01:20] Cort: Because this is pretty awesome stuff.
+[01:21] Ksero: How much design is enough design? ;)
+[01:21] Cort: oh, I can still come up with more questions, no worries
+[01:22] Cort: next topic:
+[01:22] Cort: the PI interface
+[01:22] Ksero: Yeah... but sooner or later you have to just plunge in and learn from coding
+[01:22] Cort: I'd like to eventually remove !enable and !disable from StatusPlugin
+[01:22] Ksero: how should it be handled?
+[01:22] Cort: !status stays, but needs to be more user-friendly
+[01:23] Cort: !enable, !disable and !reload can be issued from the web-app only
+[01:23] Ksero: ah
+[01:23] Cort: after all, the point of disabling was to *not* reactivate a plugin right after it crashes
+[01:23] Cort: my end goal is that the second a plugin crashes,
+[01:23] Cort: the registered plugin auther gets an e-mail,
+[01:23] Cort: commits a fix
+[01:23] Cort: marks the exception in the web-app as "fixed"
+[01:24] Cort: then an admin sees it, updates the plugin from the repo, deletes the exception and enables the plugin
+[01:24] Cort: author*
+[01:24] Ksero: okay... but you were talking about the PI interface?
+[01:24] Cort: that's some more work on the webapp for me, but I need to prepare for it
+[01:24] Cort: so !status stays, more user friendly
+[01:25] Cort: and the missing dependencies are colour highlighted
+[01:25] Ksero: Hmmm... now where should I write that down?
+[01:25] Cort: and another command lists all disabled plugins (and whether due to bugs or due to dependencies)
+[01:25] Cort: :)
+[01:25] Cort: that's the interface to the PI
+[01:25] Cort: the public methods
+[01:31] Ksero: ok, I've written down what we've said about plugins in the readme... committing
+[01:34] Cort: yes, except for some details, I can agree with that
+[01:34] Cort: what's NYI?
+[01:34] Ksero: Not Yet Implemented
+[01:34] Cort: ah :)
+[01:35] Cort: exactly when do you need "import"
+[01:35] Cort: if we inject the IrcLib
+[01:35] Cort: does the plugin have to import it?
+[01:35] Ksero: no
+[01:35] Cort: You import classes, but you don't need classes to work with instances?
+[01:35] Ksero: right
+[01:35] Cort: k
+[01:35] Cort: that's cool
+[01:36] Ksero: at least afaik :)
+[01:36] Cort: sounds right
+[01:46] *** Ksero is now known as Chairman.
+[01:46] *** Chairman is now known as ChairPerson.
+[01:47] *** ChairPerson is now known as Ksero.
+[01:55] Cort: okay, and I'm going to implement a global 'heartbeat'
+[01:55] Cort: the modules will no longer use their own timers
+[01:55] Cort: not for triggering the onTimer event
+[01:55] Cort: not for checking for updated plugins
+[01:56] Ksero: Less locks needed :)
+[01:56] Cort: and the whole thing will be somehow thread-synched around the tcpstream.read_data() call
+[01:56] Cort: to force it to a single-threaded mode
+[01:57] Cort: what else
+[01:57] Cort: okay, let's have a look how the modules communicate with each other
+[01:58] Cort: thinking about a way to generalise the Consumer idea and using it for all inter-module communication
+[01:59] Ksero: Well, I don't think it should be taken too far.
+[01:59] Ksero: in the end, it could be said that it's a "soft method call"
+[01:59] Ksero: the object can respond if it wants
+[02:00] Ksero: which is kind of like calling a real function in a try block and ignoring any exceptions for there not being a method
+[02:00] Ksero: I mean in the end you have to specify some sort of interface
+[02:00] Ksero: and now I'm ramdling
+[02:00] Ksero: *rambling
+[02:01] Ksero: I suppose one advantage is that you don't need to specify anywhere what the interfaces between the modules are. in one version, moduleA starts to send a message. In the next version ModuleB starts to process that message
+[02:02] Ksero: I mean it's just a fancy way to package the
+[02:02] Ksero: def registerInformTarget(self, botcore):
+[02:02] Ksero:         self.botcore = botcore
+[02:10] Cort: Yeah, and I'd like to see a fancier way.
+[02:11] Cort: what about the reports from PI?
+[02:11] Ksero: reporting the status in a better way? With colors?
+[02:11] Cort: it can either 'call back' (Hollywood Pattern) or just fill some lists that are then collected by the core
+[02:11] Ksero: aha
+[02:11] Ksero: nm
+[02:13] Ksero: yeah... and pushing is better than pulling / polling
+[02:16] Ksero: and is it better to have onEvent(eventName) if eventName == "LoadedPlugin" Dostuff() elif eventName == "UnloadedPlugin" DoOtherStuff()
+[02:18] Cort: just that pushing leads to stronger coupling
+[02:18] Cort: with the core
+[02:18] Cort: I'm talking about PI <-> core now
+[02:18] Cort: (for example
+[02:18] Cort: )
+[02:19] Cort: with pushing, the core needs to implement a certain interface (though not being as strict as it would be in let's say Java)
+[02:20] Ksero: Ok... I can agree with that
+[02:21] Ksero: So... GetPluginChanges --> chronologi
+[02:21] Ksero: chronological list of strings of plugin change events
+[02:22] Ksero: ("Loaded plugin", "AuthPlugin"), ("Updated plugin", "MathPlugin")
+[02:22] Ksero: Listing all changes since the last call
+[02:23] Cort: hmmm, right
+[02:23] Cort: I didn't think about those messages
+[02:23] Cort: just thought about the error messages on launch.
+[02:24] Cort: btw.: plugins that are modified via XML-RPC aren't reported in the channel
+[02:24] Cort: no "has been enabled" etc.
+[02:24] Cort: Yeah, I think I like that GetPluginChanges()
+[02:25] Cort: I don't exactly like it, but I prefer it over some random reference setting that is called back then.
+[02:25] Ksero: just one thing... we might want to aggregate multiple events together
+[02:26] Ksero: right? ("Loaded plugin(s)", ["AuthPlugin", "MathPlugin"]
+[02:27] Ksero: I'll go for that
+[02:31] Cort: yup, aggregation is good
+[02:31] Cort: and parsability of course
+Session Close (#RollingThunder.development): Mon Sep 18 02:34:45 2006
+
+
+Session Start (irc.quakenet.eu.org:Ksero): Mon Sep 18 23:42:22 2006
+[23:43] Cort: I added a new branch: branches/core6/bot with a runnable version and all necessary files to change the bot core.
+Session Close (Ksero): Mon Sep 18 23:43:26 2006
+
+
+Session Start (irc.quakenet.eu.org:Ksero): Mon Sep 18 23:43:37 2006
+[23:43] Ksero: so we develop the new version on that branch?
+[23:43] Cort: yeah, that was the idea
+[23:43] Ksero: okies
+[23:43] Cort: doesn't really matter in this case, but I wanted to try branching ;)
+[23:44] Ksero: :D
+[23:44] Cort: Oh, and I added a suggested public interface to the README file.
+[23:44] Cort: No need to stick to that in detail, though.
+[23:44] Cort: Just a guideline for what's needed.
+[23:44] Ksero: ack
+[23:45] Cort: I'm still thinking about how to report changes, though. As pretty much every method has these changes.
+[23:45] Cort: And some can't report themselves: e.g. the RPC-server calling enablePlugin()
+[23:45] Cort: so maybe it's the callback again
+[23:46] Cort: but maybe we can reduce it to one callback method
+[23:47] Ksero: doesn't the RPC server use the PI for enabling plugins? Or rather, it could do that. And then the PI could log the changed state and report it later
+[23:48] Cort: duh, right
+[23:48] Cort: well, the current README has a new idea: returning the logs as part of the heartbeat
+[23:48] Cort: or rather: the logs being the return value of the heartbeat call
+[23:49] Cort: That's just one idea of many possible ideas, though...
+[23:49] Ksero: I think it's more clear to have a separate function for reporting changes
+[23:49] Cort: yeah, probably
+Session Close (Ksero): Mon Sep 18 23:52:07 2006
