@@ -1,9 +1,13 @@
 #! /usr/bin/env python
-import sys, re, random, time, threading, string
+import threading, string
 import util, logging
 
 
 class RTBot:
+    """ This class is like Milton in Office Space. It takes the customer's specs... I mean events! 
+    That's right... events, and forwards them to the programmers. Errr, the plugin interface.
+    Also generates timer events.
+    """
     pluginTimerTimeout = 10.0
 
     def __init__(self, library, channelname, pluginInterface):
@@ -11,10 +15,13 @@ class RTBot:
         logging.debug("Initialized")
         self.channelname = channelname
         self.pluginInterface = pluginInterface
+        
         self.genericPluginTimerLock = threading.RLock()
         self.storedPluginErrors = []
         self.storedRemovedPluginsDuringLoad = []
 
+    # since the timer event reschedules itself, we need to ensure that it isn't executing when we
+    # try to stop it
     @util.withMemberLock("genericPluginTimerLock")
     def dispose(self):
         self.genericPluginTimer.cancel()
@@ -29,9 +36,6 @@ class RTBot:
     def startOrRestartTimer(self):
         self.genericPluginTimer = threading.Timer(self.pluginTimerTimeout, self.genericPluginTimerEvent)
         self.genericPluginTimer.start()
-
-#    def prepareRefresh(self):
-#        self.irclib.sendEmote("sees a tac scout boosting by... and another one! Weird, it looked just the same...")
 
     #---------------------------------------------------------------------------------
     #                      EVENTS FROM PLUGIN INTERFACE

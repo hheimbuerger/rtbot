@@ -101,21 +101,6 @@ if(Settings.database_connection_string):
     rootlog.addHandler(DatabaseEmitter)
 
 import logging.handlers
-class CortLogger(logging.handlers.TimedRotatingFileHandler):
-    "A logger that rotates log files but never erases them. And it has the log-file date in the filename"
-    def __init__(self, filepath):
-        # filepath should be a path-object
-        self.path, self.filename = filepath.splitpath()
-        logging.handlers.TimedRotatingFileHandler.__init__(self, self.getCurrentFilename(), "midnight")
-    def getCurrentFilename(self):
-        return self.path / (time.strftime("%Y%m%d ") + self.filename)
-    def doRollover(self):
-        "Called when we need to switch files."
-        self.stream.close()
-        if self.encoding:
-            self.stream = codecs.open(self.getCurrentFilename(), 'w', self.encoding)
-        else:
-            self.stream = open(self.getCurrentFilename(), 'w')
 
 class AjaxWatchLogger(logging.Handler):
     def emit(self, logrecord):
@@ -127,12 +112,12 @@ ajaxlog.setLevel(logging.INFO)
 rootlog.addHandler(ajaxlog)
 
 # Standard file logs
-debuglog = CortLogger(path("logs/debuglog.txt"))
+debuglog = logging.handlers.TimedRotatingFileHandler("logs/debuglog.txt", "midnight")
 debuglog.setLevel(logging.DEBUG)
 debuglog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 rootlog.addHandler(debuglog)
 
-filelog = CortLogger(path("logs/logfile.txt"))
+filelog = logging.handlers.TimedRotatingFileHandler("logs/logfile.txt", "midnight")
 filelog.setLevel(logging.INFO)
 filelog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 rootlog.addHandler(filelog)
@@ -141,6 +126,6 @@ console = logging.StreamHandler()
 console.setLevel(logging.DEBUG)
 console.setFormatter(logging.Formatter("%(asctime)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 # Uncomment this to receive verbose logging to console
-#rootlog.addHandler(console)
+rootlog.addHandler(console)
 
 rootlog.setLevel(logging.DEBUG)
