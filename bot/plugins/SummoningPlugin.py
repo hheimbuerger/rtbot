@@ -68,7 +68,7 @@ class SummoningPlugin:
                     irclib.sendChannelMessage("So what if he's not an Op? He's got a trout!")
                 self.banish(irclib, source.nick, targetNick)
             else:
-                if(targetNick.isAdmin()):
+                if(irclib.getUserList()[targetNick].isAdmin()):
                     irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
                     self.banish(irclib, irclib.nickname, source.nick)
                 else:
