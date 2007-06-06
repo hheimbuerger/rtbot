@@ -17,7 +17,7 @@ class WerewolfModeratorPlugin:
         self.onChannelMessage("Game aborted.")
             
     
-    def initGame(self):
+    #def initGame(self):
         #add all players
         #randomly  pick 2 werewolves and seer
         #inform werewolves of each other's identity
@@ -44,7 +44,7 @@ class WerewolfModeratorPlugin:
 
         #if gameState = "idle"
             #check for someone starting a game, set gamestate to adding, add them to player list
-        if( self.gameState = "idle" ):
+        if( self.gameState == "idle" ):
             if( message == "In Quas Corp Xen!" ):
                 self.gameState = "adding"
                 self.players.append( source.getName() )
@@ -52,7 +52,7 @@ class WerewolfModeratorPlugin:
         
         
         if( self.gameState == "adding"):
-            if( message = "!addme" ):
+            if( message == "!addme" ):
                 dontAddMe = False
                 for i in self.players:
                     if (source == i):
@@ -70,7 +70,7 @@ class WerewolfModeratorPlugin:
                 #if no
                     #report fewer than 7, allow override to start game anyway
         if( self.gameState != "idle" ):
-            if( message = "An Quas Corp Xen!" ):
+            if( message == "An Quas Corp Xen!" ):
                 self.endGame()
                 
         
