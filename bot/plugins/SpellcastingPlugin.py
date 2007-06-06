@@ -76,4 +76,6 @@ class SpellcastingPlugin:
             irclib.sendChannelMessage("Summon all: An Zu Grav!")
             irclib.sendChannelMessage("Channel wisdom: In Bet Wis!")
             irclib.sendChannelMessage("Banish <target>: An Vas Xen <target>")
+            irclib.sendChannelMessage("Begin a Werewolf Game: In Quas Corp Xen!")
+            irclib.sendChannelMessage("Abort the Werewolf Game: An Quas Corp Xen!")
             irclib.sendChannelMessage("Remember, spelling, capitalization, and punctuation count.")
