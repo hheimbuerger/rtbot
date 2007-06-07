@@ -68,6 +68,19 @@ class WerewolfModeratorPlugin:
             irclib.sendPrivateNotice( irclib.getUserList().findByName( self.seer[0] ), "Please choose a villager about which to dream. /notice " + irclib.nickname + " dream <player name> to choose.")
         else:
             self.seerHasAsked = True
+
+    def isSomeoneAPlayer(self, name ):
+        players = self.werewolves + self.seer + self.players
+        if( name in players ):
+            return True
+        else:
+            return False
+
+    def isSomeoneAWerewolf( self, name ):
+        if( name in self.werewolves ):
+            return True
+        elif:
+            return False
             
     def beginDayPhase(self, irclib):
         self.gamePhase = "day"
@@ -89,21 +102,17 @@ class WerewolfModeratorPlugin:
             irclib.sendPrivateNotice(source, "You can't ask twice in one night!")
         else:
             if( message[:len("dream ")] == "dream "):
-                if( message[len("dream "):] in self.werewolves ):
-                    irclib.sendPrivateNotice( source, "Yes, " + message[len("dream "):] + " is a werewolf.")
+                dreamTarget = message[len("dream "):]
+                if( isSomeoneAPlayer( dreamTarget ) ):
                     self.seerHasAsked = True
+                    if( isSomeoneAWerewolf( dreamTarget ) ):
+                        irclib.sendPrivateNotice( source, "Yes, " + message[len("dream "):] + " is a werewolf.")
+                    else:
+                        irclib.sendPrivateNotice( source, "No, " + message[len("dream "):] + " is not a werewolf.")
                     if( self.werewolfTarget["agreed"] ):
                         self.beginDayPhase(irclib)
-                        return True
-                    elif( message[len("dream "):] in self.players + self.seer):
-                        irclib.sendPrivateNotice( source, "No, " + message[len("dream "):] + " is not a werewolf.")
-                        self.seerHasAsked = True
-                        if( self.werewolfTarget[2] != False ):
-                            self.beginDayPhase(irclib)
-                        return True
                     else:
                         irclib.sendPrivateNotice( source, "That's not a player!" )
-                        return True
             else:
                 irclib.sendPrivateNotice( source, "Malformed request. Proper syntax is '/notice " +irclib.nickname + " dream <player name>" )
 
