@@ -11,23 +11,34 @@ class WerewolfModeratorPlugin:
     players = []
     werewolves = []
     seer = []
+    deadplayers = []
     gameState = "idle"
     gamePhase = "night"
     seerHasAsked = False
-    werewolfTarget = {0: 0, 1: 1, 2: False}
+    werewolfTarget = {}
+    werewolfJointTarget = False
     lynchTarget = {}
 
-    def endGame(self):
+    def endGame( self, irclib ):
+        allplayers = self.deadplayers + self.players + self.seer + self.werewolves
+        for i in allplayers:
+            irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "The game has ended.")
+        self.deadplayers = []
         self.gameState = "idle"
         self.players = []
         self.werewolves = []
         self.seer = []
+        seerHasAsked = False
+        werewolfTarget = {}
+        werewolfJointTarget = False
+        lynchTarget = {}
                     
 
     def echoRemainingPlayers( self, irclib ):
         playersLeft = self.players + self.werewolves + self.seer
         playersLeft.sort()
-        irclib.sendChannelMessage( "Remaining players are: " + str( playersLeft ) )
+        irclib.sendChannelMessage( "Remaining players (" + str( len( playersLeft ) ) + ") are: " + str( playersLeft ) )
+        irclib.sendChannelMessage( "Corpses: " + str( self.deadplayers ) )
 
     def didWerewolvesWin( self ):
         if( len( self.werewolves ) >= len( self.seer + self.players ) ):
@@ -35,13 +46,14 @@ class WerewolfModeratorPlugin:
         else:
             return False
 
-    def reportWerewolfWin( self, irclib)
+    def reportWerewolfWin( self, irclib ):
         irclib.sendChannelMessage("The werewolves change shape and overpower the remaining villagers! Werewolves win!")
-        irclib.sendChannelMessage("Werewolf survivor(s): " + self.werewolves )
+        irclib.sendChannelMessage("Werewolf survivor(s): " + str( self.werewolves ) )
         if( len( self.seer ) > 0 ):
-            irclib.sendChannelMessage("Seer (if alive): "  + self.seer )
-        irclib.sendChannelMessage("Final villagers: " + self.players )
-        self.endGame()
+            irclib.sendChannelMessage("Seer (if alive): "  + str( self.seer ) )
+        irclib.sendChannelMessage("Final villager(s): " + str( self.players ) )
+        irclib.sendChannelMessage("Corpses: " + str( self.deadplayers ) )
+        self.endGame( irclib )
 
     def didPlayersWin( self ):
         if( len( self.werewolves ) == 0 ):
@@ -52,16 +64,18 @@ class WerewolfModeratorPlugin:
     def reportPlayerWin( self, irclib ):
         irclib.sendChannelMessage("You killed both werewolves! Villagers win!")
         if( len( self.seer ) > 0 ):
-            irclib.sendChannelMessage("Seer (if alive): "  + self.seer )
-        irclib.sendChannelMessage("Final villagers: " + self.players )
-        self.endGame()
+            irclib.sendChannelMessage("Seer (if alive): "  + str( self.seer ) )
+        irclib.sendChannelMessage("Final villager(s): " + str( self.players ) )
+        irclib.sendChannelMessage("Corpses: " + str( self.deadplayers ) )
+        self.endGame( irclib )
         
 
     def processNightPhase( self, irclib ):
         irclib.sendChannelMessage( "Night falls, and with it comes the baying of wolves!" )
         self.echoRemainingPlayers( irclib )
         self.seerHasAsked = False
-        self.werewolfTarget["agreed"] = False
+        self.werewolfJointTarget = False
+        self.werewolfTarget = {}
         for i in self.werewolves:
             irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "Please choose which villager to eat. /notice " + irclib.nickname + " eat <player name> to vote.")
         if( len( self.seer )> 0 ):
@@ -79,21 +93,27 @@ class WerewolfModeratorPlugin:
     def isSomeoneAWerewolf( self, name ):
         if( name in self.werewolves ):
             return True
-        elif:
+        else:
             return False
             
     def beginDayPhase(self, irclib):
-        self.gamePhase = "day"
         self.lynchTarget = {}
-        if( self.werewolfTarget[ "agreed" ] in self.seer ):
-            self.seer.remove( self.werewolfTarget[ "agreed" ] )
+        irclib.sendChannelMessage( "Dawn breaks, and the villagers discover that the werewolves have eaten: " + self.werewolfJointTarget + ".")
+        if( self.werewolfJointTarget in self.seer ):
+            self.seer.remove( self.werewolfJointTarget )
+            irclib.sendChannelMessage("He or she was the seer! OMFG!")
         else:
-            self.players.remove( self.werewolfTarget[ "agreed" ] )
-        irclib.sendChannelMessage( "Dawn breaks, and the villagers discover that the werewolves have eaten: " + self.werewolfTarget[ "agreed" ] + "." )
+            self.players.remove( self.werewolfJointTarget )
+            irclib.sendChannelMessage("He or she was a normal villager.")
+        self.deadplayers.append( self.werewolfJointTarget )
+        remainingPlayers = self.players + self.seer + self.werewolves
+        for i in remainingPlayers:
+            irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "The night has ended.")
         if( self.didWerewolvesWin() ):
             self.reportWerewolfWin( irclib )
         else:
-            irclib.sendChannelMessage( "Your soul cries out for vengeance! Type '!lynch <player name>' once you are sure who you want to lynch. Simple majority wins." )        
+            irclib.sendChannelMessage( "Your soul cries out for vengeance! Type '!lynch <player name>' once you are sure who you want to lynch. Simple majority wins." )
+            irclib.sendChannelMessage( "Remember, all conversation during the day must be in public. No side conversations, and dead players must remain silent on the subject of the game.")
             self.echoRemainingPlayers(irclib)
 
 
@@ -103,19 +123,81 @@ class WerewolfModeratorPlugin:
         else:
             if( message[:len("dream ")] == "dream "):
                 dreamTarget = message[len("dream "):]
-                if( isSomeoneAPlayer( dreamTarget ) ):
+                if( self.isSomeoneAPlayer( dreamTarget ) ):
                     self.seerHasAsked = True
-                    if( isSomeoneAWerewolf( dreamTarget ) ):
+                    if( self.isSomeoneAWerewolf( dreamTarget ) ):
                         irclib.sendPrivateNotice( source, "Yes, " + message[len("dream "):] + " is a werewolf.")
                     else:
                         irclib.sendPrivateNotice( source, "No, " + message[len("dream "):] + " is not a werewolf.")
-                    if( self.werewolfTarget["agreed"] ):
-                        self.beginDayPhase(irclib)
-                    else:
-                        irclib.sendPrivateNotice( source, "That's not a player!" )
+                else:
+                    irclib.sendPrivateNotice( source, "That's not a player!" )
             else:
                 irclib.sendPrivateNotice( source, "Malformed request. Proper syntax is '/notice " +irclib.nickname + " dream <player name>" )
 
+    def processWerewolfNotice( self, irclib, source, message):
+        if( message[:len("eat ")] == "eat "):
+            eatTarget =  message[len("eat "):]
+            if( self.isSomeoneAPlayer( eatTarget ) ):
+                if( self.isSomeoneAWerewolf( eatTarget ) ):
+                    irclib.sendPrivateNotice( source, "You can't eat a werewolf." )
+                    return False
+                else:
+                    self.werewolfTarget[ source.getName() ] = eatTarget
+                    return True
+            else:
+                irclib.sendPrivateNotice( source, "That is not a valid target." )
+                return False
+        else:
+            irclib.sendPrivateNotice( source, "Malformed request. Proper syntax is '/notice " + irclib.nickname + " eat <player name>")
+            return False
+
+    def handleWerewolfTargets( self, irclib, source, message ):
+        if( self.werewolfTarget.values().count( message[len("eat "):] ) == len( self.werewolves ) ):
+            self.werewolfJointTarget  = self.werewolfTarget[ source.getName() ]
+            for i in self.werewolves:
+                irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "Rah! You eat: " + self.werewolfJointTarget + "!" )
+        else:
+            for i in self.werewolves:
+                if( len( self.werewolfTarget.values() ) == len( self.werewolves ) ):
+                    irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "There is a disagreement about who to eat! A listing of potential targets follows, please reach a decision and vote again if necessary.")
+                irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), self.werewolfTarget )
+
+    def handleLynchVote( self, irclib, source, message ):
+        if( self.isSomeoneAPlayer( source.getName() ) ):
+            if( self.isSomeoneAPlayer( message[len("!lynch "):] ) ):
+                    if( source.getName() == message[len("!lynch "):] ):
+                        irclib.sendChannelMessage( "You can't vote for yourself, " + source.getName() + ".")
+                        return False
+                    else:
+                        if( source.getName() in self.lynchTarget ):
+                            irclib.sendChannelMessage( "Vote changed, " + source.getName() + ".")
+                        else:
+                            irclib.sendChannelMessage( "Vote recorded, " + source.getName() + ".")
+                        self.lynchTarget[ source.getName() ] = message[ len("!lynch "): ]
+            else:
+                irclib.sendChannelMessage( message[len("!lynch "):] + " is not a player." )
+        else:
+            irclib.sendChannelMessage("You can't vote, " + source.getName() + ", you aren't playing!" )
+ 
+
+    def processLynchVotes( self, irclib ):
+        for i in self.lynchTarget.keys():
+            remainingPlayers = self.seer + self.players + self.werewolves
+            if( self.lynchTarget.values().count( self.lynchTarget[ i ] ) >  len( remainingPlayers ) / 2 ):
+                self.lynchTarget[ "final" ] = self.lynchTarget[ i ]
+                irclib.sendChannelMessage("You have decided to lynch " + self.lynchTarget[ "final" ] + "!")
+                if( self.lynchTarget[ "final" ] in self.players ):
+                    self.players.remove( self.lynchTarget[ "final" ] )
+                    irclib.sendChannelMessage("He or she was a villager. You paranoid gits!" )
+                elif( self.lynchTarget[ "final" ] in self.werewolves ):
+                    self.werewolves.remove( self.lynchTarget[ "final"  ] )
+                    irclib.sendChannelMessage("He or she was a werewolf. Good call!" )
+                elif( self.lynchTarget[ "final" ] in self.seer ):
+                    self.seer.remove( self.lynchTarget[ "final" ] )
+                    irclib.sendChannelMessage("That was the SEER! OMFG!")
+                self.deadplayers.append( self.lynchTarget[ "final" ] )
+                return True
+                    
         
     def onNotice( self, irclib, source, message ):
         if( self.gamePhase == "night" and self.gameState == "playing"):
@@ -124,57 +206,18 @@ class WerewolfModeratorPlugin:
             else:
                 if( source.getName() in self.seer ):
                     self.processSeerNotice( irclib, source, message )
-                elif( source.getName() == self.werewolves[0] and len( self.werewolves ) > 1):
-                    if( message[:len("eat ")] == "eat " ):
-                        if( message[len("eat "):] in ( self.players + self.seer ) ):
-                            self.werewolfTarget[ 0 ] = message[len("eat "):]
-                            if( self.werewolfTarget[ 0 ] == self.werewolfTarget[ 1 ] ):
-                                self.werewolfTarget[ 2 ] = self.werewolfTarget[ 0 ]
-                                irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 0 ] ), "Rah! You eat: " + str(self.werewolfTarget[ 2 ]) + "." )
-                                irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 1 ] ), "Rah! You eat: " + str(self.werewolfTarget[ 2 ]) + "." )
-                                if( self.seerHasAsked == True ):
-                                    self.beginDayPhase(irclib)
-                            else:
-                                irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 1 ] ), "The other werewolf, " + self.werewolves[ 0 ] + ", has selected: " + str(self.werewolfTarget[ 0 ]) + ".")
-                        elif( message[len("eat "):] in ( self.werewolves ) ):
-                            irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 0 ] ), "You can't eat the other werewolf or yourself!" )
-                        else:
-                            irclib.sendPrivateNotice( source, "That's not a player!" )
-                    else:
-                        irclib.sendPrivateNotice( source, "Malformed request. Proper syntax is '/notice " + irclib.nickname + " eat <player name>" )
-                    return True
-                elif( source.getName() == self.werewolves[0] and len( self.werewolves ) == 1):
-                    if( message[:len("eat ")] == "eat " and message[len("eat "):] in ( self.players + self.seer ) ):
-                        self.werewolfTarget[ "agreed" ] = message[len("eat "):]
-                        irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 0 ] ), "Rah! You eat: " + str(self.werewolfTarget[ 2 ]) + "." )
-                        if( self.seerHasAsked == True ):
-                                self.beginDayPhase(irclib)
-                    else:
-                        irclib.sendPrivateNotice( source, "That's not a player!" )
-                    return True
-                elif( len( self.werewolves) > 1 and source.getName() ==  self.werewolves[ 1 ] ):
-                    if( message[:len("eat ")] == "eat " ):
-                        if( message[len("eat "):] in ( self.players + self.seer ) ):
-                            self.werewolfTarget[ 1 ] = message[len("eat "):]
-                            if( self.werewolfTarget[ 0 ] == self.werewolfTarget[ 1 ] ):
-                                self.werewolfTarget[ "agreed" ] = self.werewolfTarget[ 0 ]
-                                irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 0 ] ), "Rah! You eat: " + str(self.werewolfTarget[ 2 ]) + "." )
-                                irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 1 ] ), "Rah! You eat: " + str(self.werewolfTarget[ 2 ]) + "." )
-                                if( self.seerHasAsked == True ):
-                                    self.beginDayPhase(irclib)
-                            else:
-                                irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 0 ] ), "The other werewolf, " + self.werewolves[ 1 ] + ", has selected: " + str(self.werewolfTarget[ 1 ]) + ".")
-                        if( message[len("eat "):] in ( self.werewolves ) ):
-                            irclib.sendPrivateNotice( irclib.getUserList().findByName( self.werewolves[ 1 ] ), "You can't eat the other werewolf or yourself!" )
-                        else:
-                            irclib.sendPrivateNotice( source, "That's not a player!" )
-                    else:
-                        irclib.sendPrivateNotice( source, "Malformed request. Proper syntax is '/notice " + irclib.nickname + " eat <player name>" )
-                    return True
+                elif( self.isSomeoneAWerewolf( source.getName() ) ):
+                    if( self.processWerewolfNotice( irclib, source, message ) ):
+                        self.handleWerewolfTargets( irclib, source, message )
+                if( self.werewolfJointTarget and self.seerHasAsked ):
+                    self.gamePhase = "day"
+                    self.beginDayPhase( irclib )
+                return True
 
 
     
     def initGame(self, irclib):
+        random.seed()
         werewolf1 = random.choice( self.players )
         self.players.remove( werewolf1 )
         self.werewolves.append( werewolf1 )
@@ -203,30 +246,24 @@ class WerewolfModeratorPlugin:
 
         if( self.gameState == "playing" and self.gamePhase == "day" ):
             if( message[:len("!lynch ")] == "!lynch " ):
-                remainingPlayers = self.players + self.seer + self.werewolves
-                self.lynchTarget[ source.getName() ] = message[len("!lynch "):]
-                for i in self.lynchTarget:
-                    if( self.lynchTarget.values().count( self.lynchTarget[ i ] ) > float( len( remainingPlayers ) ) / 2 ):
-                        self.lynchTarget[ "final" ] = self.lynchTarget[ i ]
-                        irclib.sendChannelMessage("You have decided to lynch " + self.lynchTarget[ "final" ] + "!")
-                        if( self.lynchTarget[ "final" ] in self.players ):
-                            self.players.remove( self.lynchTarget[ "final" ] )
-                            irclib.sendChannelMessage("He or she was a villager. You paranoid gits!" )
-                        elif( self.lynchTarget[ "final" ] in self.werewolves ):
-                            self.werewolves.remove( self.lynchTarget[ "final"  ] )
-                            irclib.sendChannelMessage("He or she was a werewolf. Good call!" )
-                        elif( self.lynchTarget[ "final" ] in self.seer ):
-                            self.seer.remove( self.lynchTarget[ "final" ] )
-                            irclib.sendChannelMessage("That was the SEER! OMFG!")
-                        if( didWerewolvesWin() ):
-                            reportWerewolfWin( irclib )
-                        elif( didPlayersWin() ):
-                            reportPlayerWin( irclib )
-                        else:
-                            self.gamePhase = "night"
-                            self.processNightPhase(irclib)
-                        break
-        
+                self.handleLynchVote( irclib, source, message )
+                if( self.processLynchVotes( irclib ) ):
+                    if( self.didWerewolvesWin() ):
+                        self.reportWerewolfWin( irclib )
+                    elif( self.didPlayersWin() ):
+                        self.reportPlayerWin( irclib )
+                    else:
+                        self.gamePhase = "night"
+                        self.processNightPhase(irclib)
+
+        if( self.gameState == "playing" and self.gamePhase == "day"):
+            if( message == "lynchvotes?" ):
+                #irclib.sendChannelMessage( str( self.lynchTarget ) )
+                lynchees = set(self.lynchTarget.values())
+                hate_list = dict([ (lynchee, [k for k, v in self.lynchTarget.items() if v == lynchee]) for lynchee in lynchees ] )
+                for k, v in hate_list.items():
+                    irclib.sendChannelMessage( '%s <-- %s' % (k, ', '.join(v)) )
+       
         if( self.gameState == "idle" ):
             if( message == "In Quas Corp Xen!" ):
                 self.gameState = "adding"
@@ -255,11 +292,11 @@ class WerewolfModeratorPlugin:
             if( message == "players?" ):
                 irclib.sendChannelMessage( self.players )
             if( message == "Por!" ):
-                if( len( self.players ) < 7 ):
+                if( len( self.players ) < 6 ):
                     irclib.sendChannelMessage("Fewer than the recommended amount of players. 'Ex!' to override." )
                 else:
                     self.gameState = "playing"
-                    self.initGame()
+                    self.initGame(irclib)
             if( message == "Ex!" ):
                 if( len(self.players ) < 3 ):
                     irclib.sendChannelMessage("You can't even play a fake game with less than 3 players." )
@@ -269,5 +306,5 @@ class WerewolfModeratorPlugin:
                     irclib.sendPrivateMessage( irclib.getUserList().findByName( "Terralthra" ), "This is a test message. Werewolves: " + str( self.werewolves ) + ". Seer: " + str( self.seer ) )
         if( self.gameState != "idle" ):
             if( message == "An Quas Corp Xen!" ):
-                irclib.sendChannelMessage("Game is over because it was manually aborted.")
-                self.endGame()
+                irclib.sendChannelMessage( "Game is over because it was manually aborted." )
+                self.endGame( irclib )

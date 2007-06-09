@@ -723,7 +723,7 @@ class AuthenticationPlugin:
                 irclib.sendPrivateMessage(source, "That person is not on my list!")
 
 
-
+    @PluginInterface.Priorities.prioritized( PluginInterface.Priorities.PRIORITY_LOW )
     def onNotice(self, irclib, source, message):
         result = self.parseAuthentication(message)
         if(result):

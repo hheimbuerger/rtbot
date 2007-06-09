@@ -91,6 +91,8 @@ class SummoningPlugin:
             irclib.sendChannelMessage("Summon all: An Zu Grav!")
             irclib.sendChannelMessage("Channel wisdom: In Bet Wis!")
             irclib.sendChannelMessage("Banish <target>: An Vas Xen <target>")
+            irclib.sendChannelMessage("Start a Werewolf game: In Quas Corp Xen!")
+            irclib.sendChannelMessage("Abort a Werewolf game: An Quas Corp Xen!")
             irclib.sendChannelMessage("Remember, spelling, capitalization, and punctuation count.")
 
         
