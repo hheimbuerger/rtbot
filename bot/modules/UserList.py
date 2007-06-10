@@ -184,7 +184,7 @@ class UserList(UserDict.IterableUserDict):
             authedAs = user.dataStore.getAttributeDefault("authedAs")
             if(authedAs and authedAs == name):
                 return(user)
-        return(None)
+        return(default)
 
 
 
