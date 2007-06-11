@@ -242,7 +242,7 @@ class WerewolfModeratorPlugin:
 
     def onChannelMessage(self, irclib, source, message):
         if( self.gameState == "playing" ):
-            if( message == "WWplayers?" ):
+            if( message == "players?" ):
                 self.echoRemainingPlayers(irclib)
 
         if( self.gameState == "playing" and self.gamePhase == "day" ):
@@ -269,16 +269,16 @@ class WerewolfModeratorPlugin:
             if( message == "In Quas Corp Xen!" ):
                 self.gameState = "adding"
                 self.players.append( source.getName() )
-                irclib.sendChannelMessage( "Beginning a game of werewolf. Type '!addmetoWW' to play, 'WWplayers?' to list the players, and 'Por!' to begin the game." )
+                irclib.sendChannelMessage( "Beginning a game of werewolf. Type '!addme' to play, 'players?' to list the players, and 'Por!' to begin the game." )
 
         
         
         if( self.gameState == "adding"):
-            if( message == "!removemetoWW" ):
+            if( message == "!removeme" ):
                 if( source.getName() in self.players):
                     self.players.remove( source.getName() )
                     irclib.sendChannelMessage("You've been removed, " + source.getName() + ".")
-            if( message == "!addmetoWW" ):
+            if( message == "!addme" ):
                 dontAddMe = False
                 for i in self.players:
                     if ( source.getName() == i ):
@@ -290,7 +290,7 @@ class WerewolfModeratorPlugin:
                 if( dontAddMe == False ):
                     self.players.append( source.getName() )
                     irclib.sendChannelMessage( "Adding you to the game, " + source.getName() + ".")
-            if( message == "WWplayers?" ):
+            if( message == "players?" ):
                 irclib.sendChannelMessage( self.players )
             if( message == "Por!" ):
                 if( len( self.players ) < 6 ):
