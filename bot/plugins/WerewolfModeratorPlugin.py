@@ -269,11 +269,17 @@ class WerewolfModeratorPlugin:
                     elif( self.didPlayersWin() ):
                         self.reportPlayerWin( irclib )
                     else:
-                        self.gamePhase = "night"
-                        self.processNightPhase(irclib)
+                        self.gamePhase = "postlynch"
+                        irclib.sendChannelMessage("Type !sunset to continue to the next night.")
         if( self.gameState == "playing" and self.gamePhase == "day" ):
             if( message[:len("!unlynch")] == "!unlynch" ):
                 self.handleUnlynch( irclib, source, message )
+
+
+        if( self.gamePhase == "postlynch" ):
+            if( message == "!sunset" ):
+                self.gamePhase = "night"
+                self.processNightPhase(irclib)
 
 
         if( self.gameState == "playing" and self.gamePhase == "day"):
