@@ -268,7 +268,7 @@ class WerewolfModeratorPlugin:
                         self.processNightPhase(irclib)
         if( self.gameState == "playing" and self.gamePhase == "day" ):
             if( message[:len("!unlynch")] == "!unlynch" ):
-                self.handleUnlynch( self, irclib, source, message )
+                self.handleUnlynch( irclib, source, message )
 
 
         if( self.gameState == "playing" and self.gamePhase == "day"):
