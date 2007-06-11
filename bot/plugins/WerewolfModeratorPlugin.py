@@ -99,9 +99,6 @@ class WerewolfModeratorPlugin:
             
     def beginDayPhase(self, irclib):
         self.lynchTarget = {}
-        remainingPlayers = self.seer + self.players + self.werewolves
-        for i in remainingPlayers:
-            self.lynchTarget[ i ] = None
         irclib.sendChannelMessage( "Dawn breaks, and the villagers discover that the werewolves have eaten: " + self.werewolfJointTarget + ".")
         if( self.werewolfJointTarget in self.seer ):
             self.seer.remove( self.werewolfJointTarget )
@@ -113,6 +110,7 @@ class WerewolfModeratorPlugin:
         remainingPlayers = self.players + self.seer + self.werewolves
         for i in remainingPlayers:
             irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "The night has ended.")
+            self.lynchTarget[ i ] = None
         if( self.didWerewolvesWin() ):
             self.reportWerewolfWin( irclib )
         else:
@@ -173,7 +171,7 @@ class WerewolfModeratorPlugin:
                         irclib.sendChannelMessage( "You can't vote for yourself, " + source.getName() + ".")
                         return False
                     else:
-                        if( source.getName() in self.lynchTarget ):
+                        if( self.lynchTarget[ source.getName() ] ):
                             irclib.sendChannelMessage( "Vote changed, " + source.getName() + ".")
                         else:
                             irclib.sendChannelMessage( "Vote recorded, " + source.getName() + ".")
@@ -189,6 +187,13 @@ class WerewolfModeratorPlugin:
     def handleUnlynch( self, irclib, source, message ):
         if( self.isSomeoneAPlayer( source.getName() ) ):
             self.lynchTarget[ source.getName() ] = None
+            irclib.sendChannelMessage("Lynch vote rescinded, " + source.getName() +".")
+        else:
+            if( source.isAuthed() ):
+                irclib.sendChannelMessage("You can't unlynch, " + source.getName() + ", you aren't playing!" )
+            else:
+                irclib.sendChannelMessage("You can't unlynch, " + source.getCanonicalNick() + ", you aren't playing!" )
+            
 
     
     def processLynchVotes( self, irclib ):
