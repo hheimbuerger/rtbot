@@ -39,7 +39,7 @@ class WerewolfModeratorPlugin:
         playersLeft = self.players + self.werewolves + self.seer
         playersLeft.sort()
         irclib.sendChannelMessage( "Remaining players (" + str( len( playersLeft ) ) + ") are: " + str( playersLeft ) )
-        irclib.sendChannelMessage( "Corpses: " + str( self.deadplayers ) )
+        irclib.sendChannelMessage( "Corpses (" + str( len( self.deadplayers + "): " + str( self.deadplayers ) )
 
     def didWerewolvesWin( self ):
         if( len( self.werewolves ) >= len( self.seer + self.players ) ):
@@ -178,8 +178,11 @@ class WerewolfModeratorPlugin:
             else:
                 irclib.sendChannelMessage( message[len("!lynch "):] + " is not a player." )
         else:
-            irclib.sendChannelMessage("You can't vote, " + source.getName() + ", you aren't playing!" )
- 
+            if( source.isAuthed() ):
+                irclib.sendChannelMessage("You can't vote, " + source.getName() + ", you aren't playing!" )
+            else:
+                irclib.sendChannelMessage("You can't vote, " + source.getCanonicalName() + ", you aren't playing!" )
+        
 
     def processLynchVotes( self, irclib ):
         for i in self.lynchTarget.keys():
@@ -291,7 +294,7 @@ class WerewolfModeratorPlugin:
                     self.players.append( source.getName() )
                     irclib.sendChannelMessage( "Adding you to the game, " + source.getName() + ".")
             if( message == "players?" ):
-                irclib.sendChannelMessage( self.players )
+                irclib.sendChannelMessage( "Players so far (" + str( len( playersLeft ) ) + ") are: " + str( self.players ) )
             if( message == "Por!" ):
                 if( len( self.players ) < 6 ):
                     irclib.sendChannelMessage("Fewer than the recommended amount of players. 'Ex!' to override." )
