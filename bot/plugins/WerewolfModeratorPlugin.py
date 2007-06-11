@@ -280,7 +280,7 @@ class WerewolfModeratorPlugin:
             if( message == "!removeme" ):
                 if( source.getName() in self.players):
                     self.players.remove( source.getName() )
-                    irclib.sendChannelMessage("You've been removed, " + source.getName() + ".")
+                    irclib.sendChannelMessage("You've been removed, " + source.getName() + ". There are now " + str( len( self.players) ) + " players.")
             if( message == "!addme" ):
                 dontAddMe = False
                 for i in self.players:
@@ -292,7 +292,7 @@ class WerewolfModeratorPlugin:
                     dontAddMe = True
                 if( dontAddMe == False ):
                     self.players.append( source.getName() )
-                    irclib.sendChannelMessage( "Adding you to the game, " + source.getName() + ".")
+                    irclib.sendChannelMessage( "Adding you to the game, " + source.getName() + ". There are now " + str( len( self.players) ) + " players.")
             if( message == "players?" ):
                 self.players.sort()
                 irclib.sendChannelMessage( "Players so far (" + str( len( self.players ) ) + ") are: " + str( self.players ) )
