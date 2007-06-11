@@ -39,7 +39,7 @@ class WerewolfModeratorPlugin:
         playersLeft = self.players + self.werewolves + self.seer
         playersLeft.sort()
         irclib.sendChannelMessage( "Remaining players (" + str( len( playersLeft ) ) + ") are: " + str( playersLeft ) )
-        irclib.sendChannelMessage( "Corpses (" + str( len( self.deadplayers + "): " + str( self.deadplayers ) )
+        irclib.sendChannelMessage( "Corpses (" + str( len( self.deadplayers ) )+ "): " + str( self.deadplayers ) )
 
     def didWerewolvesWin( self ):
         if( len( self.werewolves ) >= len( self.seer + self.players ) ):
