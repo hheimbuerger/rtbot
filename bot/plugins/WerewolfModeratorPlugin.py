@@ -99,6 +99,9 @@ class WerewolfModeratorPlugin:
             
     def beginDayPhase(self, irclib):
         self.lynchTarget = {}
+        remainingPlayers = self.seer + self.players + self.werewolves
+        for i in remainingPlayers:
+            self.lynchTarget[ i ] = None
         irclib.sendChannelMessage( "Dawn breaks, and the villagers discover that the werewolves have eaten: " + self.werewolfJointTarget + ".")
         if( self.werewolfJointTarget in self.seer ):
             self.seer.remove( self.werewolfJointTarget )
@@ -181,13 +184,17 @@ class WerewolfModeratorPlugin:
             if( source.isAuthed() ):
                 irclib.sendChannelMessage("You can't vote, " + source.getName() + ", you aren't playing!" )
             else:
-                irclib.sendChannelMessage("You can't vote, " + source.getCanonicalName() + ", you aren't playing!" )
+                irclib.sendChannelMessage("You can't vote, " + source.getCanonicalNick() + ", you aren't playing!" )
         
+    def handleUnlynch( self, irclib, source, message ):
+        if( self.isSomeoneAPlayer( source.getName() ) ):
+            self.lynchTarget[ source.getName() ] = None
 
+    
     def processLynchVotes( self, irclib ):
         for i in self.lynchTarget.keys():
             remainingPlayers = self.seer + self.players + self.werewolves
-            if( self.lynchTarget.values().count( self.lynchTarget[ i ] ) >  len( remainingPlayers ) / 2 ):
+            if( self.lynchTarget[ i ] and self.lynchTarget.values().count( self.lynchTarget[ i ] ) >  len( remainingPlayers ) / 2 ):
                 self.lynchTarget[ "final" ] = self.lynchTarget[ i ]
                 irclib.sendChannelMessage("You have decided to lynch " + self.lynchTarget[ "final" ] + "!")
                 if( self.lynchTarget[ "final" ] in self.players ):
@@ -259,6 +266,10 @@ class WerewolfModeratorPlugin:
                     else:
                         self.gamePhase = "night"
                         self.processNightPhase(irclib)
+        if( self.gameState == "playing" and self.gamePhase == "day" ):
+            if( message[:len("!unlynch")] == "!unlynch" ):
+                self.handleUnlynch( self, irclib, source, message )
+
 
         if( self.gameState == "playing" and self.gamePhase == "day"):
             if( message == "lynchvotes?" ):
