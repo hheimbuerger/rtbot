@@ -294,7 +294,7 @@ class WerewolfModeratorPlugin:
                     self.players.append( source.getName() )
                     irclib.sendChannelMessage( "Adding you to the game, " + source.getName() + ".")
             if( message == "players?" ):
-                irclib.sendChannelMessage( "Players so far (" + str( len( playersLeft ) ) + ") are: " + str( self.players ) )
+                irclib.sendChannelMessage( "Players so far (" + str( len( self.players ) ) + ") are: " + str( self.players.sort() ) )
             if( message == "Por!" ):
                 if( len( self.players ) < 6 ):
                     irclib.sendChannelMessage("Fewer than the recommended amount of players. 'Ex!' to override." )
