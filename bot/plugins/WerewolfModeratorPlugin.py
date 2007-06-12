@@ -233,7 +233,8 @@ class WerewolfModeratorPlugin:
 
     
     def initGame(self, irclib):
-        random.seed()
+        #random.seed()
+        self.players.sort()
         werewolf1 = random.choice( self.players )
         self.players.remove( werewolf1 )
         self.werewolves.append( werewolf1 )
