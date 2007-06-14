@@ -202,6 +202,10 @@ class WerewolfModeratorPlugin:
             if( self.lynchTarget[ i ] and self.lynchTarget.values().count( self.lynchTarget[ i ] ) >  len( remainingPlayers ) / 2 ):
                 self.lynchTarget[ "final" ] = self.lynchTarget[ i ]
                 irclib.sendChannelMessage("You have decided to lynch " + self.lynchTarget[ "final" ] + "!")
+                lynchees = set(self.lynchTarget.values())
+                hate_list = dict([ (lynchee, [k for k, v in self.lynchTarget.items() if v == lynchee]) for lynchee in lynchees ] )
+                for k, v in hate_list.items():
+                    irclib.sendChannelMessage( '%s <-- %s' % (k, ', '.join(v)) )                
                 if( self.lynchTarget[ "final" ] in self.players ):
                     self.players.remove( self.lynchTarget[ "final" ] )
                     irclib.sendChannelMessage("He or she was a villager. You paranoid gits!" )
