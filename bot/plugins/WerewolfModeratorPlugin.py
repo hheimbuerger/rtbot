@@ -41,11 +41,12 @@ class WerewolfModeratorPlugin:
         lynchTarget = {}
                     
     def onTimer( self, irclib ):
-        deltatime = datetime.datetime.utcnow() - self.timerStart
-        if(( deltatime.days != 0 ) or ( deltatime.seconds >  self.timerTotalSeconds ) ):
-            irclib.sendChannelMessage("Time's up.")
-            self.gamePhase = "night"
-            self.processNightPhase( irclib )
+        if( self.gameState == "playing" and self.gamePhase == "postlynch" )
+            deltatime = datetime.datetime.utcnow() - self.timerStart
+            if(( deltatime.days != 0 ) or ( deltatime.seconds >  self.timerTotalSeconds ) ):
+                irclib.sendChannelMessage("Time's up.")
+                self.gamePhase = "night"
+                self.processNightPhase( irclib )
 
     def echoRemainingPlayers( self, irclib ):
         playersLeft = self.players + self.werewolves + self.seer
@@ -269,6 +270,7 @@ class WerewolfModeratorPlugin:
         self.gameState = "playing"
         irclib.sendChannelMessage("Night will begin in 20 seconds. Any player talking during night will be disqualified.")
         self.timerStart = datetime.datetime.utcnow()
+        self.gamePhase = "postlynch"
         
 
     def onChannelMessage(self, irclib, source, message):
