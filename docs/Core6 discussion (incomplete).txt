@@ -535,3 +535,258 @@ Session Start (irc.quakenet.eu.org:Ksero): Mon Sep 18 23:43:37 2006
 [23:49] Ksero: I think it's more clear to have a separate function for reporting changes
 [23:49] Cort: yeah, probably
 Session Close (Ksero): Mon Sep 18 23:52:07 2006
+
+
+
+Session Start (CortexHH:AfTerrAll): Fri Jun 15 09:22:15 2007
+[...]
+[09:28] AfTerrAll: Have you read up on Bard's request for multichannel presence?
+[09:28] Cortex HH: no, not yet
+[09:28] AfTerrAll: (for RTBot)
+[09:28] Cortex HH: forum?
+[09:28] AfTerrAll: k
+[09:28] AfTerrAll: yeah
+[09:28] Cortex HH: will post my reply there
+[09:29] AfTerrAll: *nod*
+[09:29] AfTerrAll: I appreciate it.
+[09:29] * AfTerrAll goes back to abstracting PlayerManagementPlugin
+[09:36] Cortex HH: While I'm on it...
+[09:36] Cortex HH: WWPlugin requires AuthPlugin, right?
+[09:37] AfTerrAll: yes
+[09:37] Cortex HH: Komposition, not aggregation.
+[09:37] Cortex HH: C*
+[09:37] Cortex HH: It will crash if AuthPlugin is not around.
+[09:37] Cortex HH: Then you should declare AuthPlugin as a dependency.
+[09:37] Cortex HH: See HumanBehaviourPlugin as an example
+[09:37] Cortex HH:   @classmethod
+   def getDependencies(self):
+       return(["InsultPlugin"])
+[09:37] AfTerrAll: you're right
+[09:38] Cortex HH: by convention, if you don't declare another plugin as a dependency, your plugin is required to also work without that one
+[09:38] AfTerrAll: *nod*
+[09:38] Cortex HH: not sure if that is already used at all and if, whether it works, but better fix it now than later :)
+[09:38] AfTerrAll: I agree
+[09:38] Cortex HH: idea is, that if you deactivate (crash) AuthPlugin, WWPlugin will be deactivated as well
+[09:38] Cortex HH: same with reactivation
+[09:39] AfTerrAll: alrighty
+[09:39] AfTerrAll: Question about user instances
+[09:39] AfTerrAll: they are pointers in memory, yes?
+[09:39] Cortex HH: you can also use other plugins without declaring a dependency, but then you need to check whether that plugin is around before using it and make it work appropriately when it is not
+[09:39] Cortex HH: user instances are...
+[09:40] Cortex HH: yes, references
+[09:40] AfTerrAll: hrm
+[09:40] AfTerrAll: references
+[09:40] Cortex HH: so pointers
+[09:40] AfTerrAll: that complicates things.
+[09:40] Cortex HH: yeah, you should avoid saving them
+[09:40] AfTerrAll: Well...
+[09:40] Cortex HH: better work with the nicks/names and get the objects when you need them
+[09:40] AfTerrAll: I'm writing PlayerManagementPlugin
+[09:41] AfTerrAll: which will handle all the !addme/!removeme!/players? nonsense
+[09:41] AfTerrAll: and then just hand off that list to whatever game plugin is called
+[09:41] Cortex HH: (and will declare a dependency on WWPlugin then, btw.)
+[09:41] AfTerrAll: (yes)
+[09:41] Cortex HH: (ah, then not)
+[09:41] Cortex HH: (sorry, go ahead :) )
+[09:41] AfTerrAll: (allowing, as an ancillary effect, people to effectively sign up 'for the next game')
+[09:42] Cortex HH: can't it just hand over a list of names?
+[09:42] AfTerrAll: now, it was my hope that i could pass a list( user, user, user ) along
+[09:42] Cortex HH: but that's not your question, is it?
+[09:42] AfTerrAll: it can, but that's a bit more of a pain in the ass
+[09:42] Cortex HH: why?
+[09:42] AfTerrAll: because then all game plugins have to have a bunch of internal pointer-snapping and table lookups
+[09:43] AfTerrAll: and DRY is a good principle =/
+[09:43] AfTerrAll: which is even further complicated (potentially) by core6 and how it implements multiple channel presence.
+[09:43] AfTerrAll: e.g. irclib.sendInviteMessage( args )
+[09:46] AfTerrAll: as an ideal state of affairs (for me) would be for PlayerManagementPlugin to be active in all channels, then when the game plugin is called, the list of users signed up will be invited to a subchannel #rollingthunder.<gamename>, all that game plugin is handled strictly in that channel from then on.
+[09:46] Cortex HH: sounds good
+[09:47] Cortex HH: I don't see a problem with passing names instead of users, though.
+[09:47] AfTerrAll: no crippling problem
+[09:47] AfTerrAll: just DRY violations and overall, more complicated code.
+[09:47] Cortex HH: Sure, the game plugins will have to do a irclib.getUserList().getUserByName() and handle disappearing users, but they'll have to do that either way.
+[09:48] AfTerrAll: the latter they'd have to do
+[09:48] Cortex HH: well, the DRY violation is minimal, and brings a much cleaner interface with it
+[09:48] AfTerrAll: the former they don't, really
+[09:48] Cortex HH: good trade, imho
+[09:48] Cortex HH: well, about the lookup... that depends
+[09:48] Cortex HH: we have no policy how long user accounts are valid right now
+[09:49] AfTerrAll: also, people are still bitching about case-sensitivity. =/
+[09:49] Cortex HH: if you store them over different event handlers, you can just as well pass them between plugins
+[09:49] AfTerrAll: (and considering that IRC nicks are case-agnostic, they have a point)
+[09:49] Cortex HH: my intuitive answer is: user accounts are valid until the current event handler terminates, and not any longer
+[09:49] Cortex HH: but I haven't thought about it
+[09:50] AfTerrAll: That sounds about right
+[09:50] Cortex HH: then you always have to do a getUserByName()
+[09:50] AfTerrAll: And storing by account name  makes sense
+[09:51] AfTerrAll: I just feel like I'm writing overly verbose code every time I write:
+  irclib.sendPrivateNotice( irclib.getUserList().getUserByName( players[ i ] ) , "Night is over." )
+[09:51] Cortex HH: it's worse, actually
+[09:52] Cortex HH: because you also have the exception catch clause
+[09:52] Cortex HH: how about extracting all message sending into a new helper method
+[09:52] Cortex HH: sendNoticeToName(self, name, message)
+[09:53] AfTerrAll: I wouldn't be opposed to actually extending irclib with 'safe' versions of sendPrivateNotice and sendPrivateMessage either.
+[09:53] Cortex HH: and catching the exception inside and handling it there or rethrowing a more detailed exception, depending on how you handle disappearing players
+[09:53] AfTerrAll: that'd be up to the specific game plugin, I'd imagine
+[09:53] * AfTerrAll checks
+[09:53] Cortex HH: did you answer my question what 'safe' would mean?
+[09:54] Cortex HH: i.e. what happens if the person is not around?
+[09:54] AfTerrAll: didn't see your question on what safe would be
+[09:54] Cortex HH: some days ago, in the channel
+[09:54] Cortex HH: ah, nm
+[09:54] Cortex HH: my bad
+[09:55] Cortex HH: yeah, safe versions
+[09:55] Cortex HH: hmm
+[09:55] Cortex HH: don't see a reason why not
+[09:55] Cortex HH: we could move that to Core6 and in the meantime, you just use your own safe wrapper methods, though
+[09:56] Cortex HH: (either way, I'll add this log to the Core6 discussions in the repo, if you don't mind)
+[09:56] Cortex HH: (I need to keep track of the requirements for Core6 somehow)
+[09:57] AfTerrAll: I do not mind at all
+[09:58] AfTerrAll: well
+[09:58] AfTerrAll: Core5 has events for someone leaving channel as well as joining, right?
+[09:58] AfTerrAll: (I know it has joining, does it also have leaving?)
+[09:59] Cortex HH: it has
+[09:59] Cortex HH: but I wouldn't rely on them
+[09:59] Cortex HH: Core5 is kinda 'forced single-threaded'
+[09:59] Cortex HH: so everything's handled as if it happened in one thread, which obviously is never the case in IRC
+[10:00] Cortex HH: I'm also not sure what happens if you send a message to a user who already left but is still in the userlist, tbh
+[10:00] Cortex HH: but yeah
+[10:00] Cortex HH: you can handle onLeave (?) to e.g. say: "user left, aborting game"
+[10:01] Cortex HH: just don't use it to keep track of who you can send messages to
+[10:01] Cortex HH: (which would basically be a reimplementation of the UserList, anyway)
+[10:01] AfTerrAll: mmhm
+[10:02] AfTerrAll: I think that it'll just be up to plugin devs to intelligently handle people leaving/joining
+[10:02] AfTerrAll: and check for them
+[10:02] Cortex HH: as far as PlayerManagementPlugin is concerned, definitely!
+[10:02] AfTerrAll: well, that's part of the advantage of PMP
+[10:02] Cortex HH: and even if only because people might sign up, then drop and rejoin (different user, but same 'name'!) before the game starts
+[10:02] AfTerrAll: if a person on the list drops, remove their name from the list
+[10:03] Cortex HH: mmmh
+[10:03] AfTerrAll: and then (here's the kicker)
+[10:03] Cortex HH: how about:
+[10:03] Cortex HH: go ahead
+[10:04] AfTerrAll: irclib.sendGuaranteedNotice( target (+ retrieval functions) , "You were dropped from the Players list because you left the channel. Please rejoin." )
+[10:04] Cortex HH: huh?
+[10:04] Cortex HH: when/why should it send that?
+[10:05] Cortex HH: if he already recognised someone is the person who dropped, why not re-add silently?
+[10:05] Cortex HH: (or never remove)
+[10:05] Cortex HH: my ideas would have been:
+ !purge (remove players who have dropped)
+ and
+ giving a message when a game is started, but a person on the list is no longer around
+[10:07] AfTerrAll: well
+[10:08] AfTerrAll: the reasoning behind removing quickly and then notification is:
+[10:08] AfTerrAll: drops may be 5 minutes or 5 days
+[10:09] Cortex HH: yeah
+[10:09] Cortex HH: meh, either way is fine with me
+[10:09] Cortex HH: only field test will show what's more common
+[10:10] AfTerrAll: sec, westling with cat
+[10:10] AfTerrAll: off, you!
+[10:10] AfTerrAll: ok
+[10:10] AfTerrAll: back
+[10:10] Cortex HH: you will see what the people will bitch more about, having to rejoin or kicking AFKs :D
+[10:10] AfTerrAll: I agree with that. =]
+[10:10] Cortex HH: -the
+[10:11] Cortex HH: anyway, PMPlugin is a cool idea, that I didn't think of when we discussed the merits of !addme vs. !WWaddme
+[10:12] AfTerrAll: Well, Deng's already mentioned other ideas for in-channel games
+[10:12] AfTerrAll: (which reminds me, does the bot's python install have the image library?)
+[10:12] AfTerrAll: and PMPlugin is nearly essential to an (eventual) multi-channel thing
+[10:13] Cortex HH: I have another secret half-written game, too :)
+[10:13] Cortex HH: no, it doesn't, but we could fix that
+[10:13] AfTerrAll: I'm having trouble deciding whether PMPlugin should be called to manage a list of players with a game in mind
+[10:13] Cortex HH: I'm rather proud that you can run RTBot without any installed packages, though
+[10:13] Cortex HH: i.e. on a vanilla Python installation
+[10:13] AfTerrAll: I agree, it is fairly  awesome
+[10:13] AfTerrAll: but Deng wanted to generate board-game layouts on the fly
+[10:14] AfTerrAll: and ascii-fying those would be, well, torment is a decent verb.
+[10:14] Cortex HH: if possible, I'd like to integrate the necessary libs into the RTBot sources, if the licence allows it
+[10:14] AfTerrAll: or if the list should be started orthagonally, then passed to whatever game is called afterward.
+[10:14] AfTerrAll: (you begin to see the type of mind it takes to feel comfort commanding allegiance or spinning trance)
+[10:15] AfTerrAll: PIL is open.
+[10:15] AfTerrAll: (Link: http://www.pythonware.com/products/pil/license.htm)http://www.pythonware.com/products/pil/license.htm
+[10:15] Cortex HH: :)
+[10:16] Cortex HH: yeah, I agree an image lib is necessary at some point
+[10:16] Cortex HH: would probably also integrate well into the Core6 idea of having other access points to the bot
+[10:16] Cortex HH: (integrated HTTP server, in particular)
+[10:16] AfTerrAll: *cough cherrypy cough* =]
+[10:17] Cortex HH: look at the lower left of the link you sent me :P
+[10:17] Cortex HH: no, I think integrating a web framework might go too far
+[10:17] AfTerrAll: yes, yes, you are the Django fanboy =]
+[10:17] Cortex HH: I just want to serve some HTML
+[10:17] AfTerrAll: *nod*
+[10:18] AfTerrAll: I really say CherryPy because it's the one I'm most familiar with. =]
+[10:18] Cortex HH: same with Django :)
+[10:18] AfTerrAll: I assume  Django is free/open?
+[10:19] * AfTerrAll doesn't remember the licensing of the Django framework
+[10:19] Cortex HH: yeah
+[10:20] AfTerrAll: Thoughts on the instantiated / static orthagonal player listing?
+[10:21] Cortex HH: I don't really see a need, but I don't mind.
+[10:21] Cortex HH: It definitely won't be a problem for the server to handle it soon.
+[10:21] AfTerrAll: That's a which question, not a yes/no.
+[10:22] Cortex HH: then I'm not sure what you mean
+[10:22] Cortex HH: the purge vs. rejoin thing?
+[10:22] AfTerrAll: `2
+[10:22] AfTerrAll: (1:13:22 AM) Michael: I'm having trouble deciding whether PMPlugin should be called to manage a list of players with a game in mind
+ (1:14:20 AM) Michael: or if the list should be started orthagonally, then passed to whatever game is called afterward.
+[10:22] AfTerrAll: IE
+[10:23] Cortex HH: ah
+[10:23] Cortex HH: hmm
+[10:23] AfTerrAll: Deng: !start adding players
+ RTBot: Deng wants to play a game! type !addme to join
+ Terr: !addme
+ Cort: !addme
+ Deng: !play Werewolf
+ RTbot: Werewolf starting stuff
+[10:23] AfTerrAll: or
+[10:23] Cortex HH: game should come first
+[10:23] AfTerrAll: Deng: !start werewolf
+ RTBot: Deng wants to play werewolf! type !addme_uniq_identifier to play!
+[10:23] AfTerrAll: etc.
+[10:24] Cortex HH: yeah
+[10:24] Cortex HH: the latter
+[10:24] AfTerrAll: I tend to agree
+[10:24] Cortex HH: I don't think players will want to play "any" game.
+[10:24] AfTerrAll: Now to figure out a way to fetch which games are available.
+[10:24] Cortex HH: if you want to make it dynamic...
+[10:24] Cortex HH: look into VersionPlugin
+[10:24] * AfTerrAll adds it to the list
+[10:25] Cortex HH: and add a required method for all games
+[10:25] Cortex HH: def getGameName()
+[10:25] Cortex HH: or
+[10:25] Cortex HH: def isGame()
+[10:25] AfTerrAll: hm, point.
+[10:25] AfTerrAll: <cosmok> what is programming anymore, copy paste copy paste
+ <cosmok> copy, reorganize, paste, rework, paste
+ <kez> you missed a bit off the end
+ <cosmok> ?
+ <kez> </html>
+[10:25] Cortex HH: then go through the list of plugins and check whether one of them has that method and returns the proper value
+[10:26] AfTerrAll: Yeah, that'd seem to be the best  way to go about it
+[10:26] Cortex HH: hmm, seems like plugins will need event handlers like onPluginLoad and onPluginUnload
+[10:27] Cortex HH: ... in Core6
+[10:27] AfTerrAll: I agree.
+[10:28] AfTerrAll: also, I'm delaying statistics for WWModPlugin because I don't want to think about how to do statistics without using a DB to store every game =]
+[10:29] Cortex HH: well, I doubt DB access will ever be a guaranteed feature for RTBot
+[10:29] AfTerrAll: yeah, that's it exactly =]
+[10:29] Cortex HH: why not store it in a normal data structure and use the pickle library?
+[10:29] AfTerrAll: worried about size/access latency constraints
+[10:29] Cortex HH: then again, must have been the adrenaline, I don't really care about stats, really :)
+[10:29] AfTerrAll: yeah, neither do I
+[10:30] AfTerrAll: I just know I have an unbroken win streak as werewolf
+[10:30] Cortex HH: don't think you have to
+[10:30] Cortex HH: many plugins use pickle
+[10:30] Cortex HH: usually after every data modification
+[10:30] AfTerrAll: that reminds me!
+[10:30] AfTerrAll: 1) VoceChatPlugin::vcpref never got updated to use names instead of nicks
+[10:31] Cortex HH: yeah, I know :(
+[10:31] AfTerrAll: 2) I forgot what 2 is
+[10:32] Cortex HH: I didn't change what was still working after the AuthPlugin change, because it probably has to be modified with Core6 anyway
+[10:33] AfTerrAll: *nods*
+[10:33] Cortex HH: SeenPlugin only allows nick lookups, which is kinda stupid
+[10:33] Cortex HH: and more
+[10:33] AfTerrAll: likewise MutingPlugin and Summoning
+[10:33] AfTerrAll: w/e
+[10:33] AfTerrAll: Core6 is coming in TwoWeeks =]
+[10:33] Cortex HH: yep :)
+[10:34] AfTerrAll: anyway, 1:30 AM here, off to bed for a bit.
+[10:34] Cortex HH: g'night :)
+Session Close (AfTerrAll): Fri Jun 15 10:36:32 2007
