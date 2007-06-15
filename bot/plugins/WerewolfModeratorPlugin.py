@@ -8,6 +8,7 @@ class WerewolfModeratorPlugin:
     def getVersionInformation(self):
         return("$Id: WerewolfModeratorPlugin.py 315 2007-06-06 15:24:26Z terralthra $")
 
+    timerStart    
     players = []
     werewolves = []
     seer = []
@@ -18,6 +19,7 @@ class WerewolfModeratorPlugin:
     werewolfTarget = {}
     werewolfJointTarget = False
     lynchTarget = {}
+    timerTotalSeconds = 15
 
     def endGame( self, irclib ):
         allplayers = self.deadplayers + self.players + self.seer + self.werewolves
@@ -34,6 +36,12 @@ class WerewolfModeratorPlugin:
         werewolfJointTarget = False
         lynchTarget = {}
                     
+    def onTimer( self, irclib ):
+        deltatime = datetime.datetime.utcnow() - self.timerStart
+        if(( deltatime.days != 0 ) or ( deltatime.seconds >  self.timerTotalSeconds ) ):
+            irclib.sendChannelMessage("Time's up.")
+            self.gamePhase = "night"
+            self.processNightPhase( irclib )
 
     def echoRemainingPlayers( self, irclib ):
         playersLeft = self.players + self.werewolves + self.seer
@@ -254,10 +262,9 @@ class WerewolfModeratorPlugin:
             irclib.sendPrivateNotice( irclib.getUserList().findByName( self.seer[ 0 ] ), "You are a Seer! Your prophetic dreams allow you to identify werewolves!")
         for i in self.players:
             irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "You are a villager! Nothing special, but you'd like to keep living.")
-        self.gamePhase = "night"
         self.gameState = "playing"
-        self.processNightPhase(irclib)
-
+        irclib.sendChannelMessage("Night will begin in 15 seconds. Any player talking during night will be disqualified.")
+        self.timerStart = datetime.datetime.utcnow()
         
 
     def onChannelMessage(self, irclib, source, message):
@@ -283,9 +290,8 @@ class WerewolfModeratorPlugin:
 
         if( self.gamePhase == "postlynch" ):
             if( message == "!sunset" ):
-                self.gamePhase = "night"
-                self.processNightPhase(irclib)
-
+                irclib.sendChannelMessage("Night will begin in 15 seconds. Any player talking during night will be disqualified.")
+                self.timerStart = datetime.datetime.utcnow()
 
         if( self.gamePhase == "night" and self.gameState == "playing" ):
             if( source.getName() in self.players ):
@@ -297,7 +303,14 @@ class WerewolfModeratorPlugin:
             if( source.getName() in self.werewolves ):
                 self.werewolves.remove( source.getName() )
                 irclib.sendChannelMessage("Disqualifying you from the game for talking, " + source.getName() + ". You were a werewolf.")
-            
+            if( len( self.players + self.werewolves + self.seer ) == 0 ):
+                irclib.sendChannelMessage("Wow. This game is full of phail. Aborting.")
+                self.endGame( irclib )
+            else:
+                if( self.didWerewolvesWin() ):
+                    self.reportWerewolfWin( irclib )
+                elif( self.didPlayersWin() ):
+                    self.reportPlayerWin( irclib )
 
         if( self.gameState == "playing" and self.gamePhase == "day"):
             if( message == "lynchvotes?" ):
