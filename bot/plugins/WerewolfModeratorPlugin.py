@@ -287,7 +287,7 @@ class WerewolfModeratorPlugin:
                 self.processNightPhase(irclib)
 
 
-        if( self.gamePhase == "night" ):
+        if( self.gamePhase == "night" and self.gameState == "playing" ):
             if( source.getName() in self.players ):
                 self.players.remove( source.getName() )
                 irclib.sendChannelMessage("Removing you from the game, " + source.getName() + ". You were a perfectly normal villager.")
