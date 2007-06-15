@@ -23,7 +23,7 @@ class WerewolfModeratorPlugin:
     werewolfTarget = {}
     werewolfJointTarget = False
     lynchTarget = {}
-    timerTotalSeconds = 15
+    timerTotalSeconds = 20
 
     def endGame( self, irclib ):
         allplayers = self.deadplayers + self.players + self.seer + self.werewolves
@@ -267,7 +267,7 @@ class WerewolfModeratorPlugin:
         for i in self.players:
             irclib.sendPrivateNotice( irclib.getUserList().findByName( i ), "You are a villager! Nothing special, but you'd like to keep living.")
         self.gameState = "playing"
-        irclib.sendChannelMessage("Night will begin in 15 seconds. Any player talking during night will be disqualified.")
+        irclib.sendChannelMessage("Night will begin in 20 seconds. Any player talking during night will be disqualified.")
         self.timerStart = datetime.datetime.utcnow()
         
 
@@ -294,7 +294,7 @@ class WerewolfModeratorPlugin:
 
         if( self.gamePhase == "postlynch" ):
             if( message == "!sunset" ):
-                irclib.sendChannelMessage("Night will begin in 15 seconds. Any player talking during night will be disqualified.")
+                irclib.sendChannelMessage("Night will begin in 20 seconds. Any player talking during night will be disqualified.")
                 self.timerStart = datetime.datetime.utcnow()
 
         if( self.gamePhase == "night" and self.gameState == "playing" ):
