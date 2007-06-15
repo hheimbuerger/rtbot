@@ -287,6 +287,18 @@ class WerewolfModeratorPlugin:
                 self.processNightPhase(irclib)
 
 
+        if( self.gamePhase == "night" ):
+            if( source.getName() in self.players ):
+                self.players.remove( source.getName() )
+                irclib.sendChannelMessage("Removing you from the game, " + source.getName() + ". You were a perfectly normal villager.")
+            if( source.getName() in self.seer ):
+                self.players.remove( source.getName() )
+                irclib.sendChannelMessage("Removing you from the game, " + source.getName() + ". You were the seer.")
+            if( source.getName() in self.players ):
+                self.players.remove( source.getName() )
+                irclib.sendChannelMessage("Removing you from the game, " + source.getName() + ". You were a werewolf.")
+            
+
         if( self.gameState == "playing" and self.gamePhase == "day"):
             if( message == "lynchvotes?" ):
                 #irclib.sendChannelMessage( str( self.lynchTarget ) )
