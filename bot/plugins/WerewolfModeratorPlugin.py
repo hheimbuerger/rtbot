@@ -1,4 +1,4 @@
-import random, logging, UserList
+import random, logging, UserList, datetime
 
 class WerewolfModeratorPlugin:
 
@@ -8,7 +8,11 @@ class WerewolfModeratorPlugin:
     def getVersionInformation(self):
         return("$Id: WerewolfModeratorPlugin.py 315 2007-06-06 15:24:26Z terralthra $")
 
-    timerStart    
+    @classmethod
+    def getDependencies(self):
+      return(["AuthenticationPlugin"])
+
+    timerStart = datetime.datetime.utcnow()   
     players = []
     werewolves = []
     seer = []
