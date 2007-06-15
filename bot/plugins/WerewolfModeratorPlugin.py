@@ -12,7 +12,7 @@ class WerewolfModeratorPlugin:
     def getDependencies(self):
       return(["AuthenticationPlugin"])
 
-    timerStart = datetime.datetime.utcnow()   
+    timerStart = 0  
     players = []
     werewolves = []
     seer = []
