@@ -290,13 +290,13 @@ class WerewolfModeratorPlugin:
         if( self.gamePhase == "night" and self.gameState == "playing" ):
             if( source.getName() in self.players ):
                 self.players.remove( source.getName() )
-                irclib.sendChannelMessage("Removing you from the game, " + source.getName() + ". You were a perfectly normal villager.")
+                irclib.sendChannelMessage("Disqualifying you from the game for talking, " + source.getName() + ". You were a perfectly normal villager.")
             if( source.getName() in self.seer ):
-                self.players.remove( source.getName() )
-                irclib.sendChannelMessage("Removing you from the game, " + source.getName() + ". You were the seer.")
-            if( source.getName() in self.players ):
-                self.players.remove( source.getName() )
-                irclib.sendChannelMessage("Removing you from the game, " + source.getName() + ". You were a werewolf.")
+                self.seer.remove( source.getName() )
+                irclib.sendChannelMessage("Disqualifying you from the game for talking, " + source.getName() + ". You were the seer.")
+            if( source.getName() in self.werewolves ):
+                self.werewolves.remove( source.getName() )
+                irclib.sendChannelMessage("Disqualifying you from the game for talking, " + source.getName() + ". You were a werewolf.")
             
 
         if( self.gameState == "playing" and self.gamePhase == "day"):
