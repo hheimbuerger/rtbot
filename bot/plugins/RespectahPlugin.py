@@ -33,6 +33,7 @@ class RespectahPlugin:
                     results = []
                     for (target, value) in self.data[user][attribute].items():
                         results.append("%s = %i" % (target, value))
+                    results.sort()
                     irclib.sendChannelMessage("%s's %s: %s" % (user, attribute, ", ".join(results)))
                 else:
                     irclib.sendChannelMessage("You never gave %s to anybody!" % (attribute))
@@ -48,6 +49,7 @@ class RespectahPlugin:
                 if ( attribute not in results ):
                     results.append("%s" % (attribute))
             if (len(results)):
+                results.sort()
                 irclib.sendChannelMessage("%s's %s" % (user, results))
             else:
                 irclib.sendChannelMessage("You never gave any respectah!")
