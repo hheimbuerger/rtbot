@@ -4,8 +4,8 @@ import re, pickle
 
 class RespectahPlugin:
     commandRE = re.compile("(\\S*?)\\.(\\S*?)\\((\\S*?)\\)((\\+\\+)|(--))")
-    commandREPE = re.compile("(\\S*?)\\.(\\S*?)\\((\\S*?)\\)((\\+\\=)|(-\\=))(\\S*?)")
-    
+    commandREPE = re.compile("(\\S*?)\\.(\\S*?)\\((\\S*?)\\)([\\+-]=)(\\S*)")
+
     def __init__(self, pluginInterface):
         self.pluginInterfaceReference = pluginInterface
         self.data = {}
@@ -40,6 +40,17 @@ class RespectahPlugin:
                 irclib.sendChannelMessage("You never used that attribute!")
         else:
             irclib.sendChannelMessage("You never gave any respectah!")
+
+    def printCurrentListAll(self, irclib, user):
+        if(self.data.has_key(user)):
+            results = [] 
+            for (attribute, target) in self.data[user].items():
+                if ( attribute not in results ):
+                    results.append("%s" % (attribute))
+            if (len(results)):
+                irclib.sendChannelMessage("%s's %s" % (user, results))
+            else:
+                irclib.sendChannelMessage("You never gave any respectah!")
     
     def setValue(self, user, attribute, target, op):
         currentValue = self.data.setdefault(user, {}).setdefault(attribute, {}).setdefault(target, 0)
@@ -63,7 +74,10 @@ class RespectahPlugin:
             # "list respect"
             if((len(message.split()) >= 2) and (message.split()[0] == "list")):
                 attribute = message.split()[1]
-                self.printCurrentList(irclib, name, attribute)
+                if attribute == "*":
+                    self.printCurrentListAll(irclib, name)
+                else:
+                    self.printCurrentList(irclib, name, attribute) 
 
             # "self.respect(something)++"
             result = RespectahPlugin.commandRE.search(message)
@@ -89,12 +103,14 @@ class RespectahPlugin:
                 operation = result.group(4)
                 value = result.group(5)
                 if((object == name) or (object == "self")):
-                    if(operation == "+="):
-                        op = +int(value)
-                    else:
-                        op = -int(value)
-                    self.setValue(name, attribute, target, op)
-                    irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
+                    irclib.sendChannelMessage("object: %s attribute: %s target: %s operation: %s value: %s" % (object, attribute, target, operation, value))
+                    if(value.isdigit()):
+                        if(operation == "+="):
+                            op = +int(value)
+                        else:
+                            op = -int(value)
+                        self.setValue(name, attribute, target, op)
+                        irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
 
 #Unit-test
 if __name__ == "__main__":
