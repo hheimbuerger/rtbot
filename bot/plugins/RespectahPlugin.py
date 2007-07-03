@@ -5,6 +5,7 @@ import re, pickle
 class RespectahPlugin:
     commandRE = re.compile("(\\S*?)\\.(\\S*?)\\((\\S*?)\\)((\\+\\+)|(--))")
     commandREPE = re.compile("(\\S*?)\\.(\\S*?)\\((\\S*?)\\)([\\+-]=)(\\S*)")
+    commandREEQ = re.compile("(\\S*?)\\.(\\S*?)\\((\\S*?)\\)=(\\S*)")
 
     def __init__(self, pluginInterface):
         self.pluginInterfaceReference = pluginInterface
@@ -66,6 +67,18 @@ class RespectahPlugin:
             self.data[user][attribute][target] = currentValue + op
         self.saveList()
 
+    def setAbsValue(self, user, attribute, target, op):
+        currentValue = self.data.setdefault(user, {}).setdefault(attribute, {}).setdefault(target, 0)
+        if(op == 0):
+            del self.data[user][attribute][target]
+            if(len(self.data[user][attribute]) == 0):
+                del self.data[user][attribute]
+                if(len(self.data[user]) == 0):
+                    del self.data[user]
+        else:
+            self.data[user][attribute][target] = op
+        self.saveList()
+
     def getValue(self, user, attribute, target, op):
         return(self.data.get(user, {}).get(attribute, {}).get(target, 0))
 
@@ -112,6 +125,20 @@ class RespectahPlugin:
                             op = -int(value)
                         self.setValue(name, attribute, target, op)
                         irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
+
+            # "self.respect(something)=value"
+            result = RespectahPlugin.commandREEQ.search(message)
+            if(result):
+                object = result.group(1)
+                attribute = result.group(2)
+                target = result.group(3)
+                value = result.group(4)
+                if((object == name) or (object == "self")):
+                    if(value.isdigit()):
+                        op = int(value)
+                        self.setAbsValue(name, attribute, target, op)
+                        irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
+
 
 #Unit-test
 if __name__ == "__main__":
