@@ -103,7 +103,6 @@ class RespectahPlugin:
                 operation = result.group(4)
                 value = result.group(5)
                 if((object == name) or (object == "self")):
-                    irclib.sendChannelMessage("object: %s attribute: %s target: %s operation: %s value: %s" % (object, attribute, target, operation, value))
                     if(value.isdigit()):
                         if(operation == "+="):
                             op = +int(value)
