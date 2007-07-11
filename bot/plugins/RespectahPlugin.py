@@ -25,7 +25,7 @@ class RespectahPlugin:
         file.close()
 
     def getVersionInformation(self):
-        return("$Id: RespectahPlugin.py 260 2006-05-23 22:37:56Z Ksero $")
+        return("$Id$")
 
     def printCurrentList(self, irclib, user, attribute):
         if(self.data.has_key(user)):
