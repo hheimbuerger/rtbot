@@ -24,7 +24,8 @@ class IMDBTriviaPlugin:
         #a.write(page)
         #a.close()
 
-        reobj = re.compile("<ol>(.*?)</ol>", re.DOTALL).search(page)
+#        reobj = re.compile("<ol>(.*?)</ol>", re.DOTALL).search(page)
+        reobj = re.compile("<table>(.*?)</table>", re.DOTALL).search(page)
         if(not reobj):
             logging.debug("IMDBTriviaLib: couldn't find the film list")
             return(result)
@@ -32,7 +33,8 @@ class IMDBTriviaPlugin:
         #print filmList
         #print
 
-        reobj = re.compile("<li>(.*?)</li>(.*)", re.DOTALL).search(filmList)
+#        reobj = re.compile("<li>(.*?)</li>(.*)", re.DOTALL).search(filmList)
+        reobj = re.compile("<tr>(.*?)</tr>(.*)", re.DOTALL).search(filmList)
         while(reobj):
             #print reobj.group(1)
             #print
@@ -88,7 +90,8 @@ class IMDBTriviaPlugin:
         return(result)
 
     def getTitle(self, page):
-        reobj = re.compile("<title>Trivia for (.*?)</title>", re.DOTALL).search(page)
+#        reobj = re.compile("<title>Trivia for (.*?)</title>", re.DOTALL).search(page)
+        reobj = re.compile("<title>(.*?) - Trivia</title>", re.DOTALL).search(page)
         if(reobj):
             return(reobj.group(1))
         else:
