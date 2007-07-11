@@ -54,6 +54,8 @@ class RespectahPlugin:
                 irclib.sendChannelMessage("%s's %s" % (user, results))
             else:
                 irclib.sendChannelMessage("You never gave any respectah!")
+        else:
+            irclib.sendChannelMessage("I don't know them.")
     
     def setValue(self, user, attribute, target, op):
         currentValue = self.data.setdefault(user, {}).setdefault(attribute, {}).setdefault(target, 0)
@@ -91,6 +93,14 @@ class RespectahPlugin:
                 attribute = message.split()[1]
                 if attribute == "*":
                     self.printCurrentListAll(irclib, name)
+                elif ( attribute.find( "." ) != -1 ):
+                    DotPos = attribute.find( "." )
+                    name = attribute[0:DotPos]
+                    attribute = attribute[DotPos+1:999]
+                    if ( attribute == "*" ):
+                        self.printCurrentListAll(irclib, name)
+                    else:
+                        self.printCurrentList(irclib, name, attribute)                     
                 else:
                     self.printCurrentList(irclib, name, attribute) 
 
