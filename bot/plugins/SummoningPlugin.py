@@ -59,24 +59,12 @@ class SummoningPlugin:
                 irclib.sendChannelMessage("Oops.")
             elif(source.isAdmin()):
                 self.banish(irclib, source.nick, targetNick)
-            elif(source.getCanonicalNick() == "Kartoffel" ):
-                if(targetNick[:len("Wurf")] == "Wurf" ):
-                    irclib.sendChannelMessage("Wurf-mergency!")
-                elif(targetNick[:len("Drizzo")] == "Drizzo" ):
-                    irclib.sendChannelMessage("You can't beat him on EoR, and you can't beat him here.")
-                else:
-                    irclib.sendChannelMessage("So what if he's not an Op? He's got a trout!")
-                self.banish(irclib, source.nick, targetNick)
             elif(source.getCanonicalNick()[:len("Imm")] == "Imm"):
                 irclib.sendChannelMessage("Looks like an RT to me...")
                 self.banish(irclib, source.nick, targetNick)
-            else:
-                if(irclib.getUserList()[targetNick].isAdmin()):
-                    irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
-                    self.banish(irclib, irclib.nickname, source.nick)
-                else:
-                    irclib.sendChannelMessage("Well, you're not in my tribe...but neither's he...Don't tell anyone I did this.")
-                    self.banish(irclib, source.nick, targetNick)
+            elif(irclib.getUserList()[targetNick].isAdmin()):
+                irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
+                self.banish(irclib, irclib.nickname, source.nick)
         elif(message == self.summonAllCommand):
             if(source.isAdmin()):
                 self.summonAll(irclib, source.nick)
