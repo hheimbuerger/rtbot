@@ -11,8 +11,10 @@ class CurrencyPlugin:
 
     def __init__(self):
         self.currencyTableSource = {"host": "www.ecb.int", "url": "/stats/eurofxref/eurofxref-daily.xml"}
-        self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "SKK", "AUD", "DKK", "SEK"]
+        self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "SKK", "SEK", "NZD", "INR", "NIS"]          # removed: "AUD", "DKK"
         self.currencyRE = " (\\d{1,10}(\\.\\d{2})?)"
+        self.fixedCurrencies = {"INR": 55.7700, "NIS": 5.8637}
+        self.fixedCurrencyUpdate = "2007/08/09"
 
     def getVersionInformation(self):
         return("$Id$")
@@ -28,12 +30,9 @@ class CurrencyPlugin:
         currencyTable["EUR"] = 1.00
         for currency in cubes:
             currencyTable[currency.getAttribute("currency")] = float(currency.getAttribute("rate"))
+        for (currency, amountPer1EUR) in self.fixedCurrencies.items():
+            currencyTable[currency] = float(amountPer1EUR)
         return(currencyTable)
-#            print "%s = %f" % (currency.getAttribute("currency"), float(currency.getAttribute("rate")))
-#        return([{"RE": "GBP (\\d{1,10}(\\.\\d{2})?)", "conversions": [("%s EUR", 1.48544), ("USD %s", 1.75030), ("CAD %s", 2.02755)]},
-#                {"RE": "(\\d{1,10}(\\.\\d{2})?) EUR", "conversions": [("GBP %s", 0.67297), ("USD %s", 1.17860), ("CAD %s", 1.36436)]},
-#                {"RE": "CAD (\\d{1,10}(\\.\\d{2})?)", "conversions": [("GBP %s", 0.49315), ("%s EUR", 0.73220), ("USD %s", 0.86326)]},
-#                {"RE": "USD (\\d{1,10}(\\.\\d{2})?)", "conversions": [("GBP %s", 0.57127), ("%s EUR", 0.84839), ("CAD %s", 1.15820)]}])
 
     def getPage(self, host, url):
         conn = httplib.HTTPConnection(host)
@@ -61,16 +60,23 @@ class CurrencyPlugin:
                 # give the output
                 output = []
                 # set base currency as first value
-                output.append("%s %.2f" % (currency, round(baseValue*currencyTable[currency], 2)))
+                if(currency in self.fixedCurrencies.keys()):
+                    type = "~"
+                else:
+                    type = ""
+                output.append("%s%s %.2f" % (type, currency, round(baseValue*currencyTable[currency], 2)))
                 # append all other currencies but the base currency
                 for outputCurrency in self.usedCurrencies:
                     if(outputCurrency != currency):
-                        output.append("%s %.2f" % (outputCurrency, round(baseValue*currencyTable[outputCurrency], 2)))
-                irclib.sendChannelMessage(string.join(output, " = "))
+                        if(outputCurrency in self.fixedCurrencies.keys()):
+                            type = "~"
+                        else:
+                            type = ""
+                        output.append("%s%s %.2f" % (type, outputCurrency, round(baseValue*currencyTable[outputCurrency], 2)))
+                irclib.sendChannelMessage("%s [last fixed currency update: %s]" % (string.join(output, " = "), self.fixedCurrencyUpdate))
 
 
 (lambda reply: irclib.sendChannelMessage(reply))
-
 
 if __name__ == "__main__":
     class FakeIrcLib:
@@ -84,4 +90,4 @@ if __name__ == "__main__":
     a.onChannelMessage(FakeIrcLib(), "source", "USD 10")
     a.onChannelMessage(FakeIrcLib(), "source", "SKK 123.38")
     a.onChannelMessage(FakeIrcLib(), "source", "EUR 10, USD 20")
-
+    a.onChannelMessage(FakeIrcLib(), "source", "INR 40.4000")
