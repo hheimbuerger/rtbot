@@ -41,12 +41,14 @@ class HumanBehaviourPlugin:
         for line in HumanBehaviourPlugin.helpMessage:
             irclib.sendPrivateMessage(source, line)
         return(True)
-    elif((len(message.split()) > 0) and (message.split()[0] == "say")):
-        irclib.sendChannelMessage(message[4:])
-        return(True)
-    elif((len(message.split()) > 0) and (message.split()[0] == "me")):
-        irclib.sendChannelEmote(message[3:])
-        return(True)
+
+    if(source.isAdmin()):
+        if((len(message.split()) > 0) and (message.split()[0] == "say")):
+            irclib.sendChannelMessage(message[4:])
+            return(True)
+        elif((len(message.split()) > 0) and (message.split()[0] == "me")):
+            irclib.sendChannelEmote(message[3:])
+            return(True)
 
   @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_LOW)
   def onChannelMessage(self, irclib, source, msg):
