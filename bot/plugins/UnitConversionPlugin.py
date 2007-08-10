@@ -7,14 +7,15 @@ import xml.dom.minidom
 
 
 
-class CurrencyPlugin:
+class UnitConversionPlugin:
 
     def __init__(self):
         self.currencyTableSource = {"host": "www.ecb.int", "url": "/stats/eurofxref/eurofxref-daily.xml"}
         self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "SKK", "SEK", "NZD", "INR", "NIS"]          # removed: "AUD", "DKK"
-        self.currencyRE = " (\\d{1,10}(\\.\\d{2})?)"
+        self.currencyRE = "\s?(\\d{1,10}(\\.\\d{2})?)"
         self.fixedCurrencies = {"INR": 55.7700, "NIS": 5.8637}
         self.fixedCurrencyUpdate = "2007/08/09"
+        self.temperatureRE = "([-+]\\d{1,3}(\\.\\d)?)([KCF])"
 
     def getVersionInformation(self):
         return("$Id$")
@@ -45,6 +46,16 @@ class CurrencyPlugin:
         return((r1.status, data, r1.getheader("Location")))
 
     def onChannelMessage(self, irclib, source, message):
+        result = re.search(self.temperatureRE, string.upper(message))
+        if(result):
+            value = float(result.group(1))
+            if(result.group(3) == "C" and value >= -273.15):
+                irclib.sendChannelMessage("%.01f°C = %.01f°F" % (value, (value*1.8)+32))
+            elif(result.group(3) == "F" and value >= -459.67):
+                irclib.sendChannelMessage("%.01f°F = %.01f°C" % (value, (value-32)/1.8))
+            elif(result.group(3) == "K" and value >= 0.0):
+                irclib.sendChannelMessage("%.01f°K = %.01f°C = %s°F" % (value, value-273.15, (value*1.8)-459.67))
+        
         # iterate over all used currencies
         for currency in self.usedCurrencies:
             # check if this currency is used in the message
@@ -85,9 +96,12 @@ if __name__ == "__main__":
         def sendChannelMessage(self, text):
             print text
     
-    a = CurrencyPlugin()
-#    a.getCurrencyTable()
+    a = UnitConversionPlugin()
     a.onChannelMessage(FakeIrcLib(), "source", "USD 10")
     a.onChannelMessage(FakeIrcLib(), "source", "SKK 123.38")
     a.onChannelMessage(FakeIrcLib(), "source", "EUR 10, USD 20")
     a.onChannelMessage(FakeIrcLib(), "source", "INR 40.4000")
+    a.onChannelMessage(FakeIrcLib(), "source", "NIS3")
+    a.onChannelMessage(FakeIrcLib(), "source", "-10.5C")
+    a.onChannelMessage(FakeIrcLib(), "source", "+110F")
+    a.onChannelMessage(FakeIrcLib(), "source", "+0K")
