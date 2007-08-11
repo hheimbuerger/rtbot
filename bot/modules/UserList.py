@@ -61,6 +61,13 @@ class User:
             return(result.group(1))
         else:
             return(self.nick)
+        
+    # String: returns the name if possible, and the canonical nick otherwise
+    def getAdressingName(self):
+        if(self.isAuthed()):
+            return(self.getName())
+        else:
+            return(self.getCanonicalNick())
 
     # Boolean: has the user been authed (group is irrelevant)?
     def isAuthed(self):
