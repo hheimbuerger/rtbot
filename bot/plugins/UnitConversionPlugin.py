@@ -3,6 +3,7 @@
 import re
 import string
 import datetime
+import types
 import httplib
 import xml.dom.minidom
 
@@ -12,14 +13,41 @@ class UnitConversionPlugin:
 
     def __init__(self):
         self.currencyTableSource = {"host": "www.ecb.int", "url": "/stats/eurofxref/eurofxref-daily.xml"}
-        self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "SKK", "SEK", "NZD", "NOK", "INR", "NIS"]          # removed: "AUD", "DKK"
+        self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "SKK", "SEK", "NZD", "NOK", "PLN", "INR", "NIS"]          # removed: "AUD", "DKK"
         self.currencyRE = "\s?(\\d{1,10}(\\.\\d{2})?)"
         self.fixedCurrencies = {"INR": 55.7700, "NIS": 5.8637}
         self.fixedCurrencyUpdate = "2007/08/09"
         self.lastCurrencyUpdate = None
         self.lastCurrencyTable = None
         
-        self.temperatureRE = "([-+]\\d{1,3}(\\.\\d)?)([KCF])"
+        #self.temperatureRE = "([-+]\\d{1,3}(\\.\\d)?)([KCF])"
+        
+        # The conversion table has the following format:
+        # It's a tuple of
+        #     tuples of
+        #         an RE to detect whether this conversion is appropriate on the given line, and whose first group can be converted to a float and defines the input value
+        #         and a list of
+        #              tuples of
+        #                  a factor or lambda to calculate the conversion
+        #                  and an output mask (these will later be concatinated with equal signs) whose first placeholder is a floating value for the result
+        self.openConversionTable = (("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((yd)|(\\syards?))", [(1.0, "%.02fyd"), (0.9144, "%.02fm")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((ft)|(\\sfeet)|(\\sfoot))", [(1.0, "%.02fft"), (0.3048, "%.02fm")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((in)|(\\sinch(es)?))", [(1.0, "%.02fin"), (2.54, "%.02fcm")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((m)|(\\smeters?))", [(1.0, "%.02fm"), (1.0936, "%.02fyd")]),             #, (3.2808, "%.01fft")
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((cm)|(\\scentimeters))", [(1.0, "%.02fcm"), (0.3937, "%.02fin")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((mi)|(\\smiles))", [(1.0, "%.02f miles"), (1.6093, "%.02fkm")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((km)|(\\skilometers))", [(1.0, "%.02fkm"), (0.621, "%.02f miles")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((mph)|(mi/h))", [(1.0, "%.02fmph"), (1.609344, "%.02fkph"), (0.44704, "%.02fm/s")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((kph)|(km/h))", [(1.0, "%.02fkph"), (0.62137, "%.02fmph"), (0.27778, "%.02fm/s")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((lbs?)|(\\spounds))", [(1.0, "%.02flb"), (0.45359237, "%.02fkg")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((kg)|(\\skilograms))", [(1.0, "%.02fkg"), (2.20462262, "%.02flb")]),
+                                    
+                                    ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?C(elsius)?", [(1.0, "%.01f°C"), ((lambda value: (value*1.8)+32), "%.01f°F")]),
+                                    ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?F(ahrenheit)?", [(1.0, "%.01f°F"), ((lambda value: (value-32)/1.8), "%.01f°C")]),
+                                    ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?K(elvin)?", [(1.0, "%.01f°K"), ((lambda value: value-273.15), "%.01f°C"), ((lambda value: (value*1.8)-459.67), "%.01f°F")]),
+                                    
+                                   )
+
 
     def getVersionInformation(self):
         return("$Id$")
@@ -72,22 +100,41 @@ class UnitConversionPlugin:
 
     def onChannelMessage(self, irclib, source, message):
         # check if there are temperatures to be converted
-        result = re.search(self.temperatureRE, string.upper(message))
-        if(result):
-            value = float(result.group(1))
-            if(result.group(3) == "C" and value >= -273.15):
-                irclib.sendChannelMessage("%.01f°C = %.01f°F" % (value, (value*1.8)+32))
-            elif(result.group(3) == "F" and value >= -459.67):
-                irclib.sendChannelMessage("%.01f°F = %.01f°C" % (value, (value-32)/1.8))
-            elif(result.group(3) == "K" and value >= 0.0):
-                irclib.sendChannelMessage("%.01f°K = %.01f°C = %s°F" % (value, value-273.15, (value*1.8)-459.67))
+        #result = re.search(self.temperatureRE, message)
+        #if(result):
+        #    value = float(result.group(1))
+        #    if(result.group(3) == "C" and value >= -273.15):
+        #        irclib.sendChannelMessage("%.01f°C = %.01f°F" % (value, (value*1.8)+32))
+        #    elif(result.group(3) == "F" and value >= -459.67):
+        #        irclib.sendChannelMessage("%.01f°F = %.01f°C" % (value, (value-32)/1.8))
+        #    elif(result.group(3) == "K" and value >= 0.0):
+        #        irclib.sendChannelMessage("%.01f°K = %.01f°C = %s°F" % (value, value-273.15, (value*1.8)-459.67))
+        
+        # various other conversions
+        for (detectionRE, conversionList) in self.openConversionTable:
+            # we need to make some adjustments to the RE:
+            # 1. it has to be at the beginning of a line or after a space
+            # 2. it needs to be followed by the end of the line or a non-alphanumeric character
+            finalDetectionRE = "(^|\\s)" + detectionRE + "($|\\W)"
+
+            results = re.finditer(finalDetectionRE, message)
+            for result in results:
+                outputParts = []
+                value = float(result.group("value"))
+                for (conversion, outputMask) in conversionList:
+                    if(isinstance(conversion, types.FloatType)):
+                        resultingValue = value * conversion
+                    elif(isinstance(conversion, types.LambdaType)):
+                        resultingValue = conversion(value)
+                    outputParts.append(outputMask % resultingValue)
+                irclib.sendChannelMessage(" = ".join(outputParts))
         
         # iterate over all used currencies
         for currency in self.usedCurrencies:
             # check if this currency is used in the message
             RE = currency + self.currencyRE
-            result = re.search(RE, string.upper(message))
-            if(result):
+            results = re.finditer(RE, string.upper(message))
+            for result in results:
                 currencyTable = self.getCurrencyTable(irclib)
 
                 # calculate the base value (EUR amount)
@@ -132,3 +179,13 @@ if __name__ == "__main__":
     a.onChannelMessage(FakeIrcLib(), "source", "-10.5C")
     a.onChannelMessage(FakeIrcLib(), "source", "+110F")
     a.onChannelMessage(FakeIrcLib(), "source", "+0K")
+    a.onChannelMessage(FakeIrcLib(), "source", "1ft")
+    a.onChannelMessage(FakeIrcLib(), "source", "100000m")
+    a.onChannelMessage(FakeIrcLib(), "source", "80 miles")
+    a.onChannelMessage(FakeIrcLib(), "source", "450km")
+    a.onChannelMessage(FakeIrcLib(), "source", "400yd")
+    a.onChannelMessage(FakeIrcLib(), "source", "50mph")
+    a.onChannelMessage(FakeIrcLib(), "source", "100kph")
+    a.onChannelMessage(FakeIrcLib(), "source", "100 pounds")
+    a.onChannelMessage(FakeIrcLib(), "source", "100 miles, 50 miles")
+    a.onChannelMessage(FakeIrcLib(), "source", "EUR 10, EUR 20")
