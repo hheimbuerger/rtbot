@@ -13,6 +13,13 @@ class DieRollingPlugin:
         else:
           irclib.sendChannelMessage("Sorry, I don't know that die...")
 
+    def rollFromList(self, irclib, listString):
+        alternatives = listString.split(", ")
+        irclib.sendChannelEmote("rolls a d%i..." % (len(alternatives)))
+        resultId = int(random.random()*len(alternatives))
+        resultText = alternatives[resultId]
+        irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up \x0304%s\x0310! %s is the one!" % (resultId+1, resultText))
+
     def flipCoin(self, irclib):
         irclib.sendChannelEmote("flips a coin...")
         if(int(random.random() * 2) == 0):
@@ -24,6 +31,8 @@ class DieRollingPlugin:
         if((len(msg.split()) > 0) and (msg.split()[0] == "roll")):
             if(len(msg.split()) >= 2):
                 self.rollDie(irclib, msg.split()[1])
+        if((len(msg.split()) >= 2) and (msg.split()[0] == "rollfrom")):            
+            self.rollFromList(irclib, msg.split(" ", 1)[1])
         if(msg == "flip"):
             self.flipCoin(irclib)
             
@@ -111,6 +120,14 @@ class Die:
 
 
 if __name__ == "__main__":
+    class IrcLibMock:
+        def sendPrivateMessage(self, target, text):
+            print text
+        def sendChannelMessage(self, text):
+            print text
+        def sendChannelEmote(self, text):
+            print "* %s" % (text)
+
 #    print Die("1d1").roll()
 #    print Die("2d6").roll()
 #    print Die("d6").roll()
@@ -118,3 +135,4 @@ if __name__ == "__main__":
 #    print Die("20od6").roll()
     for i in range(0,20):
       print Die("1od6").roll()
+    DieRollingPlugin().onChannelMessage(IrcLibMock(), "source", "rollfrom DN, EoR, PC2, GoD2, A+, Star Wars")
