@@ -13,3 +13,4 @@ did you try rebooting?
 it works for me.
 you must be using it wrong.
 why did you do that?
+it's not a bug, it's a feature.
