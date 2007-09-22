@@ -13,6 +13,18 @@ import logging
 
 
 
+
+
+class AliasLookupTooDeepError(Exception):
+    def __init__(self, alias):
+        self.aliases = [alias]
+
+class SubAliasNotFoundError(Exception):
+    def __init__(self, alias):
+        self.aliases = alias
+
+
+
 class ClockPlugin:
 
     def __init__(self):
@@ -82,7 +94,7 @@ class ClockPlugin:
     
         try:
             # find cities
-            (status, page, location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+self.citiesSource["file"])
+            (status, page, location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+self.citiesSource['file'])
             numCities = 0
             for (url, city) in re.compile("<a href=\"(city.html\?n=.*?)\">(.*?)</a>").findall(page):
               numCities += 1
@@ -96,10 +108,10 @@ class ClockPlugin:
               if(not self.isRefreshRunning):
                   return
     
-              # get the city's page and extract it's timezone information
+              # get the city's page and extract its timezone information
               (city_status, city_page, city_location) = self.getPage(self.citiesSource["host"], self.citiesSource["path"]+url)
               fullname = self.decodeHTMLCharacterEntities(re.compile("<span class=\"biggest\">(.*?)</span>", re.DOTALL).search(city_page).group(1))
-              timezone_string = re.compile("<tr class=\"d1\"><th>UTC/GMT Offset</th><td id=\"tz1\"><table border=\"0\" cellpadding=\"2\" cellspacing=\"0\">(.*?)</table>", re.DOTALL).search(city_page).group(1)
+              timezone_string = re.compile("<tr class=\"d2\"><th>UTC/GMT Offset</th><td id=\"tz1\"><table border=\"0\" cellpadding=\"2\" cellspacing=\"0\">(.*?)</table>", re.DOTALL).search(city_page).group(1)
         
               # terminate if asked for
               if(not self.isRefreshRunning):
@@ -236,7 +248,7 @@ class ClockPlugin:
 
 
 
-    def findZone(self, nameparts, checkForAliases=True):
+    def findZone(self, nameparts, findOnlyAliases=False, currentLookupDepth=0):
         # ASSERT: nameparts is a list
         if(type(nameparts) != list):
             raise TypeError("ERROR: Parameter 'nameparts' has to be a list!")
@@ -247,29 +259,58 @@ class ClockPlugin:
         RE = string.lower(string.join(map(re.escape, nameparts), ".*?"))
         #print RE
 
-        for zone in self.timezones.keys():
-            if(re.search(RE, string.lower(zone))):
-                if(len(zone) == len(string.join(nameparts))):
+        # first, try to find an exact match
+        if(not findOnlyAliases):
+            for zone in self.timezones.keys():
+                if(string.lower(zone) == string.lower(string.join(nameparts))):
                     currentBestZone = zone
                     modifier = self.timezones[currentBestZone][0]
                     zonename = self.timezones[currentBestZone][1]
-                    break
-                elif(len(zone) > len(currentBestZone)):
-                    currentBestZone = zone
-                    modifier = self.timezones[currentBestZone][0]
-                    zonename = self.timezones[currentBestZone][1]
-        if(len(currentBestZone) == 0):
+
+        # then try to find a matching alias
+        if(currentBestZone == ""):
             for zone in self.aliases.keys():
                 if(re.search(RE, string.lower(zone))):
                     currentBestZone = zone
-                    lookupresult = self.findZone([self.aliases[zone]], False)
-                    if(lookupresult):
+                    if(currentLookupDepth >= 3):
+                        raise AliasLookupTooDeepError(zone)
+                    else:
+                        try:
+                            lookupresult = self.findZone([self.aliases[zone]], currentLookupDepth=currentLookupDepth+1)
+                        except AliasLookupTooDeepError, exc:
+                            exc.aliases.append(zone)
+                            raise exc
+                        except SubAliasNotFoundError, exc:
+                            exc.aliases.append(zone)
+                            raise exc
+                        if(not lookupresult):
+                            raise SubAliasNotFoundError([self.aliases[zone], zone]) 
                         (dummy, modifier, zonename) = lookupresult
                         break
 
-        if(re.match("^[+-]\d\d\d\d$", string.join(nameparts))):
-            return(string.join(nameparts), string.join(nameparts), "[manually specified zone]")
-        elif(len(currentBestZone) == 0):
+        # if that didn't give a result, search through the rest of the list
+        if(not findOnlyAliases):
+            if(currentBestZone == ""):
+                for zone in self.timezones.keys():
+                    if(string.lower(zone) == string.join(nameparts)):
+                        currentBestZone = zone
+                        modifier = self.timezones[currentBestZone][0]
+                        zonename = self.timezones[currentBestZone][1]
+                    elif(re.search(RE, string.lower(zone))):
+                        if(len(zone) == len(string.join(nameparts))):
+                            currentBestZone = zone
+                            modifier = self.timezones[currentBestZone][0]
+                            zonename = self.timezones[currentBestZone][1]
+                            break
+                        elif(len(zone) > len(currentBestZone)):
+                            currentBestZone = zone
+                            modifier = self.timezones[currentBestZone][0]
+                            zonename = self.timezones[currentBestZone][1]
+    
+            if(re.match("^[+-]\d\d\d\d$", string.join(nameparts))):
+                return(string.join(nameparts), string.join(nameparts), "[manually specified zone]")
+        
+        if(currentBestZone == ""):
             return(None)
         else:
             return(currentBestZone, modifier, zonename)
@@ -297,9 +338,11 @@ class ClockPlugin:
             hours = int(time[0:2])
             minutes = int(time[3:5])
             if(time[2] != ":"):
-                raise Exception()
-        except:
-            irclib.sendChannelMessage("That is not a valid time: HH:MM")
+                raise ValueError()
+            nowtime = datetime.datetime.utcnow()
+            basetime = datetime.datetime(nowtime.year, nowtime.month, nowtime.day, hours, minutes)
+        except ValueError:
+            irclib.sendChannelMessage("That is not a valid time (format: HH:MM)!")
             return
 
         # detect sourceZone and targetZone
@@ -324,8 +367,6 @@ class ClockPlugin:
         (target_zone, target_modifier, target_zonename) = target
         
         # calculate times
-        nowtime = datetime.datetime.utcnow()
-        basetime = datetime.datetime(nowtime.year, nowtime.month, nowtime.day, hours, minutes)
         source_direction = source_modifier[0]
         source_hours = source_modifier[1:3]
         source_minutes = source_modifier[3:5]
@@ -343,6 +384,16 @@ class ClockPlugin:
 
 
 
+    def saveAliasDatabase(self):
+        # write the CSV
+        file = open(self.aliasFilename, "wb")
+        writer = csv.writer(file)
+        for alias in self.aliases.keys():
+          writer.writerow((alias, self.aliases[alias]))
+        file.close()
+
+
+
     def defineAlias(self, irclib, arguments):
         # detect alias and location
         asIndex = arguments.index("as")
@@ -350,41 +401,79 @@ class ClockPlugin:
         location = arguments[asIndex+1:]
         #print "|%s|%s|" % (str(alias), str(location))
 
+        aliasresult = self.findZone(alias)
         lookupresult = self.findZone(location)
-        if(lookupresult):
+        #if(aliasresult and lookupresult and (aliasresult == lookupresult)):
+        #    irclib.sendChannelMessage("You can't create an alias to itself.")
+        if(aliasresult):
+            irclib.sendChannelMessage("You can't create the alias '%s', it already resolves to '%s'." % (string.join(alias), aliasresult[0]))
+        elif(lookupresult):
             (target, modifier, zonename) = lookupresult
             #print string.join(alias)
             self.aliases[string.join(alias)] = target
             irclib.sendChannelMessage("Okay, I defined '%s' as an alias of '%s'." % (string.join(alias), target))
-            # write the CSV
-            file = open(self.aliasFilename, "wb")
-            writer = csv.writer(file)
-            for alias in self.aliases.keys():
-              writer.writerow((alias, self.aliases[alias]))
-            file.close()
+            self.saveAliasDatabase()
         else:
-            irclib.sendChannelMessage("I don't know a timezone that matches '%s'." % (location))
+            irclib.sendChannelMessage("I don't know a timezone that matches '%s'." % (string.join(location)))
+
+
+
+    def deleteAlias(self, irclib, alias):
+        aliasString = string.join(alias)
+        if(aliasString in self.aliases.keys()):
+            irclib.sendChannelMessage("The alias '%s'->'%s' has been deleted." % (aliasString, self.aliases[aliasString]))
+            del self.aliases[aliasString]
+            self.saveAliasDatabase()
+        else:
+            irclib.sendChannelMessage("There is no alias '%s'." % (aliasString))
+
+
+
+    def displayAlias(self, irclib, alias):
+        aliasString = string.join(alias)
+        if(aliasString in self.aliases.keys()):
+            irclib.sendChannelMessage("The alias '%s' is defined as '%s'." % (aliasString, self.aliases[aliasString]))
+        else:
+            aliasresult = self.findZone(alias, findOnlyAliases=True)
+            if(aliasresult):
+                irclib.sendChannelMessage("There is no alias '%s', but '%s' is resolved to '%s'." % (aliasString, aliasString, aliasresult[0]))
+            else:
+                irclib.sendChannelMessage("There is no alias '%s'." % (aliasString))
 
 
 
     def onChannelMessage(self, irclib, source, msg):
-        if((len(msg.split()) > 0) and (msg.split()[0] == "clock")):
-            if(self.isRefreshRunning):
-                irclib.sendChannelMessage("I'm busy updating the tables, don't bother me!")
-            elif(len(msg.split()) > 1):
-                commandArguments = msg.split()[1:]
-                trailing = msg.split(None, 1)[1]
-                if(commandArguments[0] == "update"):
-                    irclib.sendChannelMessage("Do I really have to? Oh well, this will take a while...")
-                    self.doTimezoneRefresh()
-                elif((len(commandArguments) >= 4) and (commandArguments[0] == "define") and ("as" in commandArguments[2:])):
-                    self.defineAlias(irclib, commandArguments[1:])
-                elif((len(commandArguments) >= 3) and ("in" in commandArguments[1:])):
-                    self.showTranslation(irclib, commandArguments[0:])
+        try:
+            if((len(msg.split()) > 0) and (msg.split()[0] == "clock")):
+                if(self.isRefreshRunning):
+                    irclib.sendChannelMessage("I'm busy updating the tables, don't bother me!")
+                elif(len(msg.split()) > 1):
+                    commandArguments = msg.split()[1:]
+                    trailing = msg.split(None, 1)[1]
+                    if(commandArguments[0] == "update"):
+                        irclib.sendChannelMessage("Do I really have to? Oh well, this will take a while...")
+                        self.doTimezoneRefresh()
+                    elif(commandArguments[0] == "define"):
+                        if((len(commandArguments) >= 4) and ("as" in commandArguments[2:])):
+                            self.defineAlias(irclib, commandArguments[1:])
+                        else:
+                            irclib.sendChannelMessage("If you were trying to define a new alias, you forgot to tell me 'as' what to define it.")
+                    elif((len(commandArguments) >= 3) and ("in" in commandArguments[1:])):
+                        self.showTranslation(irclib, commandArguments[0:])
+                    elif((len(commandArguments) >= 3) and (commandArguments[0] == "delete") and (commandArguments[1] == "alias")):
+                        self.deleteAlias(irclib, commandArguments[2:])
+                    elif((len(commandArguments) >= 3) and (commandArguments[0] == "display") and (commandArguments[1] == "alias")):
+                        self.displayAlias(irclib, commandArguments[2:])
+                    else:
+                        self.showResult(irclib, commandArguments)
                 else:
-                    self.showResult(irclib, commandArguments)
-            else:
-                self.showResult(irclib, ["UTC"])
+                    self.showResult(irclib, ["UTC"])
+        except AliasLookupTooDeepError, exc:
+            exc.aliases.reverse()
+            irclib.sendChannelMessage("You're using too many aliases, that's confusing! (%s)" % ("->".join(exc.aliases)))
+        except SubAliasNotFoundError, exc:
+            exc.aliases.reverse()
+            irclib.sendChannelMessage("An alias referenced a timezone that doesn't exist! (%s)" % ("->".join(exc.aliases)))
 
 
 
@@ -398,16 +487,44 @@ if __name__ == "__main__":
     c = ClockPlugin()
 #    c.onChannelMessage(FakeIrcLib(), "source", "clock berl")
 #    c.onChannelMessage(FakeIrcLib(), "source", "clock delhi")
-#    c.onChannelMessage(FakeIrcLib(), "source", "clock 10:00 New York in England")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock t1")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock 10:00 New York in England")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock 25:00 in New York")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock Jerusalem")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock define Terralthra as San Francisco")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock define")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock Wurf")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock display alias terr")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock define terr as UTC")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock define abc as UTC")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock define def as abc")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock delete alias Cortex")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock display alias abc")
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock define test1 as UTC")
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock define test2 as test1")
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock define test3 as test2")
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock define test4 as test3")
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock define UTC as UTC")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock test4")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock test3")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock test2")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock test1")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock display alias Z")
+    c.onChannelMessage(FakeIrcLib(), "source", "clock Z")
+    
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock Wurf")
     #print "findZone: |%s|" % (c.findZone("clock Abidjan, Cote d'Ivoire (Ivory Coast)"))
     #c.onChannelMessage(FakeIrcLib(), "source", "clock Abi")
     #c.onChannelMessage(FakeIrcLib(), "source", "clock +0300")
-    c.onChannelMessage(FakeIrcLib(), "source", "clock define Tuebingen, Baden-Wuerttemberg, Germany as Berlin")
-    c.onChannelMessage(FakeIrcLib(), "source", "clock Tuebingen")
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock define Tuebingen, Baden-Wuerttemberg, Germany as Berlin")
+#    c.onChannelMessage(FakeIrcLib(), "source", "clock Tuebingen")
+    #c.isRefreshRunning = True
     #c.refreshTimezones()
     #print c.normaliseOffset("+3")
     #print c.normaliseOffset("-4:30")
     #print c.normaliseOffset("-13")
+    #c.onChannelMessage(FakeIrcLib(), "source", "clock update")
+    
 
       #t.listAll()
 #     print t.getTime("EDT")
