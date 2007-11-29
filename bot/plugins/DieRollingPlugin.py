@@ -8,8 +8,12 @@ class DieRollingPlugin:
     def rollDie(self, irclib, dieDesc):
         die = Die(dieDesc)
         if(die.isValid()):
-          irclib.sendChannelEmote("rolls " + dieDesc + "...")
-          irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up \x0304" + str(die.roll()) + "\x0310!")
+	  if(die.num_surfaces == 1):
+		irclib.sendChannelEmote("rolls " + dieDesc + "...")
+		irclib.sendChannelMessage("It rolls... and rolls... aww, I can't find it anymore. Damn marbles.")
+	  else:
+		irclib.sendChannelEmote("rolls " + dieDesc + "...")
+		irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up \x0304" + str(die.roll()) + "\x0310!")
         else:
           irclib.sendChannelMessage("Sorry, I don't know that die...")
 
