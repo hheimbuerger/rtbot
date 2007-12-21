@@ -1,3 +1,9 @@
+"""IrcLib.py
+
+This file manages the IRC connection with the server via the
+LowlevelIrcLib class.
+"""
+
 import socket, select, re, sys, time, datetime, logging, string
 import util, UserList
 
@@ -18,10 +24,20 @@ class IrcError(Exception):
 
 
 class LowlevelIrcLib:
+    """IRC client code.
+
+    This class handles the low-level interaction with the IRC
+    server.
+    """
+
     reIncomingGenericMessage = re.compile("(:(.*?)\\s)?(\\S*)([^:]*)(:(.*))?")
     reFilterFormatCodes = re.compile(r"(?:\x02|\x16|\x1F|\x03(?:\d{1,2}(?:,\d{1,2})?)?)")
 
     def __init__(self):
+        """Initialise the LowlevelIrcLib.
+
+        Internal use.
+        """
         self.socket = None
         self.connected = False
         self.previous_buffer = ""
@@ -40,6 +56,13 @@ class LowlevelIrcLib:
     # Decorator for methods that require channel operator privileges
     @util.decorator
     def requirePrivileges(func, self, *args, **kwargs):
+        """Warn when function expects +o mode but this isn't true.
+
+        Raises an exception when func is called and expects RTBot
+        to have +o mode, while this isn't the case.
+
+        Debug/Logging use.
+        """
         if not self.isOp():
             raise AuthorizationError("Tried to call " + func.__name__ + " without channel operator privileges")
         func(self, *args, **kwargs)
@@ -49,6 +72,10 @@ class LowlevelIrcLib:
     #---------------------------------------------------------------------------------        
         
     def connect(self, server, port, nickname, username, realname):
+        """Connect to IRC.
+
+        Connects the Bot to the IRC server using the provided settings.
+        """
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.socket.bind(("", 0))
@@ -63,11 +90,19 @@ class LowlevelIrcLib:
         self.changeUser(username, realname)
 
     def disconnect(self):
+        """Disconnect from IRC.
+
+        Closes the socket to the IRC server.
+        """
         logging.info("Closing socket...")
         if(self.socket):
             self.socket.close()
 
     def quit(self, message):
+        """/quit <message>
+
+        Sends the /quit command to the IRC server.
+        """
         try:
             self.shutdownInitiated = True
             self.sendRawMsg("QUIT " + message)
@@ -76,15 +111,29 @@ class LowlevelIrcLib:
             logging.debug("tried to quit, but failed")
 
     def changeNick(self, nickname):
+        """/nick <nickname>
+
+        Changes the bot's nickname. Required for nickname collisions.
+        """
         self.sendRawMsg("NICK " + nickname)
         logging.info("NICK SENT")
         self.nickname = nickname
 
     def changeUser(self, username, realname):
+        """/user <username> 0 * :<realname>
+
+        Changes the bot's username and realname info.
+        """
         self.sendRawMsg("USER %s 0 * :%s" % (username, realname))
         logging.info("USER SENT")
 
     def joinChannel(self, channel):
+        """/join <channel>
+
+        Makes the bot join a channel and prepare a UserList for it.
+        If the channel is passworded (+k), it SHOULD be possible to
+        join it via setting the channel par to "#channel password".
+        """
         # create a new user list for this channel
         self.userLists[channel] = UserList.UserList()
         
@@ -94,15 +143,31 @@ class LowlevelIrcLib:
         self.channel = channel
 
     def getUserList(self):
+        """Return the channel userlist.
+
+        Provides access to a channel's UserList.
+        """
         if(self.channel):
             return(self.userLists[self.channel])
         else:
             return(None)
 
     def getChannelModes(self):
+        """Return the channel modes.
+
+        Provides access to channelModes.
+        """
         return(self.channelModes)
 
     def sendChannelMessage(self, msg):
+        """Send <msg> to the channel
+
+        Raises exception when:
+                * no channel has been joined yet
+                * the bot tried to send a message to a non-trusted ("suspicious") channel (hardcoded values)
+
+        Sets the RTBot text colour to 10 (light blue).
+        """
         if(self.channel == None):
             raise Exception("ERROR: Tried to send channel message without being in a channel yet.")
         elif not (self.channel == "#RollingThunder" or self.channel == "#RollingThunder.test" or self.channel == "#RollingThunder.development"):
@@ -114,6 +179,13 @@ class LowlevelIrcLib:
 
     # target: User object
     def sendPrivateMessage(self, target, msg):
+        """Send <msg> to <target> via /msg
+    
+        Raises exception when:
+                * the bot tries to /msg "none"
+        
+        No colour code is applied here, differently from sendChannelMessage. 
+        """
         if(str(target.nick).lower() == "none"):
             logging.debug(
                 "========================================\n"
@@ -122,32 +194,59 @@ class LowlevelIrcLib:
             raise Exception("TRIED TO PM 'NoNe'!")
         logging.info("%s-->%s: %s" % (self.nickname, target.nick, msg))
         for line in self.splitLongMessages(msg):
-            self.sendRawMsg("PRIVMSG %s :%s" % (target.nick, line))
+            self.sendRawMsg("PRIVMSG %s :%s" % (target.nick, line)) # Where's the colour code? XXX
 
     # target: User object
     def sendPrivateNotice(self, target, msg):
+        """Send <msg> to <target> via /notice
+
+        No colour code is applied here, differently from sendChannelMessage.
+        See also: sendExternalNotice
+        """
         for line in self.splitLongMessages(msg):
-            self.sendRawMsg("NOTICE %s :%s" % (target.nick, line))
+            self.sendRawMsg("NOTICE %s :%s" % (target.nick, line)) # Where's the colour code? XXX
 
     # target: nick
     def sendExternalNotice(self, targetNick, msg):
+        """Send <msg> to <targetNick> via /notice
+
+        No colour code is applied here, differently from sendChannelMessage.
+        This function only expects a nickname and can be used to /notice people
+        not in the channel. This is used e.g. by the AuthenticationPlugin.
+        """
         for line in self.splitLongMessages(msg):
-            self.sendRawMsg("NOTICE %s :%s" % (targetNick, line))
+            self.sendRawMsg("NOTICE %s :%s" % (targetNick, line)) # Where's the colour code? XXX
 
     def sendChannelEmote(self, emote):
+        """/me <emote>
+
+        Makes the bot say it's doing something.
+        """
         logging.info("%s-->#: * %s" % (self.nickname, emote))
         self.sendRawMsg("PRIVMSG %s :\x01ACTION %s\x01" % (self.channel, emote))
 
     # target: User object
     def sendPrivateEmote(self, target, emote):
+        """/me <emote>, over /msg <target>
+
+        Makes the bot say it's doing something in private /msg chat.
+        """
         logging.info("%s-->%s: * %s" % (self.nickname, target.nick, emote))
         self.sendRawMsg("PRIVMSG %s :\x01ACTION %s\x01" % (target.nick, emote))
 
     # targets: List of strings (nicks)
+        # XXX requires decoration?
     def setModes(self, flagModifiers, targets):
+        """/mode channel <flagModifiers> <targets>
+
+        Sets channel ops. NOT decorated -- won't fire RequirePrivileges.
+        Does nothing if the bot isn't opped. Inconsistent with setChannelMode.
+
+        This updates the channel's userList -- use setChannelMode for channel modes (like +k).
+        """
         if(self.getUserList()[self.nickname].hasOp()):
-            for startingIndex in range(0, len(targets), 6):
-                currentFlagModifiers = flagModifiers[startingIndex*2:(startingIndex+6)*2]
+            for startingIndex in range(0, len(targets), 6): # ?!
+                currentFlagModifiers = flagModifiers[startingIndex*2:(startingIndex+6)*2] # ?!
                 currentTargets = targets[startingIndex:(startingIndex+6)]
                 logging.info("* Mode changed: %s %s" % (currentFlagModifiers, currentTargets))
                 self.sendRawMsg("MODE %s %s %s" % (self.channel, currentFlagModifiers, string.join(currentTargets, " ")))
@@ -161,12 +260,23 @@ class LowlevelIrcLib:
 
 #    @requirePrivileges
     def setChannelMode(self, flags, target = ""):
+        """/mode channel <flagModifiers> <targets>
+
+        Sets channel ops. IS decorated -- will fire RequirePrivileges.
+        Raises an exception if the bot isn't opped. Inconsistent with setModes.
+
+        Does NOT update the channel's userList -- use setModes for user modes (like +o).
+        """
 #        assert re.match(r"[-+][bcCdDiklmnNoprstuv]", flags) # available quakenet channel modes
         logging.info("* Mode changed: %s %s-->%s" % (self.channel, target, flags))
         self.sendRawMsg("MODE %s %s %s" % (self.channel, flags, target))
 
     # target: User object
     def kick(self, target, reason):
+        """/kick <target> <reason>
+
+        Is decorated: raises an exception if the bot isn't opped.
+        """
         self.sendRawMsg("KICK %s %s :%s" % (self.channel, target.nick, reason))
 
     # target: User object
@@ -181,30 +291,63 @@ class LowlevelIrcLib:
     
     # target: User object
     def doWho(self, target):
+        """/who <target>
+
+        Expects a user object -- use only on people in the channel.
+        See also doExternalWho.
+        """
         self.sendRawMsg("WHO %s" % (target.nick))
 
     # target: nick
     def doExternalWho(self, targetNick):
+        """/who <targetNick>
+
+        Expects a nickname -- use only for people NOT in the channel.
+        See also doWho.
+        """
         self.sendRawMsg("WHO %s" % (targetNick))
 
     # target: User object
     def doWhois(self, target):
+        """/whois <target>
+
+        Expects a user object -- use only on people in the channel.
+        See also doExternalWhois.
+        """
         self.sendRawMsg("WHOIS %s" % (target.nick))
 
     # target: nick
     def doExternalWhois(self, targetNick):
+        """/who <targetNick>
+
+        Expects a nickname -- use only for people NOT in the channel.
+        See also doWho.
+        """
         self.sendRawMsg("WHOIS %s" % (targetNick))
 
+        #XXX Not decorated!
     def setChannelTopic(self, topic):
+        """/topic <topic>
+
+        Not decorated: undocumented behaviour when the bot is not opped.
+        """
         self.sendRawMsg("TOPIC %s :%s" % (self.channel, topic))
 
     def registerEventTarget(self, newEventTarget):
+        """Required for event driven programming.
+        """
         self.eventTarget = newEventTarget
 
     def unregisterEventTarget(self):
+        """Required for event driven programming.
+        """
         self.eventTarget = None
 
     def requestChannelModesUpdate(self):
+        """/mode channel
+
+        No real use, if one had to guess. Proably forces UserList to update.
+        """
         self.sendRawMsg("MODE :%s" % (self.channel))
 
     #---------------------------------------------------------------------------------
@@ -212,6 +355,10 @@ class LowlevelIrcLib:
     #---------------------------------------------------------------------------------
     
     def decodeGenericMessage(self, message):
+        """Decodes incoming messages.
+
+        Internal use.
+        """
         message = self.reFilterFormatCodes.sub("", message)
         reResult = self.reIncomingGenericMessage.match(message)
         return((reResult.group(2), reResult.group(3), (reResult.group(4)[1:]).strip().split(" "), reResult.group(6)))
@@ -239,8 +386,12 @@ class LowlevelIrcLib:
         self.handleIncomingMessage(source, command, arguments, trailing)
 
     def handleIncomingMessage(self, source, command, arguments, trailing):
+        """Translates incoming messages to events.
+
+        Internal use. Lots of magic numbers.
+        """
         # try decoding chat message
-        if(command == "PING"):
+        if(command == "PING"):             
             self.sendPong(trailing)
         elif(command == "376"):        # End of /MOTD command
             self.eventTarget.onConnected()
@@ -386,6 +537,11 @@ class LowlevelIrcLib:
         return
     
     def sendRawMsg(self, rawmsg):     # throws: socket.error
+        """Sends a raw message through the socket.
+
+        Adds Windows-style line delimiters (just to be on the safe
+        side of things?). Internal use.
+        """
         self.waitUntilReadyToSend()
         if self.socket is None:
             raise ServerConnectionError, "LowLevelIrcLib.sendRawMsg(): We're not connected! (self.socket==None)"
@@ -393,9 +549,23 @@ class LowlevelIrcLib:
         self.socket.sendall(s)
 
     def sendPong(self, id):
-        self.sendRawMsg("PONG :" + id)
+        """Pongs pings.
+
+        Teorethically handles ping requests. Internal use.
+        """
+        self.sendRawMsg("PONG :" + id) # XXX RTBot never seems to pong back. Any idea?
 
     def receiveDataLooped(self):  # throws: socket.error, ServerConnectionError, KeyboardInterrupt
+        """Keeps the bot running. Only stops when the bot is disconnected.
+
+        The three kind of exception that make receiveDataLooped end are:
+
+                * socket.error -- Not connected to Internet. (?)
+                * ServerConnectionError -- Connection with the server lost (?)
+                * KeyboardInterrupt -- The bot is closing.
+
+        Internal use.
+        """
         if(self.eventTarget):
             while True:
                 try:
@@ -461,6 +631,13 @@ class LowlevelIrcLib:
 
 
 #class LibTestBot:
+#               """Dummy bot
+#
+#               Probably used in the very early development, this bot doesn't seem to work,
+#           even by isolating IrcLib.py, Utils.py and moving this to LibTestBot.py. (What I tried)
+#
+#               Undocumented.
+#               """
 ##    keepRunning = True
 #    irc = None
 #
