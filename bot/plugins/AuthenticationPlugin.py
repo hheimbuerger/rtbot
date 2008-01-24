@@ -478,6 +478,9 @@ class AuthenticationPlugin:
                     irclib.sendPrivateMessage(source, "The password has been set on the account '%s'." % (name))
                     irclib.sendPrivateMessage(source, "You can now authenticate anytime by sending me a notice with the content 'authenticate <name/> </password/>', e.g. by typing \"/notice RTBot authenticate %s mysecretpassword\"." % (name))
                     return    # need to return here to prevent the "don't know you" message
+                else:
+                    irclib.sendPrivateMessage(source, "You are not granted to set a password at this time!")
+                    return
 
         # abort if we're not talking to a friend, set sourceUser otherwise
         if(not source.isAdmin() and source.nick != "Cort"):
