@@ -567,12 +567,15 @@ class LowlevelIrcLib:
         Internal use.
         """
         if(self.eventTarget):
+            LastMessageTime = datetime.datetime.now()
             while True:
                 try:
                     try:
                         # wait for socket
                         (i, o, e) = select.select([self.socket], [], [], timeout)        # throws?
                         if(len(i) == 0):
+                            if datetime.datetime.now() - LastMessageTime > datetime.timedelta(120):
+                                raise ServerConnectionError, "No message received for 2 minutes!"
                             continue
                         new_data = self.socket.recv(2**14)      # throws: socket.error
                     except socket.error, x:
