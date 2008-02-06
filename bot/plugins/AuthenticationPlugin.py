@@ -157,7 +157,7 @@ class AuthenticationPlugin:
     # ==================================================
     def makeMeOp( self, irclib ):
         self.dontThankLNextTime = True
-        irclib.sendExternalNotice( "L", "OP " + irclib.channel )
+        irclib.sendPrivateMessage( irclib.getUserList()["L"], "OP " + irclib.channel )
 
     def determineNecessaryUpdate(self, targetFlags, currentFlags):
         result = ""
@@ -174,7 +174,7 @@ class AuthenticationPlugin:
             elif((flag == 'v') and ('v' not in targetFlags)):
                 result += "-v"
         return(result)
-
+ 
     def getFormattedAuthInformationList(self, account):
         result = []
         i = 0
@@ -186,7 +186,7 @@ class AuthenticationPlugin:
                 result.append("%i. Username='%s', Host='%s', Userinfo='%s'" % (i, username, host, userinfo))
                 i += 1
         return(result)
-
+ 
     def pmAuthInformationList(self, irclib, target, account):
         for line in self.getFormattedAuthInformationList(account):
             irclib.sendPrivateMessage(target, line)
@@ -380,7 +380,9 @@ class AuthenticationPlugin:
                 else:
                     return(None)
 
-
+    def punish(self, irclib, nick):
+        if(nick in irclib.getUserList().keys()):
+            irclib.getUserList()[nick].dataStore.setAttribute("isPunished", True)
 
     # ==================================================
     # EVENT HANDLERS
@@ -442,7 +444,7 @@ class AuthenticationPlugin:
               irclib.sendChannelMessage("Hey " + source.getCanonicalNick() + ", that's not nice... :(")
               self.makeMeOp( irclib )
               time.sleep(1)
-              self.punish(irclib, source)
+              self.punish(irclib, source.nick)
               irclib.sendChannelMessage(":p")
 
     def onWhoResult(self, irclib, user):
@@ -758,8 +760,7 @@ class AuthenticationPlugin:
             irclib.sendChannelMessage("Currently in punish-mode: %s" % (", ".join(listOfPunishedUsers)))
         elif((len(message.split()) >= 2) and (message.split()[0] == "!punish")):
             name = message.split()[1]
-            if(name in irclib.getUserList().keys()):
-                irclib.getUserList()[name].dataStore.setAttribute("isPunished", True)
+            self.punish(irclib, name)
         elif((len(message.split()) >= 2) and (message.split()[0] == "!pardon")):
             listOfPunishedUsers = [user.nick for user in irclib.getUserList().values() if user.dataStore.getAttributeDefault("isPunished", False)]
             name = message.split()[1]
