@@ -574,10 +574,11 @@ class LowlevelIrcLib:
                         # wait for socket
                         (i, o, e) = select.select([self.socket], [], [], timeout)        # throws?
                         if(len(i) == 0):
-                            if datetime.datetime.now() - LastMessageTime > datetime.timedelta(120):
+                            if datetime.datetime.now() - LastMessageTime > datetime.timedelta(seconds=120):
                                 raise ServerConnectionError, "No message received for 2 minutes!"
                             continue
                         new_data = self.socket.recv(2**14)      # throws: socket.error
+                        LastMessageTime = datetime.datetime.now()
                     except socket.error, x:
                         raise ServerConnectionError, "LowLevelIrcLib.receiveDataLooped(): select.select() or self.socket.recv() threw a socket.error, the connection must be lost!"
                     if not new_data:
