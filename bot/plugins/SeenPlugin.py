@@ -111,7 +111,8 @@ class SeenPlugin:
                 nicksInChannel = self.getCanonicalUserList(irclib)
                 if targetNick == irclib.nickname.lower():
                     irclib.sendChannelMessage("#mute " + sourceNick + "@jesters :P")
-                elif targetNick in nicksInChannel:
+                #elif targetNick in nicksInChannel:
+                elif any(v.lower() == targetNick for v in nicksInChannel):
                     irclib.sendChannelMessage("Ummm... " + targetNick + " is right here, yo? Whatcha talkin' bout, boy?")
                 elif targetNick in self.lastSeenTimes:
                     irclib.sendChannelMessage(targetNick + " was last seen " + str(self.lastSeenTimes[targetNick]))
