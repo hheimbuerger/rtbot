@@ -10,22 +10,22 @@ class MathEvalPlugin:
         if((len(msg.split()) > 1) and ((msg.split()[0] == "eval") or (msg.split()[0] == "evalstatement"))):
             try:
                 exp = msg.split(None, 1)[1]
-                if(len(re.findall("\*\*", exp)) > 1):
+                if(len(re.findall("\*\*", exp)) + len(re.findall("pow", exp)) > 1):
                     replyMessage("Sorry, excessive use of power is not allowed.")
                 elif(exp == "42"):
                     replyMessage("No need to think about that. It's The Answer to Life, the Universe, and Everything, of course!")
                 elif(msg.split()[0] == "evalstatement"):
+                    replyEmote("thinks...")
                     result = eval(exp)
                     str_result = str(result)
-                    replyEmote("thinks...")
                     if(len(str_result) > 100):
                         replyMessage("That's too long, I won't write all that down...")
                     else:
                         replyMessage(str_result)
                 else:
+                    replyEmote("thinks...")
                     result = eval(exp)
                     str_result = str(result)
-                    replyEmote("thinks...")
                     if(len(str_result) > 100):
                         replyMessage("That's too long, I won't write all that down...")
                     else:

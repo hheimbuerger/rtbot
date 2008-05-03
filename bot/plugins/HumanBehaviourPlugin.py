@@ -83,6 +83,16 @@ class HumanBehaviourPlugin:
 		irclib.sendChannelMessage("Ram it! Ram it! RAM IT!!!")
 	elif(msg.lower() == "'gn" or msg.lower() == "`gn"):
 		irclib.sendChannelMessage("Read the Academy, you n00b!")
+	elif(msg.lower() == "if you're happy and you know it, syntax error!"):
+		irclib.sendChannelMessage("Syntax error")
+	elif(msg.lower() == "if you're happy and you know it syntax error!"):
+		irclib.sendChannelMessage("Syntax error")
+	elif(msg.lower() == "if you're happy and you know it, and you really want to show it, if you're happy and you know it, syntax error!"):
+		irclib.sendChannelMessage("Syntax error")
+	elif(msg.lower() == "if you're happy and you know it, and you really want to show it, if you're happy and you know it syntax error!"):
+		irclib.sendChannelMessage("Syntax error")
+	elif(msg.lower() == "if you're happy and you know it and you really want to show it if you're happy and you know it syntax error!"):
+		irclib.sendChannelMessage("Syntax error")
 	elif(msg.lower().find("lich") >= 0):
             irclib.sendChannelMessage("A lich? TURN UNDEAD!")
         elif(msg.lower().find("ghost") >= 0):

@@ -757,15 +757,19 @@ class AuthenticationPlugin:
     def onChannelMessage(self, irclib, source, message):
         if(message == "!punishlist"):
             listOfPunishedUsers = [user.nick for user in irclib.getUserList().values() if user.dataStore.getAttributeDefault("isPunished", False)]
-            irclib.sendChannelMessage("Currently in punish-mode: %s" % (", ".join(listOfPunishedUsers)))
+            if len(listOfPunishedUsers) == 0:
+            	irclib.sendChannelMessage("Nobody's currently punished.")
+            else:
+	            irclib.sendChannelMessage("Currently punished: %s" % (", ".join(listOfPunishedUsers)))
         elif((len(message.split()) >= 2) and (message.split()[0] == "!punish")):
             name = message.split()[1]
+            irclib.sendChannelEmote("smashes %s with a pellet." % name)
             self.punish(irclib, name)
         elif((len(message.split()) >= 2) and (message.split()[0] == "!pardon")):
             listOfPunishedUsers = [user.nick for user in irclib.getUserList().values() if user.dataStore.getAttributeDefault("isPunished", False)]
             name = message.split()[1]
             if(name in listOfPunishedUsers):
-                if(source.isAdmin() and source.nick != name):
+                if((source.isAdmin()) and (source not in listOfPunishedUsers) and (source.nick != name)): #possibly redundant
                     irclib.getUserList()[name].dataStore.removeAttribute("isPunished")
                     irclib.sendChannelMessage("Yo.")
                 else:
