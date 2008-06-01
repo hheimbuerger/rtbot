@@ -609,16 +609,16 @@ class LowlevelIrcLib:
     
     def splitLongMessages(self, message):
         result = []
-        while (len(message) > 400):
+        while (len(message) > 100):
             splitpos = 0
             contpos = 0
             for i in range(0, 50):
-              if(message[399-i] == " "):
+              if(message[99-i] == " "):
                 splitpos = i
                 contpos = i-1
                 break
-            result.append(message[:399-splitpos])
-            message = message[399-contpos:]
+            result.append(message[:99-splitpos])
+            message = message[99-contpos:]
         if(len(message) > 0):
             result.append(message)
         return(result)
