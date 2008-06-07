@@ -15,8 +15,8 @@ class UnitConversionPlugin:
         self.currencyTableSource = {"host": "www.ecb.int", "url": "/stats/eurofxref/eurofxref-daily.xml"}
         self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "SKK", "SEK", "NZD", "NOK", "PLN", "INR", "NIS"]          # removed: "AUD", "DKK"
         self.currencyRE = "\s?(\\d{1,10}(\\.\\d{2})?)"
-        self.fixedCurrencies = {"INR": 55.7700, "NIS": 5.8637}
-        self.fixedCurrencyUpdate = "2007/08/09"
+        self.fixedCurrencies = {"INR": 67.0725, "NIS": 5.2428}
+        self.fixedCurrencyUpdate = "2008/06/07"
         self.lastCurrencyUpdate = None
         self.lastCurrencyTable = None
         
@@ -188,4 +188,5 @@ if __name__ == "__main__":
     a.onChannelMessage(FakeIrcLib(), "source", "100kph")
     a.onChannelMessage(FakeIrcLib(), "source", "100 pounds")
     a.onChannelMessage(FakeIrcLib(), "source", "100 miles, 50 miles")
+    a.onChannelMessage(FakeIrcLib(), "source", " vis(16.1 kilometers) uv(0 out of 16)")
     a.onChannelMessage(FakeIrcLib(), "source", "EUR 10, EUR 20")
