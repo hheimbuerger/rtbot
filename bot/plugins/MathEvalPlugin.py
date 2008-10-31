@@ -1,5 +1,6 @@
 import math
 import re
+from __future__ import division
 
 class MathEvalPlugin:
 
@@ -56,4 +57,3 @@ if __name__ == "__main__":
     a = MathEvalPlugin()
     a.onChannelMessage(IrcLibMock(), "source", "eval 1+2")
     a.onChannelMessage(IrcLibMock(), "source", "irclib.sendChannelMessage('test')")
-    
