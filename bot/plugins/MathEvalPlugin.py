@@ -1,4 +1,4 @@
-import math
+from math import *
 import re
 from __future__ import division
 
