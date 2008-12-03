@@ -30,7 +30,10 @@ class UnitConversionPlugin:
         #              tuples of
         #                  a factor or lambda to calculate the conversion
         #                  and an output mask (these will later be concatinated with equal signs) whose first placeholder is a floating value for the result
-        self.openConversionTable = (("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((yd)|(\\syards?))", [(1.0, "%.02fyd"), (0.9144, "%.02fm")]),
+        self.openConversionTable = (("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((mpg)|(\\smiles per gallon))", [(1.0, "%.02f miles per gallon"), (lambda value: 1.0/value*235.214583, "%.02f litres per 100 kilometres")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((lpk)|(\\slit((re)|(er))s? per 100 kilomet((re)|(er))s?))", [(1.0, "%.02f litres per 100 kilometres"), (lambda value: 1.0/value*235.214583, "%.02f miles per gallon")]),
+
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((yd)|(\\syards?))", [(1.0, "%.02fyd"), (0.9144, "%.02fm")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((ft)|(\\sfeet)|(\\sfoot))", [(1.0, "%.02fft"), (0.3048, "%.02fm")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((in)|(\\sinch(es)?))", [(1.0, "%.02fin"), (2.54, "%.02fcm")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((m)|(\\smeters?))", [(1.0, "%.02fm"), (1.0936, "%.02fyd")]),             #, (3.2808, "%.01fft")
@@ -41,11 +44,13 @@ class UnitConversionPlugin:
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((kph)|(km/h))", [(1.0, "%.02fkph"), (0.62137, "%.02fmph"), (0.27778, "%.02fm/s")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((lbs?)|(\\spounds))", [(1.0, "%.02flb"), (0.45359237, "%.02fkg")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((kg)|(\\skilograms))", [(1.0, "%.02fkg"), (2.20462262, "%.02flb")]),
-                                    
+
                                     ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?C(elsius)?", [(1.0, "%.01f°C"), ((lambda value: (value*1.8)+32), "%.01f°F")]),
                                     ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?F(ahrenheit)?", [(1.0, "%.01f°F"), ((lambda value: (value-32)/1.8), "%.01f°C")]),
                                     ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?K(elvin)?", [(1.0, "%.01f°K"), ((lambda value: value-273.15), "%.01f°C"), ((lambda value: (value*1.8)-459.67), "%.01f°F")]),
-                                    
+
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((g)|(gal)|(\\sgallons?))", [(1.0, "%.02fgal"), (3.78496, "%.02fl")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((l)|(\\slitres?)|(\\sliters?))", [(1.0, "%.02fl"), (1.0/3.78496, "%.02fgal")]),
                                    )
 
 
@@ -111,14 +116,14 @@ class UnitConversionPlugin:
         #        irclib.sendChannelMessage("%.01f°K = %.01f°C = %s°F" % (value, value-273.15, (value*1.8)-459.67))
         
         # various other conversions
+        reducedMessage = message
         for (detectionRE, conversionList) in self.openConversionTable:
             # we need to make some adjustments to the RE:
             # 1. it has to be at the beginning of a line or after a space
             # 2. it needs to be followed by the end of the line or a non-alphanumeric character
             finalDetectionRE = "(^|\\s)" + detectionRE + "($|\\W)"
 
-            results = re.finditer(finalDetectionRE, message)
-            for result in results:
+            for result in re.finditer(finalDetectionRE, reducedMessage):
                 outputParts = []
                 value = float(result.group("value"))
                 for (conversion, outputMask) in conversionList:
@@ -128,7 +133,9 @@ class UnitConversionPlugin:
                         resultingValue = conversion(value)
                     outputParts.append(outputMask % resultingValue)
                 irclib.sendChannelMessage(" = ".join(outputParts))
-        
+                # now remove the value from our copy of the message string, so it's not resolved again (only happens if there are overlapping rules)
+                reducedMessage = reducedMessage.replace(result.group(0), "")
+
         # iterate over all used currencies
         for currency in self.usedCurrencies:
             # check if this currency is used in the message
@@ -190,3 +197,4 @@ if __name__ == "__main__":
     a.onChannelMessage(FakeIrcLib(), "source", "100 miles, 50 miles")
     a.onChannelMessage(FakeIrcLib(), "source", " vis(16.1 kilometers) uv(0 out of 16)")
     a.onChannelMessage(FakeIrcLib(), "source", "EUR 10, EUR 20")
+    a.onChannelMessage(FakeIrcLib(), "source", "1 miles per gallon")
