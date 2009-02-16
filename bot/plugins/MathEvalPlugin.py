@@ -1,13 +1,16 @@
-from math import *
-import re
 from __future__ import division
+from math import *
+import re, itertools
 
 class MathEvalPlugin:
+
+    latestResult = None
 
     def getVersionInformation(self):
         return("$Id$")
 
-    def handleMessage(self, msg, replyMessage, replyEmote):
+    def handleMessage(self, msg, _, replyMessage, replyEmote):
+        # _ is the latest result eval returned. Returns "None"
         if((len(msg.split()) > 1) and ((msg.split()[0] == "eval") or (msg.split()[0] == "evalstatement"))):
             try:
                 exp = msg.split(None, 1)[1]
@@ -23,6 +26,7 @@ class MathEvalPlugin:
                         replyMessage("That's too long, I won't write all that down...")
                     else:
                         replyMessage(str_result)
+                        return result
                 else:
                     replyEmote("thinks...")
                     result = eval(exp)
@@ -31,18 +35,24 @@ class MathEvalPlugin:
                         replyMessage("That's too long, I won't write all that down...")
                     else:
                         replyMessage("I think '" + exp + "' evaluates to '" + str_result + "', but I'm not all knowing. ;)")
+                        return result
             except:
                 replyMessage("Too complex to do with mental arithmetics. Am I a computer or what!?")
 
     def onPrivateMessage(self, irclib, source, msg):
-        self.handleMessage(msg, (lambda reply: irclib.sendPrivateMessage(source, reply)), (lambda reply: irclib.sendPrivateEmote(source, reply)))
+        self.handleMessage( msg, "Sorry, _ is not available for private queries yet.",
+                           (lambda reply: irclib.sendPrivateMessage(source, reply)),
+                           (lambda reply: irclib.sendPrivateEmote(source, reply))
+                          )
+
 
     def onChannelMessage(self, irclib, source, msg):
-        self.handleMessage(msg, (lambda reply: irclib.sendChannelMessage(reply)), (lambda reply: irclib.sendChannelEmote(reply)))
-
-
-
-
+        thisResult = self.handleMessage( msg, MathEvalPlugin.latestResult,
+                                        (lambda reply: irclib.sendChannelMessage(reply)),
+                                        (lambda reply: irclib.sendChannelEmote(reply))
+                                       )
+        if thisResult:
+            MathEvalPlugin.latestResult = thisResult
 
 if __name__ == "__main__":
     class IrcLibMock:
@@ -56,4 +66,5 @@ if __name__ == "__main__":
             print "* " + text
     a = MathEvalPlugin()
     a.onChannelMessage(IrcLibMock(), "source", "eval 1+2")
+    a.onChannelMessage(IrcLibMock(), "source", "eval 1+_")
     a.onChannelMessage(IrcLibMock(), "source", "irclib.sendChannelMessage('test')")
