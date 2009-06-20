@@ -21,20 +21,43 @@ class CoreReaderPlugin:
         except IOError:
             return(None)
 
+    def findObject(self, core, objectlist, namekey, searchterm):
+
+        if type(searchterm) == list:
+            searchterm = " ".join(searchterm)
+        
+        exactMatch = [object for object in objectlist \
+                      if searchterm.lower() == object.attribs[namekey].lower()]
+
+
+        if not exactMatch: #look for partial matches
+            possibleMatches = [object for object in objectlist \
+                               if searchterm.lower() in object.attribs[namekey].lower()]
+            if not possibleMatches:
+                return None
+            elif len(possibleMatches) == 1:
+                return possibleMatches[0]
+            else: #multiple matches, get shortest
+                nameCompareLambda = ( lambda x,y : cmp(len(x.attribs[namekey].lower()),
+                                                       len(y.attribs[namekey].lower())))
+                possibleMatches.sort( cmp = nameCompareLambda )
+                return possibleMatches[0]
+        elif len(exactMatch) == 1:
+            return exactMatch[0]
+        else: # len(exactMatch) > 1:
+            #I'm sorry, what?
+            #raise Exception("More than one exact match!")
+            print exactMatch
+            return exactMatch[0]
+    
     def getObjectAttributes(self, core, objectlist, namekey, searchterm):
-        # create the search RE
-        expression = "(.*?)"
-        for word in searchterm.split():
-            expression += re.escape(word) + "(.*?)"
-
-        for object in objectlist: 
-            if re.match(expression, object.attribs[namekey].lower()):
-                result = {}
-                for attrib in object.attribs.keys():
-                    result[attrib] = str(object.attribs[attrib])
-                return(result)
-
-        return([])
+        theObject = self.findObject(core, objectlist, namekey, searchterm)
+        if(theObject):
+            result = {}
+            for attrib in theObject.attribs.keys():
+                result[attrib] = str(theObject.attribs[attrib])
+            return result
+        return {}
 
     def getFormattedOutput(self, attriblist, namekey, displayattribs):
         result = []
@@ -44,27 +67,27 @@ class CoreReaderPlugin:
         return(result)
 
     def getObjectAttributesString(self, core, objectlist, namekey, searchterm):
-        # create the search RE
-        expression = "(.*?)"
-        for word in searchterm.split():
-            expression += re.escape(word) + "(.*?)"
 
-        for object in objectlist: 
-            if re.match(expression, object.attribs[namekey].lower()):
-                result = []
-                for attrib in object.attribs.keys():
-                    #filter unintersting details
-                    if ("sound" not in attrib) and (attrib != "description") and (not "_id" in attrib) and \
-                       ("_mask" not in attrib) and ("next_" not in attrib) and (attrib != "loadout") and \
-                       (attrib != namekey) and (attrib != "pre") and (attrib != "def") and (attrib != "locals"):
-                            #attempt to pretty print
-                            value = object.attribs[attrib]
-                            if(type(value) == float):
+        object = self.findObject(core, objectlist, namekey, searchterm)
+        if(object):
+            result = []
+            for attrib in object.attribs.keys():
+                #filter unintersting details
+                if ("sound" not in attrib) and (attrib != "description") and (not "_id" in attrib) and \
+                   ("_mask" not in attrib) and ("next_" not in attrib) and (attrib != "loadout") and \
+                   (attrib != namekey) and (attrib != "pre") and (attrib != "def") and (attrib != "locals") and \
+                   ("offset" not in attrib) and (attrib != "hull_abilities") and (attrib != "hull_abilities_text"):
+                        value = object.attribs[attrib]
+                        if(value): #skip empty stuff
+                            if(type(value) == float): #attempt to pretty print
                                 value = "%.1f" % value
-                            result.append(attrib + " = " + str(value))
-                return(object.attribs[namekey] + ": " + "; ".join(result))
-
-        return("Couldn't find object!")
+                            attribDisplay = attrib.replace("_", " ")
+                            result.append(attribDisplay + " = " + str(value))
+            if("hull_abilities_text" in object.attribs.keys()):
+                result.append(str(object.attribs["hull_abilities_text"]))
+            return object.attribs[namekey] + ": " + "; ".join(result)
+        else:
+            return "Couldn't find object!"
 
     def onChannelMessage(self, irclib, source, msg):
         if((len(msg.split()) >= 4) and (msg.split()[0] == "core")):
