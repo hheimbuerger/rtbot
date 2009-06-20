@@ -1,5 +1,5 @@
 # These imports are only used for the unit-test code, they are ignored when used as a plugin (but all of them are automatically imported by the PluginInterface)
-import re
+import re, os
 
 
 
@@ -53,9 +53,16 @@ class CoreReaderPlugin:
             if re.match(expression, object.attribs[namekey].lower()):
                 result = []
                 for attrib in object.attribs.keys():
-                    if((attrib != namekey) and (attrib != "pre") and (attrib != "def") and (attrib != "locals")):
-                        result.append(attrib + "=" + str(object.attribs[attrib]))
-                return(object.attribs[namekey] + ": " + ", ".join(result))
+                    #filter unintersting details
+                    if ("sound" not in attrib) and (attrib != "description") and (not "_id" in attrib) and \
+                       ("_mask" not in attrib) and ("next_" not in attrib) and (attrib != "loadout") and \
+                       (attrib != namekey) and (attrib != "pre") and (attrib != "def") and (attrib != "locals"):
+                            #attempt to pretty print
+                            value = object.attribs[attrib]
+                            if(type(value) == float):
+                                value = "%.1f" % value
+                            result.append(attrib + " = " + str(value))
+                return(object.attribs[namekey] + ": " + "; ".join(result))
 
         return("Couldn't find object!")
 
@@ -70,8 +77,7 @@ class CoreReaderPlugin:
                 return
 
             if(command.lower() == "ship"):
-                for line in self.getFormattedOutput(self.getObjectAttributes(core, reader.ships, "name", arguments), "name", ["description", "hp", "ac", "speed", "thrust", "scan", "sig", "energy", "recharge", "ammo", "missiles", "fuel", "chaff", "cost", "rip_time", "mass", "hull_abilities_text"]):
-                    irclib.sendChannelMessage(line)
+                irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.ships, "name", arguments))
             elif(command.lower() == "faction"):
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.factions, "name", arguments))
             elif(command.lower() == "weapon"):
@@ -97,7 +103,13 @@ class CoreReaderPlugin:
             elif(command.lower() == "booster"):
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.boosters, "name", arguments))
 
-
+        elif msg == "core list":
+            files = [corefile.replace(".igc", "") for corefile in os.listdir("resources/cores/")
+                     if ".igc" in corefile]
+            files = " ".join(files)
+            irclib.sendChannelMessage("Available cores are: " + files)
+            
+        
 
 
 
