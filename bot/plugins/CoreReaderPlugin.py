@@ -47,7 +47,6 @@ class CoreReaderPlugin:
         else: # len(exactMatch) > 1:
             #I'm sorry, what?
             #raise Exception("More than one exact match!")
-            print exactMatch
             return exactMatch[0]
     
     def getObjectAttributes(self, core, objectlist, namekey, searchterm):
@@ -74,9 +73,10 @@ class CoreReaderPlugin:
             for attrib in object.attribs.keys():
                 #filter unintersting details
                 if ("sound" not in attrib) and (attrib != "description") and (not "_id" in attrib) and \
-                   ("_mask" not in attrib) and ("next_" not in attrib) and (attrib != "loadout") and \
+                   ("mask" not in attrib) and ("next_" not in attrib) and (attrib != "loadout") and \
                    (attrib != namekey) and (attrib != "pre") and (attrib != "def") and (attrib != "locals") and \
-                   ("offset" not in attrib) and (attrib != "hull_abilities") and (attrib != "hull_abilities_text"):
+                   ("offset" not in attrib) and (attrib != "hull_abilities") and (attrib != "hull_abilities_text") and \
+                   ("tech" not in attrib) and (attrib != "hud") and (attrib != "type") and ("ID" not in attrib):
                         value = object.attribs[attrib]
                         if(value): #skip empty stuff
                             if(type(value) == float): #attempt to pretty print
@@ -121,8 +121,8 @@ class CoreReaderPlugin:
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.stations, "name", arguments))
             elif(command.lower() == "chaff"):
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.chaff, "ld_name", arguments))
-            elif(command.lower() == "tech"):
-                irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.techs, "name", arguments))
+ #           elif(command.lower() == "tech"): #only interesting for cost
+ #               irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.techs, "name", arguments))
             elif(command.lower() == "booster"):
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.boosters, "name", arguments))
 
