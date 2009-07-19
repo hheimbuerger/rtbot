@@ -3,7 +3,7 @@ import string
 class SpellCheckPlugin:
   
   def __init__(self):
-    self.dictFile = "resources/british-words.lst"
+    self.dictFile = "resources/dictionary.lst"
 
   def getVersionInformation(self):
     return("$Id$")
