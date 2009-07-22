@@ -26,10 +26,9 @@ class SpellCheckPlugin:
           if(len(msg.split()) >= 2):
               word = msg.split()[1]
               if(self.spellcheck(word)):
-                  irclib.sendChannelMessage("Yes, '%s' is a British word." % (word))
+                  irclib.sendChannelMessage("Yes, '%s' is a word." % (word))
               else:
-                  irclib.sendChannelMessage("No, '%s' is not a British word." % (word))
-
+                  irclib.sendChannelMessage("No, '%s' is not a word." % (word))
 
 
 #Unit-test
