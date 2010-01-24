@@ -41,14 +41,12 @@ class HumanBehaviourPlugin:
         for line in HumanBehaviourPlugin.helpMessage:
             irclib.sendPrivateMessage(source, line)
         return(True)
-
-    if(source.isAdmin()):
-        if((len(message.split()) > 0) and (message.split()[0] == "say")):
-            irclib.sendChannelMessage(message[4:])
-            return(True)
-        elif((len(message.split()) > 0) and (message.split()[0] == "me")):
-            irclib.sendChannelEmote(message[3:])
-            return(True)
+    elif((len(message.split()) > 0) and (message.split()[0] == "say")):
+        irclib.sendChannelMessage(message[4:])
+        return(True)
+    elif((len(message.split()) > 0) and (message.split()[0] == "me")):
+        irclib.sendChannelEmote(message[3:])
+        return(True)
 
   @PluginInterface.Priorities.prioritized(PluginInterface.Priorities.PRIORITY_LOW)
   def onChannelMessage(self, irclib, source, msg):
@@ -78,21 +76,11 @@ class HumanBehaviourPlugin:
 	elif(msg.lower() == "'gl" or msg.lower() == "`gl"):
 		irclib.sendChannelMessage("'gc")
 	elif(msg.lower() == "'go" or msg.lower() == "`go"):
-		irclib.sendChannelMessage("Sleep well, " + source.getCanonicalNick() + "!")
+		irclib.sendChannelMessage("Sleep well, " + source + "!")
 	elif(msg.lower() == "'ac" or msg.lower() == "`ac"):
 		irclib.sendChannelMessage("Ram it! Ram it! RAM IT!!!")
 	elif(msg.lower() == "'gn" or msg.lower() == "`gn"):
 		irclib.sendChannelMessage("Read the Academy, you n00b!")
-	elif(msg.lower() == "if you're happy and you know it, syntax error!"):
-		irclib.sendChannelMessage("Syntax error")
-	elif(msg.lower() == "if you're happy and you know it syntax error!"):
-		irclib.sendChannelMessage("Syntax error")
-	elif(msg.lower() == "if you're happy and you know it, and you really want to show it, if you're happy and you know it, syntax error!"):
-		irclib.sendChannelMessage("Syntax error")
-	elif(msg.lower() == "if you're happy and you know it, and you really want to show it, if you're happy and you know it syntax error!"):
-		irclib.sendChannelMessage("Syntax error")
-	elif(msg.lower() == "if you're happy and you know it and you really want to show it if you're happy and you know it syntax error!"):
-		irclib.sendChannelMessage("Syntax error")
 	elif(msg.lower().find("lich") >= 0):
             irclib.sendChannelMessage("A lich? TURN UNDEAD!")
         elif(msg.lower().find("ghost") >= 0):
@@ -105,8 +93,6 @@ class HumanBehaviourPlugin:
             irclib.sendChannelMessage("A ghoul? TURN UNDEAD!")
         elif(msg.lower().find("skeleton") >= 0):
             irclib.sendChannelMessage("A skeleton? TURN UNDEAD!")
-        elif(msg.lower().find("slut") >= 0):
-            irclib.sendChannelMessage("A slut? TURN UNWED!")
 #	elif(self.removeURLs(msg).lower().find("rtbot") != -1):
 #		if((msg.lower().find("'yh") != -1) or (msg.lower().find("sup") != -1)):
 #			irclib.sendChannelMessage("'yh! I'm fine. How about you?")

@@ -25,14 +25,19 @@ private
     #         "30891|su rtbot\n" \
     #         "30892|bash\n" \
     #         "31191|ps x -o %p|%a"
-    re = /^(\d+)\|(.*)$/
+    #print "output: #{output}\n"
+    re = /^\s*?(\d+)\|(.*)$/
     if(output) then
+      #print "in IF\n"
       result = []
       output.split("\n").each do |line|
+        #print "line: #{line}\n"
         md = re.match(line)
         if(not md.nil?) then
           didFindOne = true
+          #print "md[1]/md[2]: #{md[1]}/#{md[2]}\n"
           if(md[2].include? "python BotManager") then
+            #print "included!\n"
             result << {:pid => md[1], :command => md[2]}
           end
         end
@@ -67,8 +72,9 @@ public
     print params[:type]
     if(params[:type] == 'start') then
       flash[:results] = `cd #{BOT_PATH} && python BotManager.py start 2>&1`
-    elsif(params[:type] == 'restart') then
-      flash[:results] = `cd #{BOT_PATH} && python BotManager.py restart 2>&1`
+    #elsif(params[:type] == 'restart') then
+    #  flash[:results] = `cd #{BOT_PATH} && python BotManager.py restart 2>&1`
+    # Couldn't make restart working, it stops but doesn't start. After 2+h of debugging, I still have no idea why.
     elsif(params[:type] == 'stop') then
       flash[:results] = `cd #{BOT_PATH} && python BotManager.py stop 2>&1`
     end

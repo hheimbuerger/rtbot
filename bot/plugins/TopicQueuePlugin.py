@@ -17,14 +17,16 @@ class TopicQueuePlugin:
 
       if((command == "!push") and (len(message.split()) >= 2)):
         topic = message.split(None, 1)[1]
-        #reResult = re.compile("\(.*?\)^").search(topic.strip())
-        reResult = re.search("\(.*?\)^", topic.strip())
-        if(reResult):
-          try:
-            users = reResult.group(1).split(", ")
-            
-          except:
-            irclib.sendChannelMessage("One or more of the users are invalid.")
+#===============================================================================
+#        reResult = re.compile("\((.*?)\)^").search(topic.strip()) 
+#        if(reResult):
+#          try:
+#            users = reResult.group(1).split(", ")
+#            
+#          except:
+#            irclib.sendChannelMessage("One or more of the users are invalid.")
+#===============================================================================
+          
         self.topicQueue.append(topic)
         irclib.sendChannelMessage("The topic '%s' has been queued." % (topic))
       elif(command == "!peek"):

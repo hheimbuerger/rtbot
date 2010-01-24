@@ -16,7 +16,7 @@ class LogsController < ApplicationController
   allow_with_permission :action => 'stop', :required_permission => 'watchlogs'
 
   def index
-    @my_dir = Dir.new(BOT_PATH + "logs/")
+    @my_dir = Dir.new(BOT_PATH + "logs/").sort()
   end
   
   def register

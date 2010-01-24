@@ -44,8 +44,8 @@ class MutingPlugin:
 
     def mute(self, irclib, source, nick, verbose = True):
         if(nick.lower() == irclib.nickname.lower()):
-            self.mute(irclib, irclib.nickname, source)
-        else:
+            self.mute(irclib, irclib.nickname, source.nick)
+        elif(irclib.getUserList().has_key(nick)):
             if(verbose):
                 if(nick in self.getMuteList(irclib.getUserList().values())):
                     irclib.sendChannelEmote("decides to keep %s muted a bit longer" % (nick))
@@ -56,6 +56,8 @@ class MutingPlugin:
             user.dataStore.setAttribute("isMuted", True)
             user.dataStore.setAttribute("mutedAt", datetime.datetime.utcnow())
             #self.triggerModeUpdate(irclib)
+        else:
+            irclib.sendChannelMessage("huh? who's that?")
 
     def unmute(self, irclib, nick):
         # check if the user is around, otherwise ignore

@@ -18,7 +18,7 @@ module BotConnectionHelper
 	      #print "bot: #{bot.inspect}\n"
 	      #print "bot.pluginStatusList: #{bot.pluginStatusList.inspect}\n"
 	      @plugins = bot.pluginStatusList
-	    rescue Errno::ECONNREFUSED, Errno::EBADF
+	    rescue
 	      @has_connection = false
 	      @plugins = nil
 	    end

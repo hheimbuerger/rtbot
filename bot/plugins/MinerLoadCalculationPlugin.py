@@ -5,7 +5,8 @@ import string
 class MinerLoadCalculationPlugin:
 
     def __init__(self):
-        self.cores = {"DN": "00.04.50 Alpha",
+        self.cores = {"CC": "0.6a",
+                      "DN": "00.04.50 Alpha",
                       "EoR": "6a",
                       "A+": "15b7",
                       "PC2": "019",
@@ -14,6 +15,7 @@ class MinerLoadCalculationPlugin:
                       "SW": "a103"}
 
         self.baseHeliumConstant = {}
+        self.baseHeliumConstant["CC"] = 1500.0
         self.baseHeliumConstant["DN"] = 1500.0
         self.baseHeliumConstant["EoR"] = 1500.0
         self.baseHeliumConstant["A+"] = 1500.0
@@ -23,6 +25,7 @@ class MinerLoadCalculationPlugin:
         self.baseHeliumConstant["SW"] = 1500.0
 
         self.defaultMinerCapacity = {}
+        self.defaultMinerCapacity["CC"] = 90.0
         self.defaultMinerCapacity["DN"] = 90.0
         self.defaultMinerCapacity["EoR"] = 90.0
         self.defaultMinerCapacity["A+"] = 90.0
@@ -39,6 +42,16 @@ class MinerLoadCalculationPlugin:
         self.mapSectors["hilo4for2"] = 17
 
         self.minerCapacityModifier = {}
+        self.minerCapacityModifier["CC"] = []
+        self.minerCapacityModifier["CC"].append(("Belters", 0.8))
+        self.minerCapacityModifier["CC"].append(("Bios", 1.0))
+        self.minerCapacityModifier["CC"].append(("Dreghklar", 0.75))
+        self.minerCapacityModifier["CC"].append(("Ga'Taraan", 1.0))
+        self.minerCapacityModifier["CC"].append(("Gigacorp", 1.25))
+        self.minerCapacityModifier["CC"].append(("Iron Coalition", 0.75))
+        self.minerCapacityModifier["CC"].append(("Omicron", 0.85))
+        self.minerCapacityModifier["CC"].append(("Rixian", 1.0))
+        self.minerCapacityModifier["CC"].append(("Technoflux", 0.55))
         self.minerCapacityModifier["DN"] = []
         self.minerCapacityModifier["DN"].append(("Belters", 0.8))
         self.minerCapacityModifier["DN"].append(("Bios", 1.0))
@@ -203,12 +216,14 @@ if __name__ == "__main__":
     a = MinerLoadCalculationPlugin()
     a.onChannelMessage(FakeIrcLib(), "source", "minercalc abc 12 med normal")
     print "==============="
-    a.onChannelMessage(FakeIrcLib(), "source", "minercalc DN 12 med normal")
+    a.onChannelMessage(FakeIrcLib(), "source", "minercalc CC 12 med normal")
     print "==============="
-    a.onChannelMessage(FakeIrcLib(), "source", "minercalc DN 12 123 normal")
+    a.onChannelMessage(FakeIrcLib(), "source", "minercalc CC 12 123 normal")
     print "==============="
-    a.onChannelMessage(FakeIrcLib(), "source", "minercalc DN 12 med 123")
+    a.onChannelMessage(FakeIrcLib(), "source", "minercalc CC 12 med 123")
     print "==============="
-    a.onChannelMessage(FakeIrcLib(), "source", "minercalc DN abc med normal")
+    a.onChannelMessage(FakeIrcLib(), "source", "minercalc CC abc med normal")
     print "==============="
-    a.onChannelMessage(FakeIrcLib(), "source", "minercalc DN HiLo med normal /detailed")
+    a.onChannelMessage(FakeIrcLib(), "source", "minercalc CC HiLo med normal /detailed")
+    print "==============="
+    a.onChannelMessage(FakeIrcLib(), "source", "minercalc CC 1 med normal /detailed")

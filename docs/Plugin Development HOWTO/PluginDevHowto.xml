@@ -5,7 +5,7 @@
 <document title="HOWTO write RTBot plugins 1.0">
     <!-- Introduction -->
     <normal-text>
-    Based on core version 4.2 of the bot. Repository revision: 160.
+    Based on core version 4.3 of the bot. Repository revision: 210.
     </normal-text>
     
     <!-- CHAPTER: Meta -->
@@ -21,12 +21,55 @@
         
             <!-- Normal text -->
             <paragraph>
-            The address is ...
+            The address of the repository is <link url="svn://svn.edge-of-reality.de/rtbot">svn://svn.edge-of-reality.de/rtbot</link>.
+            Ask Cortex for an account. (Before you start asking, think about a password! Or decide to want get assigned a random one...)
+            With your account data and the URL, you have everything you need to configure your preferred Subversion client.
+            <link url="http://www.tortoisesvn.org/">TortoiseSVN</link> is a good choice, the <link url="???">Subclipse</link> plugin for
+            Eclipse, too. I personally use both, they cooperate very well.
             </paragraph>
             
             <!-- Normal text -->
             <paragraph>
-            Ask Cortex for an account. (Before you start asking, think about a password! Or decide to get assigned a random one...)
+            Please read the chapters ??? of the <link url="???">Subversion book</link>. You should at least understand concepts like
+            "checkout", "update", "commit", "sandbox", "repository". You don't need to know about branching, tagging and administration.
+            </paragraph>
+
+        </section>
+
+        <!-- SECTION: IDEs -->
+        <section title="IDEs">
+        
+            <!-- Normal text -->
+            <paragraph>
+            Of course, you can use any text editor (e.g. notepad) to write bot plugins. You can also use the IDE that comes with
+            the official (i.e. non ActiveState) Python releases. My personal suggestion though is <link url="http://www.eclipse.org/">Eclipse</link>.
+            It's an excellent IDE and the Python-plugin <link url="???">PyDev</link> is pretty mature. Last but not least, the
+            Subversion plugin <link url="">Subclipse</link> mimics the integrated CVS-plugin very well, and the CVS-plugin is
+            probably the best Subversion client available. Using Eclipse/PyDev, you can even step-debug the bot!
+            </paragraph>
+            
+            <!-- Normal text -->
+            <paragraph>
+            I'm using Eclipse myself for almost all bot development and you'll find a .project file for Eclipse in the repository.
+            </paragraph>
+
+        </section>
+
+        <!-- SECTION: Bugzilla -->
+        <section title="Bugzilla">
+        
+            <!-- Normal text -->
+            <paragraph>
+            We're using a <link url="http://www.bugzilla.org">Bugzilla</link> system to track all open issues for the bot. The name
+            is a bit misleading, Bugzilla is not only used to track bugs, but also to track what has to be done, feature/plugin
+            requests, etc.
+            </paragraph>
+            
+            <!-- Normal text -->
+            <paragraph>
+            Please create an account and make use of it. Accept issues when start working on them. You can still reopen them if you
+            decide that you no longer want to work on it. Close them when you're done. It just helps to keep of who is doing what
+            and to make sure that not a few people are working on the same issue without knowing of each other.
             </paragraph>
 
         </section>
@@ -42,6 +85,90 @@
    
         <!-- SECTION: Repository -->
         <section title="Introduction">
+        
+            <!-- Normal text -->
+            <paragraph>
+            lifecycle
+            </paragraph>
+            
+            <code>import stuff
+
+            class test:
+                pass</code>
+            
+            <!-- Normal text -->
+            <paragraph>
+            And here it ends.
+            </paragraph>
+
+        </section>
+
+    </chapter>
+
+
+
+
+
+    <!-- CHAPTER: Advanced -->
+    <chapter title="Advanced">
+   
+        <!-- SECTION: Dependencies -->
+        <section title="Dependencies and how they are resolved">
+        
+            <!-- Normal text -->
+            <paragraph>
+            RTBot plugins can communicate. They also come with a very basic dependency resolving system, that will probably be
+            extended soon.
+            </paragraph>
+            
+            <paragraph>
+            One problem is that plugins may never assume that another plugin is running. This is solved by using the (partly)
+            interpreted nature of Python. Everytime a plugin needs the services of another plugin, it should request a reference
+            to that plugin again.
+            </paragraph>
+            
+            <paragraph>
+            In the future, plugins will also be able to declare plugins they absolutely need to run. In this case, the plugin manager
+            will make sure the plugin only runs when its dependent plugins are running. If the necessary plugin is unloaded (deliberately
+            or because it crashed), then the dependent plugins will be unloaded as well. It will also make sure that the dependent
+            plugin is only loaded *after* the used plugins.
+            </paragraph>
+            
+            <paragraph>
+            This system is not yet in effect. Nevertheless, you should even now declare the dependencies of your plugins, to minimise
+            the necessary changes then. This is simply done by writing a getDependencies() function, as documented in the References
+            chapter.
+            </paragraph>
+            
+            <paragraph>
+            Remember that this only has to be done if you absolutely need the plugin. For example, if you also want to access
+            getCanonicalName() of the AuthenticationPlugin, your plugin will most probably also work (with a minimally reduced
+            feature set) if the AuthenticationPlugin is not available.
+            </paragraph>
+            
+            <paragraph>
+            To access another plugin, you will need a reference to the plugin manager, called the "pluginInterface". You can simply
+            get it by using a constructor with a second parameter. If this constructor is available, the plugin interface will
+            automatically pass this reference to your plugin. You can then call getPluginByClassname() to get a plugin reference (or
+            'None' if the plugin isn't available). I suggest to have this call in another function. [CODE] Remember, the reference
+            to this plugin should not be stored, will you can safely assume that the reference to the plugin interface won't change
+            during the runtime of your plugin. 
+            </paragraph>
+            
+            <code>import stuff
+
+            class test:
+                pass</code>
+            
+            <!-- Normal text -->
+            <paragraph>
+            And here it ends.
+            </paragraph>
+
+        </section>
+   
+        <!-- SECTION: Consuming events -->
+        <section title="Priorities and consuming events">
         
             <!-- Normal text -->
             <paragraph>
@@ -61,5 +188,232 @@
         </section>
 
     </chapter>
+
+
+
+
+
+    <!-- CHAPTER: Basics -->
+    <chapter title="Reference">
+		<section title="Events and their signatures">
+            <!-- Normal text -->
+            <paragraph>
+            Now I will present some source code.
+            </paragraph>
+
+			<events>
+				<event name="onJoin">
+					<description>A nick joined the channel.</description>
+					<parameters>
+						<parameter name="irclib" type="class reference">A reference to the IRC library that can be used to send messages, get the user list, etc.</parameter>
+						<parameter name="source" type="string">The nick that joined the channel.</parameter>
+					</parameters>
+				</event>
+			</events>
+		</section>
+
+<!--
+onChangeNick
+A nick changed.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The old
+nick.
+target (string): The new
+nick.
+onLeave
+A nick left the
+channel.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that left the channel.
+onQuit
+A nick left the IRC
+server.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that left the server.
+reason (string): The
+reason supplied by the
+nick.
+onKick
+A nick was kicked from
+the channel.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that performed the kick.
+target (string): The nick
+that was kicked.
+reason (string): The
+supplied reason for the
+kick.
+onUserMode
+A user mode was
+changed.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that performed the mode
+change.
+targets (list of strings):
+The targets of the mode
+change.
+flags (string): The flag
+modifier string, e.g. "+tm".
+onChannelMode
+A channel mode was
+changed.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that performed the kick.
+flags (string): The flag
+modifier string, e.g. "+tm".
+onNotice
+The bot received a
+notice.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that sent the notice.
+message (string): The
+message of the notice.
+onChannelMessage
+The bot received a
+channel message.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that sent the message.
+message (string): The
+channel message.
+onChannelEmote
+The bot received a
+channel message that
+was an emote.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that sent the emote.
+message (string): The
+content of the emote.
+onPrivateMessage
+The bot received a
+private message.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that sent the message.
+message (string): The
+private message.
+onPrivateEmote
+The bot received a
+private message that
+was an emote.
+irclib (class reference):
+A reference to the IRC
+library that can be used to
+send messages, get the
+user list, etc.
+source (string): The nick
+that sent the emote.
+message (string): The
+content of the emote.
+onKeyboardInterrupt
+The bot was told
+to terminate on the
+computer it is running
+on by pressing Ctrl-C.
+		
+		
+		</section>
+Important IrcLib functions and their signatures
+sendChannelMessage
+Send a channel message.
+message (string): The
+message content.
+sendChannelEmote
+Send a channel emote.
+emote (string): The emote.
+sendPrivateMessage
+Send a private message.
+target (string): The
+recipient of the message.
+message (string): The
+message content.
+sendPrivateEmote
+Send a private emote.
+target (string): The
+recipient of the emote.
+emote (string): The emote.
+getChannelModes
+Retrieve the channel
+modes.
+setChannelMode
+Set a channel mode.
+flags (string): The flag
+modifier string.
+setUserMode
+Set a user mode.
+flags (string): The flag
+modifier string.
+target (string): The target
+nick.
+upOp
+Remove op status.
+target (string): The nick to
+be un-oped.
+isOp
+Check if a nick has op.
+target (string): [optional]
+The nick to be checked. If
+this parameter is omitted,
+the bot is checked.
+-->
+		<section title="Commonly used functions from other plugins">
+            <!-- Normal text -->
+            <paragraph>
+            Now I will present some source code.
+            </paragraph>
+
+            <paragraph>
+            isFriend(), getCanonicalName(), insult()
+            </paragraph>
+		</section>
+
+	</chapter>
 
 </document>

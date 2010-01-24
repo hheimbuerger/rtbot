@@ -155,9 +155,9 @@ class AuthenticationPlugin:
     # ==================================================
     # VARIOUS METHODS
     # ==================================================
-    def makeMeOp( self, irclib ):
+    def makeMeOp(self, irclib):
         self.dontThankLNextTime = True
-        irclib.sendPrivateMessage( irclib.getUserList()["L"], "OP " + irclib.channel )
+        irclib.sendPrivateMessage(irclib.getUserList()["L"], "OP " + irclib.channel)
 
     def determineNecessaryUpdate(self, targetFlags, currentFlags):
         result = ""
@@ -174,7 +174,7 @@ class AuthenticationPlugin:
             elif((flag == 'v') and ('v' not in targetFlags)):
                 result += "-v"
         return(result)
- 
+
     def getFormattedAuthInformationList(self, account):
         result = []
         i = 0
@@ -186,7 +186,7 @@ class AuthenticationPlugin:
                 result.append("%i. Username='%s', Host='%s', Userinfo='%s'" % (i, username, host, userinfo))
                 i += 1
         return(result)
- 
+
     def pmAuthInformationList(self, irclib, target, account):
         for line in self.getFormattedAuthInformationList(account):
             irclib.sendPrivateMessage(target, line)
@@ -380,9 +380,7 @@ class AuthenticationPlugin:
                 else:
                     return(None)
 
-    def punish(self, irclib, nick):
-        if(nick in irclib.getUserList().keys()):
-            irclib.getUserList()[nick].dataStore.setAttribute("isPunished", True)
+
 
     # ==================================================
     # EVENT HANDLERS
@@ -429,7 +427,7 @@ class AuthenticationPlugin:
 
     def onUserMode( self, irclib, source, targets, flags ):
       if( ( flags == "+o" ) and ( targets[0] == irclib.nickname ) ):
-          if( source == "L" ):
+          if( source.getCanonicalNick() == "L" ):
               if( not self.dontThankLNextTime ):
                   irclib.sendChannelMessage( "You op'ed me, L. But you're just a stupid bot, so I won't thank you. ;)" )
               self.dontThankLNextTime = False
@@ -444,7 +442,7 @@ class AuthenticationPlugin:
               irclib.sendChannelMessage("Hey " + source.getCanonicalNick() + ", that's not nice... :(")
               self.makeMeOp( irclib )
               time.sleep(1)
-              self.punish(irclib, source.nick)
+              source.dataStore.setAttribute("isPunished", True)
               irclib.sendChannelMessage(":p")
 
     def onWhoResult(self, irclib, user):
@@ -480,12 +478,11 @@ class AuthenticationPlugin:
                     irclib.sendPrivateMessage(source, "The password has been set on the account '%s'." % (name))
                     irclib.sendPrivateMessage(source, "You can now authenticate anytime by sending me a notice with the content 'authenticate <name/> </password/>', e.g. by typing \"/notice RTBot authenticate %s mysecretpassword\"." % (name))
                     return    # need to return here to prevent the "don't know you" message
-                else:
-                    irclib.sendPrivateMessage(source, "You are not granted to set a password at this time!")
-                    return
 
         # abort if we're not talking to a friend, set sourceUser otherwise
-        if(not source.isAdmin() and source.nick != "Cort"):
+        #irclib.sendChannelMessage(source, "source.isAdmin()=="+str(source.isAdmin()))
+        #irclib.sendChannelMessage(source, "source.getCanonicalNick().lower()=="+str(source.getCanonicalNick().lower()))
+        if(not source.isAdmin() and source.getCanonicalNick().lower() != "cort"):
             irclib.sendPrivateMessage(source, "I don't know you, please leave me alone!")
             return
         else:
@@ -743,6 +740,7 @@ class AuthenticationPlugin:
             irclib.sendPrivateNotice(source, "Authentication failed, username or password incorrect!")
 
     def onExternalNotice(self, irclib, sourceNick, message):
+		#if(message.startswith("
         result = self.parseAuthentication(message)
         if(result):
             (name, password) = result
@@ -757,19 +755,16 @@ class AuthenticationPlugin:
     def onChannelMessage(self, irclib, source, message):
         if(message == "!punishlist"):
             listOfPunishedUsers = [user.nick for user in irclib.getUserList().values() if user.dataStore.getAttributeDefault("isPunished", False)]
-            if len(listOfPunishedUsers) == 0:
-            	irclib.sendChannelMessage("Nobody's currently punished.")
-            else:
-	            irclib.sendChannelMessage("Currently punished: %s" % (", ".join(listOfPunishedUsers)))
+            irclib.sendChannelMessage("Currently in punish-mode: %s" % (", ".join(listOfPunishedUsers)))
         elif((len(message.split()) >= 2) and (message.split()[0] == "!punish")):
             name = message.split()[1]
-            irclib.sendChannelEmote("smashes %s with a pellet." % name)
-            self.punish(irclib, name)
+            if(name in irclib.getUserList().keys()):
+                irclib.getUserList()[name].dataStore.setAttribute("isPunished", True)
         elif((len(message.split()) >= 2) and (message.split()[0] == "!pardon")):
             listOfPunishedUsers = [user.nick for user in irclib.getUserList().values() if user.dataStore.getAttributeDefault("isPunished", False)]
             name = message.split()[1]
             if(name in listOfPunishedUsers):
-                if((source.isAdmin()) and (source not in listOfPunishedUsers) and (source.nick != name)): #possibly redundant
+                if(source.isAdmin() and source.nick != name):
                     irclib.getUserList()[name].dataStore.removeAttribute("isPunished")
                     irclib.sendChannelMessage("Yo.")
                 else:

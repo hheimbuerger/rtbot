@@ -13,10 +13,10 @@ class UnitConversionPlugin:
 
     def __init__(self):
         self.currencyTableSource = {"host": "www.ecb.int", "url": "/stats/eurofxref/eurofxref-daily.xml"}
-        self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "SKK", "SEK", "NZD", "NOK", "PLN", "INR", "NIS"]          # removed: "AUD", "DKK"
+        self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "NZD", "PLN", "INR", "NIS"]          # removed: "AUD", "DKK", "SKK", "SEK", "NOK",
         self.currencyRE = "\s?(\\d{1,10}(\\.\\d{2})?)"
-        self.fixedCurrencies = {"INR": 67.0725, "NIS": 5.2428}
-        self.fixedCurrencyUpdate = "2008/06/07"
+        self.fixedCurrencies = {"INR": 65.301296, "NIS": 5.54656082}
+        self.fixedCurrencyUpdate = "2009-05-21"
         self.lastCurrencyUpdate = None
         self.lastCurrencyTable = None
         
@@ -30,8 +30,9 @@ class UnitConversionPlugin:
         #              tuples of
         #                  a factor or lambda to calculate the conversion
         #                  and an output mask (these will later be concatinated with equal signs) whose first placeholder is a floating value for the result
-        self.openConversionTable = (("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((mpg)|(\\smiles per gallon))", [(1.0, "%.02f miles per gallon"), (lambda value: 1.0/value*235.214583, "%.02f litres per 100 kilometres")]),
-                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((lpk)|(\\slit((re)|(er))s? per 100 kilomet((re)|(er))s?))", [(1.0, "%.02f litres per 100 kilometres"), (lambda value: 1.0/value*235.214583, "%.02f miles per gallon")]),
+        self.openConversionTable = (("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((mpg)|(\\smiles per gallon))", [(1.0, "%.02f miles per gallon"), (lambda value: 1.0/value*235.214583, "%.02f litres per 100 kilometres"), (0.425143707, "%.02f kilometres per litre")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((lpk)|(\\slit((re)|(er))s? per 100 kilomet((re)|(er))s?))", [(1.0, "%.02f litres per 100 kilometres"), (lambda value: 1.0/value*235.214583, "%.02f miles per gallon"), (lambda value: 100/value, "%.02f kilometres per litre")]),
+                                    ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((kpl)|(\\skilomet((re)|(er))s? per lit((re)|(er))s?))", [(1.0, "%.02f kilometres per litre"), (lambda value: 100/value, "%.02f litres per 100 kilometres"), (2.35214583, "%.02f miles per gallon")]),
 
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((yd)|(\\syards?))", [(1.0, "%.02fyd"), (0.9144, "%.02fm")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((ft)|(\\sfeet)|(\\sfoot))", [(1.0, "%.02fft"), (0.3048, "%.02fm")]),
@@ -45,9 +46,10 @@ class UnitConversionPlugin:
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((lbs?)|(\\spounds))", [(1.0, "%.02flb"), (0.45359237, "%.02fkg")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((kg)|(\\skilograms))", [(1.0, "%.02fkg"), (2.20462262, "%.02flb")]),
 
-                                    ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?C(elsius)?", [(1.0, "%.01f°C"), ((lambda value: (value*1.8)+32), "%.01f°F")]),
-                                    ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?F(ahrenheit)?", [(1.0, "%.01f°F"), ((lambda value: (value-32)/1.8), "%.01f°C")]),
-                                    ("(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?K(elvin)?", [(1.0, "%.01f°K"), ((lambda value: value-273.15), "%.01f°C"), ((lambda value: (value*1.8)-459.67), "%.01f°F")]),
+                                    (r"(?P<value>[-+]?\d{1,4}(\.\d)?)\s?((°)|(degrees?\s))?C(elsius)?", [(1.0, "%.01f°C"), ((lambda value: (value*1.8)+32), "%.01f°F")]),
+									# old: "(?P<value>[-+]?\\d{1,4}(\\.\\d)?)°?F(ahrenheit)?"
+                                    (r"(?P<value>[-+]?\d{1,4}(\.\d)?)\s?((°)|(degrees?\s))?F(ahrenheit)?", [(1.0, "%.01f°F"), ((lambda value: (value-32)/1.8), "%.01f°C")]),
+                                    (r"(?P<value>[-+]?\d{1,4}(\.\d)?)\s?((°)|(degrees?\s))?K(elvin)?", [(1.0, "%.01f°K"), ((lambda value: value-273.15), "%.01f°C"), ((lambda value: (value*1.8)-459.67), "%.01f°F")]),
 
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((g)|(gal)|(\\sgallons?))", [(1.0, "%.02fgal"), (3.78496, "%.02fl")]),
                                     ("(?P<value>\\d{1,6}(\\.\\d{1,2})?)((l)|(\\slitres?)|(\\sliters?))", [(1.0, "%.02fl"), (1.0/3.78496, "%.02fgal")]),

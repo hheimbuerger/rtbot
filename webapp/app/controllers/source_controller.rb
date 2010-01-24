@@ -3,6 +3,7 @@ class SourceController < ApplicationController
   layout 'main'
   include SvnProxy
   include FileHelper
+  include ApplicationHelper
 
   # /=============================================
   # | PERMISSIONS
