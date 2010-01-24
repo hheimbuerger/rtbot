@@ -29,8 +29,6 @@ class BotManager:
         BotManager is the main module that starts, restarts and updates
         RTBot.
 
-
-
         Starting and Stopping RTBot
 
         On Windows, starting the bot is achieved by simply running the script;
@@ -87,173 +85,105 @@ class BotManager:
                 Internal use.
                 """
                 if(action == "start"):
-                        logging.info("Loading IRC library...")
-                        self.irclib = IrcLib.LowlevelIrcLib()
-                        self.irclib.connect(self.settings.server, self.settings.port, self.settings.nickname, self.settings.username, self.settings.realname)
-                elif(action == "stop"):
-                        logging.info("Disconnecting from IRC...")
-                        try:
-                                self.irclib.disconnect()
-                        except Exception, exc:
-                                logging.exception("Exception during irclib.disconnect()")
-                        self.irclib = None
-                else:
-                        raise Exception("Unsupported action sent to controller_IRCLibrary: %s" % action)
-
-        def controller_PluginInterface(self, action):
-                """Start/Stop Plugin System
-
-                "start"s and "stop"s the plugin system.
-                Raises an exception if the action is not "start" or "stop".
-
-                Internal use.
-                """
                 if(action == "start"):
-                        logging.info("Loading PluginInterface...")
-                        self.pluginInterface = PluginInterface.PluginInterface(self.pluginsDirectory)
+                    logging.info("Loading IRC library...")
+                    self.irclib = IrcLib.LowlevelIrcLib()
+                    self.irclib.connect(self.settings.server, self.settings.port, self.settings.nickname, self.settings.username, self.settings.realname)
                 elif(action == "stop"):
-                        logging.info("Unloading PluginInterface...")
-                        try:
-                                self.pluginInterface.dispose()
-                        except Exception, exc:
-                                logging.exception("Exception during pluginInterface.dispose()")
-                        self.pluginInterface = None
+                    logging.info("Disconnecting from IRC...")
+                    try:
+                        self.irclib.disconnect()
+                    except Exception, exc:
+                        logging.exception("Exception during irclib.disconnect()")
+                    self.irclib = None
                 else:
-                        raise Exception("Unsupported action sent to controller_PluginInterface: %s" % action)
+                    raise Exception("Unsupported action sent to controller_IRCLibrary: %s" % action)
 
-        def controller_BotCore(self, action):
-                """Initialise/Deinitialise RTBot's core code.
-
-                "start"s and "stop"s RTBot's core code (?)
-                Raises an exception if the action is not "start" or "stop".
-
-                Internal use.
-                """
+            def controller_PluginInterface(self, action):
                 if(action == "start"):
-                        logging.info("Loading core bot code...")
-                        self.rtbot = RTBot.RTBot(self.irclib, self.settings.channel, self.pluginInterface)
-                        self.irclib.registerEventTarget(self.rtbot)
-                        self.pluginInterface.registerInformTarget(self.rtbot)
+                    logging.info("Loading PluginInterface...")
+                    self.pluginInterface = PluginInterface.PluginInterface(self.pluginsDirectory)
                 elif(action == "stop"):
-                        logging.info("Unloading core bot code...")
-                        try:
-                                self.rtbot.dispose()
-                        except Exception, exc:
-                                logging.exception("Exception during rtbot.dispose()")
-                        self.rtbot = None
+                    logging.info("Unloading PluginInterface...")
+                    try:
+                        self.pluginInterface.dispose()
+                    except Exception, exc:
+                        logging.exception("Exception during pluginInterface.dispose()")
+                    self.pluginInterface = None
                 else:
-                        raise Exception("Unsupported action sent to controller_BotCore: %s" % action)
+                    raise Exception("Unsupported action sent to controller_PluginInterface: %s" % action)
 
-        def controller_Plugins(self, action):
-                """Start/Stop RTBot's Plugins
-
-                "start"s and "stop"s the individual plugins. Mostly a wrapper.
-                Raises an exception if the action is not "start" or "stop".
-
-                Internal use.
-                """
+            def controller_BotCore(self, action):
                 if(action == "start"):
-                        logging.info("Loading plugins...")
-                        self.pluginInterface.updatePlugins(False)
+                    logging.info("Loading core bot code...")
+                    self.rtbot = RTBot.RTBot(self.irclib, self.settings.channel, self.pluginInterface)
+                    self.irclib.registerEventTarget(self.rtbot)
+                    self.pluginInterface.registerInformTarget(self.rtbot)
                 elif(action == "stop"):
-                        pass
+                    logging.info("Unloading core bot code...")
+                    try:
+                        self.rtbot.dispose()
+                    except Exception, exc:
+                        logging.exception("Exception during rtbot.dispose()")
+                    self.rtbot = None
                 else:
-                        raise Exception("Unsupported action sent to controller_Plugins: %s" % action)
+                    raise Exception("Unsupported action sent to controller_BotCore: %s" % action)
 
-        def controller_ModificationsTimer(self, action):
-                """Start/Stop Plugin Hot-updating System
-
-                "start"s and "stop"s the hot-updating system.
-                Raises an exception if the action is not "start" or "stop".
-
-                Internal use.
-                """
+            def controller_Plugins(self, action):
                 if(action == "start"):
-                        logging.info("Starting to check for changed plugins every X seconds...")
-                        self.modificationsTimerLock = threading.RLock()
-                        self.startModificationsTimer()
+                    logging.info("Loading plugins...")
+                    self.pluginInterface.updatePlugins(False)
                 elif(action == "stop"):
-                        logging.info("Stopping checking for changed plugins...")
-                        self.modificationsTimer.cancel()
-                        self.modificationsTimer = None
+                    pass
                 else:
-                        raise Exception("Unsupported action sent to controller_ModificationsTimer: %s" % action)
+                    raise Exception("Unsupported action sent to controller_Plugins: %s" % action)
 
-        def controller_WebService(self, action):
-                """Start/Stop WebService
-                
-                "start"s and "stop"s the web-application
-                Raises an exception if the action is not "start" or "stop".
-                
-                Internal use.
-                """
-
+            def controller_ModificationsTimer(self, action):
                 if(action == "start"):
-                        if(self.settings.webservice_host and self.settings.webservice_port):
-                                logging.info("Starting WebService...")
-                                self.webservice = WebService.WebService(self, self.settings.webservice_host, self.settings.webservice_port)
-                                self.webservice.start()
-                        else:
-                                logging.info("WebService deactivated...")
+                    logging.info("Starting to check for changed plugins every X seconds...")
+                    self.modificationsTimerLock = threading.RLock()
+                    self.startModificationsTimer()
                 elif(action == "stop"):
-                        logging.info("STOPPING WEBSERVICE NOT YET IMPLEMENTED!")
-                        self.webservice = None
+                    logging.info("Stopping checking for changed plugins...")
+                    self.modificationsTimer.cancel()
+                    self.modificationsTimer = None
                 else:
-                        raise Exception("Unsupported action sent to controller_ModificationsTimer: %s" % action)
+                    raise Exception("Unsupported action sent to controller_ModificationsTimer: %s" % action)
 
-        def startup(self):
-                """Start main RTBot modules.
+            def controller_WebService(self, action):
+                if(action == "start"):
+                    if(self.settings.webservice_host and self.settings.webservice_port):
+                        logging.info("Starting WebService...")
+                        self.webservice = WebService.WebService(self, self.settings.webservice_host, self.settings.webservice_port)
+                        self.webservice.start()
+                    else:
+                        logging.info("WebService deactivated...")
+                elif(action == "stop"):
+                    logging.info("STOPPING WEBSERVICE NOT YET IMPLEMENTED!")
+                    self.webservice = None
+                else:
+                    raise("NO ACTION SPECIFIED")
 
-                Starts all the main components of RTBot. In order:
-
-                        1. the IRC library (handles the connection to the servers)
-                        2. the plugin loading/unloading system
-                        3. RTBot's core code
-                        4. the plugins
-                        5. the plugin hot-update system.
-
-                Internal use.
-                """
+            def startup(self):
                 self.controller_IRCLibrary("start")
                 self.controller_PluginInterface("start")
                 self.controller_BotCore("start")
                 self.controller_Plugins("start")
                 self.controller_ModificationsTimer("start")
 
-        @util.withMemberLock("modificationsTimerLock")
-        def shutdown(self):
-                """Stop main RTBot modules.  
-
-                Stops all the main components of RTBot.
-
-                Internal use.
-                """
+            @util.withMemberLock("modificationsTimerLock")
+            def shutdown(self):
                 self.controller_ModificationsTimer("stop")
                 self.controller_PluginInterface("stop")
                 self.controller_BotCore("stop")
                 self.controller_IRCLibrary("stop")
 
-        def startModificationsTimer(self):
-                """Create the timer for the hot-update system
-
-                Starts the timer for the hot-update system.
-                RTBot will check plugins every 10 seconds (hardcoded value).
-
-                Internal use.
-                """
+            def startModificationsTimer(self):
                 self.modificationsTimer = threading.Timer(10.0, self.checkForModifications)
                 self.modificationsTimer.start()
 
-        @util.withMemberLock("modificationsTimerLock", False) # If we can't lock, then we're shutting down - do nothing
-        def checkForModifications(self):
-                """Force an update of the plugin list.
-
-                Starts the timer for the hot-update system.
-                RTBot will check plugins every 10 seconds (hardcoded value).
-                Decorated (requires a lock (?)).
-
-                Internal use.
-                """
+            @util.withMemberLock("modificationsTimerLock", False) # If we can't lock, then we're shutting down - do nothing
+            def checkForModifications(self):
                 self.pluginInterface.updatePlugins()
                 
                 # Restart the timer
@@ -261,65 +191,46 @@ class BotManager:
 
 
                 
-        # -----------------------
-        # PUBLIC
-        # -----------------------
+            # -----------------------
+            # PUBLIC
+            # -----------------------
 
-        def getState(self):
-                """Returns RTBot's Status
-
-                It can be one of the following:
-
-                        1. "Launched." (Loading the web-applet. Connecting to IRC.)
-                        2. "Connected." (Connected to IRC. Working.)
-
-                        3. "Disconnected." (Preparing to unload the code.)
-                        4. "Shutting down." (Unloading the modules.)
-                        5. "Shut down." (Closing the web-applet.)
-
-                Of course, each status is an hardcoded string.
-
-                See also: run(self)
-                """
+            def getState(self):
                 return(self.status)
 
-        def run(self):
-                """Main RTBot control
-
-                Initialises the bot, starts the main loop, deinitialises the bot.
-                """
+            def run(self):
                 self.status = "Launched."
                 self.controller_WebService("start")
                 
-                logging.debug( "Entering main BotManager loop...")              
+                logging.debug( "Entering main BotManager loop...")      
 
                 while(True):
-                        logging.info("Trying to initialise bot...")
+                    logging.info("Trying to initialise bot...")
+                    try:
+                        self.startup()
+                    except IrcLib.ServerConnectionError, x:
+                        logging.exception("Exception: ServerConnectionError during connect!")
+                    else:
+                        self.status = "Connected."
                         try:
-                                self.startup()
+                            self.irclib.receiveDataLooped()     # receiveDataLooped() won't return unless the user requested a quit
+                            break
                         except IrcLib.ServerConnectionError, x:
-                                logging.exception("Exception: ServerConnectionError during connect!")
-                        else:
-                                self.status = "Connected."
-                                try:
-                                        self.irclib.receiveDataLooped()         # receiveDataLooped() won't return unless the user requested a quit
-                                        break
-                                except IrcLib.ServerConnectionError, x:
-                                        logging.exception("Exception: ServerConnectionError in BotManager.run()")
-                                        # will try to reconnect
-                                except IrcLib.IrcError, x:
-                                        logging.exception("Exception: IrcError in BotManager.run()")
-                                        # will try to reconnect
-                                except Exception, x:
-                                        logging.exception("Exception: ")
-                                        self.irclib.sendChannelEmote("is confused and runs away panicking")
-                                        # will not try to reconnect
-                                        break
+                            logging.exception("Exception: ServerConnectionError in BotManager.run()")
+                            # will try to reconnect
+                        except IrcLib.IrcError, x:
+                            logging.exception("Exception: IrcError in BotManager.run()")
+                            # will try to reconnect
+                        except Exception, x:
+                            logging.exception("Exception: ")
+                            self.irclib.sendChannelEmote("is confused and runs away panicking")
+                            # will not try to reconnect
+                            break
 
-                        # wait x seconds before reconnecting
-                        self.status = "Disconnected."
-                        self.shutdown()
-                        time.sleep(self.timeoutBeforeReconnecting)
+                    # wait x seconds before reconnecting
+                    self.status = "Disconnected."
+                    self.shutdown()
+                    time.sleep(self.timeoutBeforeReconnecting)
 
                 self.status = "Shutting down."
                 logging.info("BotManager.run(): Destructing BotManager...")
@@ -333,9 +244,9 @@ class BotManager:
 
 
 if __name__ == "__main__":
-        if(os.name == 'posix'):
-                daemonize.startstop(stdout='logs/rtbot.log',
-                        stderr='logs/rtbot_err.log',
-                        pidfile='rtbot.pid')
-        botManager = BotManager()
-        botManager.run()
+    if(os.name == 'posix'):
+        daemonize.startstop(stdout='logs/rtbot.log',
+            stderr='logs/rtbot_err.log',
+            pidfile='rtbot.pid')
+    botManager = BotManager()
+    botManager.run()
