@@ -126,8 +126,8 @@ class WatchListPlugin:
                         user.dataStore.setAttribute("watchedNicks", watchedNicks)
 
     def isNickAroundCaseInsensitive(self, irclib, target):
-        for user in irclib.getUserList().values():
-            if(user.getCanonicalNick().lower() == target.getCanonicalNick().lower()):
+        for nick in irclib.getUserList().keys():
+            if(nick.lower() == target.lower()):
                 return(True)
         return(False)
 
@@ -162,12 +162,12 @@ class WatchListPlugin:
             
             elif(command == "!waitfornick"):
                 waitedForNicks = source.dataStore.getAttributeDefault("waitedForNicks", [])
-                if(target.getCanonicalNick().lower() in waitedForNicks):
-                    irclib.sendChannelMessage("I'm already waiting for the nick '%s' for you!" % (target.getCanonicalNick()))
+                if(target.lower() in waitedForNicks):
+                    irclib.sendChannelMessage("I'm already waiting for that nick for you!")
                 elif(self.isNickAroundCaseInsensitive(irclib, target)):
                     irclib.sendChannelMessage("Turn around, that person is right behind you! :)")
                 else:
-                    self.waitforNick(source, target.getCanonicalNick().lower())
+                    self.waitforNick(source, target.lower())
                     irclib.sendChannelMessage("Okay %s, I'll tell you when the nick '%s' shows up." % (source.getAdressingName(), target))
             
             elif(command == "!waitforuser"):

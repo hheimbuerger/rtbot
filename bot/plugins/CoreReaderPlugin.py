@@ -1,5 +1,5 @@
 # These imports are only used for the unit-test code, they are ignored when used as a plugin (but all of them are automatically imported by the PluginInterface)
-import re, os
+import re
 
 
 
@@ -21,42 +21,20 @@ class CoreReaderPlugin:
         except IOError:
             return(None)
 
-    def findObject(self, core, objectlist, namekey, searchterm):
-
-        if type(searchterm) == list:
-            searchterm = " ".join(searchterm)
-        
-        exactMatch = [object for object in objectlist \
-                      if searchterm.lower() == object.attribs[namekey].lower()]
-
-
-        if not exactMatch: #look for partial matches
-            possibleMatches = [object for object in objectlist \
-                               if searchterm.lower() in object.attribs[namekey].lower()]
-            if not possibleMatches:
-                return None
-            elif len(possibleMatches) == 1:
-                return possibleMatches[0]
-            else: #multiple matches, get shortest
-                nameCompareLambda = ( lambda x,y : cmp(len(x.attribs[namekey].lower()),
-                                                       len(y.attribs[namekey].lower())))
-                possibleMatches.sort( cmp = nameCompareLambda )
-                return possibleMatches[0]
-        elif len(exactMatch) == 1:
-            return exactMatch[0]
-        else: # len(exactMatch) > 1:
-            #I'm sorry, what?
-            #raise Exception("More than one exact match!")
-            return exactMatch[0]
-    
     def getObjectAttributes(self, core, objectlist, namekey, searchterm):
-        theObject = self.findObject(core, objectlist, namekey, searchterm)
-        if(theObject):
-            result = {}
-            for attrib in theObject.attribs.keys():
-                result[attrib] = str(theObject.attribs[attrib])
-            return result
-        return {}
+        # create the search RE
+        expression = "(.*?)"
+        for word in searchterm.split():
+            expression += re.escape(word) + "(.*?)"
+
+        for object in objectlist: 
+            if re.match(expression, object.attribs[namekey].lower()):
+                result = {}
+                for attrib in object.attribs.keys():
+                    result[attrib] = str(object.attribs[attrib])
+                return(result)
+
+        return([])
 
     def getFormattedOutput(self, attriblist, namekey, displayattribs):
         result = []
@@ -66,28 +44,20 @@ class CoreReaderPlugin:
         return(result)
 
     def getObjectAttributesString(self, core, objectlist, namekey, searchterm):
+        # create the search RE
+        expression = "(.*?)"
+        for word in searchterm.split():
+            expression += re.escape(word) + "(.*?)"
 
-        object = self.findObject(core, objectlist, namekey, searchterm)
-        if(object):
-            result = []
-            for attrib in object.attribs.keys():
-                #filter unintersting details
-                if ("sound" not in attrib) and (attrib != "description") and (not "_id" in attrib) and \
-                   ("mask" not in attrib) and ("next_" not in attrib) and (attrib != "loadout") and \
-                   (attrib != namekey) and (attrib != "pre") and (attrib != "def") and (attrib != "locals") and \
-                   ("offset" not in attrib) and (attrib != "hull_abilities") and (attrib != "hull_abilities_text") and \
-                   ("tech" not in attrib) and (attrib != "hud") and (attrib != "type") and ("ID" not in attrib):
-                        value = object.attribs[attrib]
-                        if(value): #skip empty stuff
-                            if(type(value) == float): #attempt to pretty print
-                                value = "%.1f" % value
-                            attribDisplay = attrib.replace("_", " ")
-                            result.append(attribDisplay + " = " + str(value))
-            if("hull_abilities_text" in object.attribs.keys()):
-                result.append(str(object.attribs["hull_abilities_text"]))
-            return object.attribs[namekey] + ": " + "; ".join(result)
-        else:
-            return "Couldn't find object!"
+        for object in objectlist: 
+            if re.match(expression, object.attribs[namekey].lower()):
+                result = []
+                for attrib in object.attribs.keys():
+                    if((attrib != namekey) and (attrib != "pre") and (attrib != "def") and (attrib != "locals")):
+                        result.append(attrib + "=" + str(object.attribs[attrib]))
+                return(object.attribs[namekey] + ": " + ", ".join(result))
+
+        return("Couldn't find object!")
 
     def onChannelMessage(self, irclib, source, msg):
         if((len(msg.split()) >= 4) and (msg.split()[0] == "core")):
@@ -100,7 +70,8 @@ class CoreReaderPlugin:
                 return
 
             if(command.lower() == "ship"):
-                irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.ships, "name", arguments))
+                for line in self.getFormattedOutput(self.getObjectAttributes(core, reader.ships, "name", arguments), "name", ["description", "hp", "ac", "speed", "thrust", "scan", "sig", "energy", "recharge", "ammo", "missiles", "fuel", "chaff", "cost", "rip_time", "mass", "hull_abilities_text"]):
+                    irclib.sendChannelMessage(line)
             elif(command.lower() == "faction"):
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.factions, "name", arguments))
             elif(command.lower() == "weapon"):
@@ -121,18 +92,12 @@ class CoreReaderPlugin:
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.stations, "name", arguments))
             elif(command.lower() == "chaff"):
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.chaff, "ld_name", arguments))
- #           elif(command.lower() == "tech"): #only interesting for cost
- #               irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.techs, "name", arguments))
+            elif(command.lower() == "tech"):
+                irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.techs, "name", arguments))
             elif(command.lower() == "booster"):
                 irclib.sendChannelMessage(self.getObjectAttributesString(core, reader.boosters, "name", arguments))
 
-        elif msg == "core list":
-            files = [corefile.replace(".igc", "") for corefile in os.listdir("resources/cores/")
-                     if ".igc" in corefile]
-            files = " ".join(files)
-            irclib.sendChannelMessage("Available cores are: " + files)
-            
-        
+
 
 
 

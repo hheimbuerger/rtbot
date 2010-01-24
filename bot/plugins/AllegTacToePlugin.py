@@ -10,7 +10,7 @@ class AllegTacToePlugin:
         self.games = {}
 
     def onChannelMessage(self, irclib, source, msg):
-      if((msg == "!play") or (msg == "!play novice")):
+      if((msg == "play") or (msg == "play novice")):
           if((len(msg.split()) >= 2) and (msg.split()[1] == "novice")):
             irclib.sendChannelMessage("Okay, here we go (easy mode):")
             expertMode = False

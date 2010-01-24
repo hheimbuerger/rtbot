@@ -406,10 +406,7 @@ class ClockPlugin:
         #if(aliasresult and lookupresult and (aliasresult == lookupresult)):
         #    irclib.sendChannelMessage("You can't create an alias to itself.")
         if(aliasresult):
-            if(string.join(alias) == aliasresult[0]):
-                irclib.sendChannelMessage("You can't create the alias '%s', it already exists." % (string.join(alias)))
-            else:
-                irclib.sendChannelMessage("You can't create the alias '%s', it already resolves to '%s'." % (string.join(alias), aliasresult[0]))
+            irclib.sendChannelMessage("You can't create the alias '%s', it already resolves to '%s'." % (string.join(alias), aliasresult[0]))
         elif(lookupresult):
             (target, modifier, zonename) = lookupresult
             #print string.join(alias)

@@ -1,5 +1,7 @@
 "Madurai, Tamil Nadu, India",+0530,no timezone abbreviation
+"Fort-de-France, Martinique",-0400,no timezone abbreviation
 "Tangshan, China",+0800,no timezone abbreviation
+"Hai Phong, Vietnam",+0700,no timezone abbreviation
 "Shenzhen, China",+0800,no timezone abbreviation
 "Detroit, Michigan, United States",-0500,EST - Eastern Standard Time
 "Mobile, Alabama, United States",-0600,CST - Central Standard Time
@@ -10,19 +12,24 @@
 "Victoria, Seychelles",+0400,no timezone abbreviation
 "Richmond, Virginia, United States",-0500,EST - Eastern Standard Time
 "Porto Alegre, Rio Grande do Sul, Brazil",-0200,no timezone abbreviation
+"Tórshavn, Faroe Islands, Faroe Islands",+0000,UTC - Coordinated Universal Time
 "Malang, Java, Indonesia",+0700,no timezone abbreviation
 "Anchorage, Alaska, United States",-0900,AKST - Alaska Standard Time
 "Vancouver, British Columbia, Canada",-0800,PST - Pacific Standard Time
 "Antananarivo, Madagascar",+0300,no timezone abbreviation
 "Port Moresby, Papua New Guinea",+1000,no timezone abbreviation
+"Cayenne, French Guiana",-0300,no timezone abbreviation
 "Riyadh, Saudi Arabia",+0300,no timezone abbreviation
 "Gdansk, Poland",+0100,CET - Central European Time
 "Guatemala, Guatemala",-0600,no timezone abbreviation
 AKDT,-0800,AKDT - Alaska Daylight Time
 "Unalaska, Alaska, United States",-0900,AKST - Alaska Standard Time
 P,-0300,P - Papa Time Zone
+"Limerick, Ireland",+0000,GMT - Greenwich Mean Time
 "Niamey, Niger",+0100,no timezone abbreviation
 "St. Petersburg, Florida, United States",-0500,EST - Eastern Standard Time
+"Brno, Czech Republic",+0100,CET - Central European Time
+"Chisinau, Moldova",+0200,EET - Eastern European Time
 "Belgrade, Serbia",+0100,CET - Central European Time
 "Porto, Portugal",+0000,WET - Western European Time
 "Moroni, Comoros",+0300,no timezone abbreviation
@@ -32,25 +39,24 @@ P,-0300,P - Papa Time Zone
 "Mexicali, Baja California, Mexico",-0800,PST - Pacific Standard Time
 "Pretoria, South Africa",+0200,no timezone abbreviation
 "Stockholm, Sweden",+0100,CET - Central European Time
-"Cebu City, Philippines",+0800,no timezone abbreviation
+"Mamoutzou, Mayotte",+0300,no timezone abbreviation
+"Blanc-Sablon, Quebec, Canada",-0400,AST - Atlantic Standard Time
 "Brasilia, Distrito Federal, Brazil",-0200,no timezone abbreviation
 "Tarawa, Kiribati",+1200,no timezone abbreviation
 "Hangzhou, China",+0800,no timezone abbreviation
 "Tunis, Tunisia",+0100,no timezone abbreviation
-"Fort-de-France, Martinique, France",-0400,no timezone abbreviation
+"Sydney, New South Wales, Australia",+1100,EDT - Eastern Daylight Time
 "Copenhagen, Denmark",+0100,CET - Central European Time
-"Gibraltar, Gibraltar, United Kingdom",+0100,CET - Central European Time
 "Manado, Sulawesi, Indonesia",+0800,no timezone abbreviation
+"Saipan, Northern Mariana Islands",+1000,no timezone abbreviation
 "Ternate, Halmahera, Indonesia",+0900,no timezone abbreviation
 "London, Ontario, Canada",-0500,EST - Eastern Standard Time
-"Karachi, Pakistan",+0500,no timezone abbreviation
-"Kãnpur, Uttar Pradesh, India",+0530,no timezone abbreviation
-"Mamoutzou, Mayotte, France",+0300,no timezone abbreviation
+"Belfast, Northern Ireland, United Kingdom",+0000,GMT - Greenwich Mean Time
 "Lausanne, Switzerland",+0100,CET - Central European Time
 "Edmonton, Alberta, Canada",-0700,MST - Mountain Standard Time
 "Bratislava, Slovak Republic",+0100,CET - Central European Time
 "Anadyr, Russian Federation",+1200,no timezone abbreviation
-"Novgorod, Russian Federation",+0300,no timezone abbreviation
+"Novgorod, Russian Federation",+0300,MSK - Moscow Standard Time
 "Riga, Latvia",+0200,EET - Eastern European Time
 "Sarajevo, Bosnia-Herzegovina",+0100,CET - Central European Time
 "Salzburg, Austria",+0100,CET - Central European Time
@@ -65,21 +71,27 @@ P,-0300,P - Papa Time Zone
 "San Luis Potosi, San Luis Potosí, Mexico",-0600,CST - Central Standard Time
 "Recife, Pernambuco, Brazil",-0300,no timezone abbreviation
 "Atlanta, Georgia, United States",-0500,EST - Eastern Standard Time
-"Rio Branco, Acre, Brazil",-0500,no timezone abbreviation
+"Hefei, China",+0800,no timezone abbreviation
 "Bissau, Guinea Bissau",+0000,UTC - Coordinated Universal Time
 "Nukualofa, Tonga",+1300,no timezone abbreviation
 "Roseau, Dominica",-0400,no timezone abbreviation
 "San Antonio, Texas, United States",-0600,CST - Central Standard Time
 "Kabul, Afghanistan",+0430,no timezone abbreviation
+"Lubango, Angola",+0100,no timezone abbreviation
 "Rarotonga, Cook Islands",-1000,no timezone abbreviation
-"Hamilton, Ontario, Canada",-0500,EST - Eastern Standard Time
 "Kaohsiung, Taiwan",+0800,no timezone abbreviation
+"Willemstad, Netherlands Antilles",-0400,no timezone abbreviation
+"Thiruvananthapuram, Kerala, India",+0530,no timezone abbreviation
+"Tyumen, Russian Federation",+0500,no timezone abbreviation
 "Ankara, Turkey",+0200,EET - Eastern European Time
+"Bacolod, Philippines",+0800,no timezone abbreviation
 "Sao Paulo, São Paulo, Brazil",-0200,no timezone abbreviation
+"Nizhny Novgorod, Russian Federation",+0300,MSK - Moscow Standard Time
 "Montgomery, Alabama, United States",-0600,CST - Central Standard Time
 "Brussels, Belgium",+0100,CET - Central European Time
+"Nuuk, Greenland",-0300,no timezone abbreviation
 W,-1000,W - Whiskey Time Zone
-"Al Jizah, Egypt",+0200,no timezone abbreviation
+"Philadelphia, Pennsylvania, United States",-0500,EST - Eastern Standard Time
 "Louisville, Kentucky, United States",-0500,EST - Eastern Standard Time
 "Jeddah, Saudi Arabia",+0300,no timezone abbreviation
 "Harbin, China",+0800,no timezone abbreviation
@@ -91,12 +103,15 @@ W,-1000,W - Whiskey Time Zone
 "Brazzaville, Congo",+0100,no timezone abbreviation
 "Pune, Maharashtra, India",+0530,no timezone abbreviation
 BST,+0100,BST - British Summer Time
+"Oranjestad, Aruba",-0400,no timezone abbreviation
 "Toronto, Ontario, Canada",-0500,EST - Eastern Standard Time
 "Perm, Russian Federation",+0500,no timezone abbreviation
-"Wroclaw, Poland",+0100,CET - Central European Time
+"Davao, Philippines",+0800,no timezone abbreviation
 "Denpasar, Bali, Indonesia",+0800,no timezone abbreviation
 "Addis Ababa, Ethiopia",+0300,no timezone abbreviation
+"Atyrau, Kazakstan",+0500,no timezone abbreviation
 MDT,-0600,MDT - Mountain Daylight Time
+"Cotonou, Benin",+0100,no timezone abbreviation
 F,+0600,F - Foxtrot Time Zone
 "Dodoma, Tanzania",+0300,no timezone abbreviation
 "Caracas, Venezuela",-0430,no timezone abbreviation
@@ -107,16 +122,18 @@ F,+0600,F - Foxtrot Time Zone
 "Luxembourg, Luxembourg",+0100,CET - Central European Time
 "Andorra La Vella, Andorra",+0100,CET - Central European Time
 V,-0900,V - Victor Time Zone
+"St. Paul, Minnesota, United States",-0600,CST - Central Standard Time
 "Tallinn, Estonia",+0200,EET - Eastern European Time
+"Agadir, Morocco",+0000,UTC - Coordinated Universal Time
 "Lhasa, China",+0800,no timezone abbreviation
+"Castries, Saint Lucia",-0400,no timezone abbreviation
 "Yangon, Myanmar",+0630,no timezone abbreviation
-"Sydney, New South Wales, Australia",+1100,EDT - Eastern Daylight Time
+"Anshan, China",+0800,no timezone abbreviation
+"Chatham Islands, New Zealand",+1245,no timezone abbreviation
 "Ottawa, Ontario, Canada",-0500,EST - Eastern Standard Time
 EDT,-0400,EDT - Eastern Daylight Time
-"Saipan, Northern Mariana Islands, United States",+1000,no timezone abbreviation
 "Kano Nigeria, Nigeria",+0100,no timezone abbreviation
 "Athens, Greece",+0200,EET - Eastern European Time
-"Tórshavn, Faroe Islands, Denmark",+0000,UTC - Coordinated Universal Time
 "Providence, Rhode Island, United States",-0500,EST - Eastern Standard Time
 "Chongqing, China",+0800,no timezone abbreviation
 "San Marino, San Marino",+0100,CET - Central European Time
@@ -124,13 +141,16 @@ EDT,-0400,EDT - Eastern Daylight Time
 "Guadalajara, Jalisco, Mexico",-0600,CST - Central Standard Time
 "Lima, Lima, Peru",-0500,no timezone abbreviation
 "Oslo, Norway",+0100,CET - Central European Time
+"Gibraltar, Gibraltar",+0100,CET - Central European Time
 "Rotterdam, Netherlands",+0100,CET - Central European Time
 "Vilnius, Lithuania",+0200,EET - Eastern European Time
 WEDT,+0100,WEDT - Western European Daylight Time
 "Kingston, Jamaica",-0500,no timezone abbreviation
 EEST,+0300,EEST - Eastern European Summer Time
+"Kingston, Norfolk Island",+1130,NFT - Norfolk (Island) Time
 "Jefferson City, Missouri, United States",-0600,CST - Central Standard Time
 "Ho Chi Minh, Vietnam",+0700,no timezone abbreviation
+"Ludhiana, Punjab, India",+0530,no timezone abbreviation
 "Kaunas, Lithuania",+0200,EET - Eastern European Time
 "St. John's, Newfoundland and Labrador, Canada",-0330,NST - Newfoundland Standard Time
 "Banjul, Gambia",+0000,UTC - Coordinated Universal Time
@@ -142,33 +162,36 @@ A,+0100,A - Alpha Time Zone
 "Luanda, Angola",+0100,no timezone abbreviation
 "Venice, Italy",+0100,CET - Central European Time
 "Bridgetown, Barbados",-0400,no timezone abbreviation
-"Barcelona, Spain",+0100,CET - Central European Time
 HAE,-0400,HAE - Heure Avancée de l'Est
 Q,-0400,Q - Quebec Time Zone
 "Hobart, Tasmania, Australia",+1100,EDT - Eastern Daylight Time
 "Rawaki, Phoenix Islands, Kiribati",+1300,no timezone abbreviation
 "Wellington, New Zealand",+1300,no timezone abbreviation
-"Chittagong, Bangladesh",+0600,no timezone abbreviation
+"Chittagong, Bangladesh",+0700,no timezone abbreviation
 "Juneau, Alaska, United States",-0900,AKST - Alaska Standard Time
 I,+0900,I - India Time Zone
+"Arkhangelsk, Russian Federation",+0300,MSK - Moscow Standard Time
 "Merida, Yucatán, Mexico",-0600,CST - Central Standard Time
 HADT,-0900,HADT - Hawaii-Aleutian Daylight Time
 "Harare, Zimbabwe",+0200,no timezone abbreviation
+"Brades, Montserrat",-0400,AST - Atlantic Standard Time
 "Des Moines, Iowa, United States",-0600,CST - Central Standard Time
 "Guiyang, China",+0800,no timezone abbreviation
 "Managua, Nicaragua",-0600,no timezone abbreviation
-"Porto Novo, Benin",+0100,no timezone abbreviation
+"Canberra, Australian Capital Territory, Australia",+1100,EDT - Eastern Daylight Time
 "London, England, United Kingdom",+0000,GMT - Greenwich Mean Time
+"Medina, Saudi Arabia",+0300,no timezone abbreviation
 "Podgorica, Montenegro",+0100,CET - Central European Time
 "Yokohama, Japan",+0900,no timezone abbreviation
 "Kyiv, Ukraine",+0200,EET - Eastern European Time
 "Jinzhou, China",+0800,no timezone abbreviation
-"Road Town, British Virgin Islands, United Kingdom",-0400,no timezone abbreviation
+"Kãnpur, Uttar Pradesh, India",+0530,no timezone abbreviation
 "Jayapura, Papua, Indonesia",+0900,no timezone abbreviation
 "Delhi, Delhi, India",+0530,no timezone abbreviation
 "Bhubaneshwar, Orissa, India",+0530,no timezone abbreviation
 "Minneapolis, Minnesota, United States",-0600,CST - Central Standard Time
 "Hartford, Connecticut, United States",-0500,EST - Eastern Standard Time
+"Rasht, Iran",+0330,no timezone abbreviation
 HAP,-0700,HAP - Heure Avancée du Pacifique
 "Palikir, Ponape, Micronesia",+1100,no timezone abbreviation
 "Maputo, Mozambique",+0200,no timezone abbreviation
@@ -177,14 +200,13 @@ HAP,-0700,HAP - Heure Avancée du Pacifique
 PDT,-0700,PDT - Pacific Daylight Time
 "La Coruña, Spain",+0100,CET - Central European Time
 "Gatineau, Quebec, Canada",-0500,EST - Eastern Standard Time
-"The Valley, Anguilla, United Kingdom",-0400,no timezone abbreviation
 "Yaoundé, Cameroon",+0100,no timezone abbreviation
 "Johannesburg, South Africa",+0200,no timezone abbreviation
-"Yuzhno-Sakhalinsk, Russian Federation",+1000,no timezone abbreviation
+"Aleppo, Syria",+0200,no timezone abbreviation
 "Singapore, Singapore",+0800,no timezone abbreviation
 "Colombo, Sri Lanka",+0530,no timezone abbreviation
-"Little Rock, Arkansas, United States",-0600,CST - Central Standard Time
-"Tirane, Albania",+0100,CET - Central European Time
+"Lucknow, Uttar Pradesh, India",+0530,no timezone abbreviation
+"Port-aux-Francais, Kerguelen Islands",+0500,no timezone abbreviation
 "Yaren, Nauru",+1200,no timezone abbreviation
 L,+1100,L - Lima Time Zone
 "Yellowknife, Northwest Territories, Canada",-0700,MST - Mountain Standard Time
@@ -196,6 +218,7 @@ L,+1100,L - Lima Time Zone
 "Cincinnati, Ohio, United States",-0500,EST - Eastern Standard Time
 NST,-0330,NST - Newfoundland Standard Time
 "Hamburg, Hamburg, Germany",+0100,CET - Central European Time
+"Saint-Pierre, Saint Pierre and Miquelon",-0300,no timezone abbreviation
 "Pittsburgh, Pennsylvania, United States",-0500,EST - Eastern Standard Time
 "Sofia, Bulgaria",+0200,EET - Eastern European Time
 "Mataram, Lombok, Indonesia",+0800,no timezone abbreviation
@@ -204,20 +227,21 @@ NST,-0330,NST - Newfoundland Standard Time
 "Billings, Montana, United States",-0700,MST - Mountain Standard Time
 "Lahore, Pakistan",+0500,no timezone abbreviation
 "Fukuoka, Japan",+0900,no timezone abbreviation
-"Khulna, Bangladesh",+0600,no timezone abbreviation
+"Khulna, Bangladesh",+0700,no timezone abbreviation
 "Port Vila, Vanuatu",+1100,no timezone abbreviation
 "New Delhi, Delhi, India",+0530,no timezone abbreviation
 "Varanasi, Uttar Pradesh, India",+0530,no timezone abbreviation
 "Bismarck, North Dakota, United States",-0600,CST - Central Standard Time
+"Cheboksary, Russian Federation",+0300,MSK - Moscow Standard Time
 "Dakar, Senegal",+0000,UTC - Coordinated Universal Time
 "Saint John's, Antigua and Barbuda",-0400,no timezone abbreviation
 "Paris, France",+0100,CET - Central European Time
-"Rosario, Santa Fe, Argentina",-0200,no timezone abbreviation
-"Perth, Western Australia, Australia",+0900,WDT - Western Daylight Time
+"Rosario, Santa Fe, Argentina",-0300,no timezone abbreviation
+"Perth, Western Australia, Australia",+0800,WST - Western Standard Time
 "Yekaterinburg, Russian Federation",+0500,no timezone abbreviation
 "Omsk, Russian Federation",+0600,no timezone abbreviation
 "Kaliningrad, Russian Federation",+0200,EET - Eastern European Time
-"Santa Ana, El Salvador",-0600,no timezone abbreviation
+"Panama, Panama",-0500,no timezone abbreviation
 "Almaty, Kazakstan",+0600,no timezone abbreviation
 "Milan, Italy",+0100,CET - Central European Time
 "Zürich, Switzerland",+0100,CET - Central European Time
@@ -237,23 +261,26 @@ CST,-0600,CST - Central Standard Time
 "Bangalore, Karnataka, India",+0530,no timezone abbreviation
 "Malabo, Equatorial Guinea",+0100,no timezone abbreviation
 "Oklahoma City, Oklahoma, United States",-0600,CST - Central Standard Time
+"Makati, Philippines",+0800,no timezone abbreviation
 "Foochow, China",+0800,no timezone abbreviation
 "Noumea, New Caledonia, France",+1100,no timezone abbreviation
 "Kathmandu, Nepal",+0545,no timezone abbreviation
 "Melbourne, Victoria, Australia",+1100,EDT - Eastern Daylight Time
+"Sri Jayawardenapura Kotte, Sri Lanka",+0530,no timezone abbreviation
 "Tehran, Iran",+0330,no timezone abbreviation
 "Gaborone, Botswana",+0200,no timezone abbreviation
 "Chihuahua, Chihuahua, Mexico",-0700,MST - Mountain Standard Time
 "San Diego, California, United States",-0800,PST - Pacific Standard Time
 "Port Louis, Mauritius",+0400,no timezone abbreviation
 "Helena, Montana, United States",-0700,MST - Mountain Standard Time
-"Moscow, Russian Federation",+0300,no timezone abbreviation
+"Moscow, Russian Federation",+0300,MSK - Moscow Standard Time
 IST,+0100,IST - Irish Summer Time
 MESZ,+0200,MESZ - Mitteleuroäische Sommerzeit
-"Mendoza, Mendoza, Argentina",-0200,no timezone abbreviation
+"Mendoza, Mendoza, Argentina",-0300,no timezone abbreviation
 "Boise, Idaho, United States",-0700,MST - Mountain Standard Time
 "Cape Town, South Africa",+0200,no timezone abbreviation
 AWST,+0800,AWST - Australian Western Standard Time
+"Rawalpindi, Pakistan",+0500,no timezone abbreviation
 "Sioux Falls, South Dakota, United States",-0600,CST - Central Standard Time
 AST,-0400,AST - Atlantic Standard Time
 "Zibo, China",+0800,no timezone abbreviation
@@ -261,7 +288,6 @@ AST,-0400,AST - Atlantic Standard Time
 "Bastia, Corsica, France",+0100,CET - Central European Time
 "Manaus, Amazonas, Brazil",-0400,no timezone abbreviation
 "Muscat, Oman",+0400,no timezone abbreviation
-"Pristina, Kosovo, Serbia",+0100,CET - Central European Time
 B,+0200,B - Bravo Time Zone
 NFT,+1130,NFT - Norfolk (Island) Time
 "Monrovia, Liberia",+0000,UTC - Coordinated Universal Time
@@ -270,6 +296,8 @@ NFT,+1130,NFT - Norfolk (Island) Time
 R,-0500,R - Romeo Time Zone
 HAST,-1000,HAST - Hawaii-Aleutian Standard Time
 "Georgetown, Guyana",-0400,no timezone abbreviation
+"Bursa, Turkey",+0200,EET - Eastern European Time
+"The Valley, Anguilla",-0400,no timezone abbreviation
 "Sialkot, Pakistan",+0500,no timezone abbreviation
 "Columbia, South Carolina, United States",-0500,EST - Eastern Standard Time
 "Concord, New Hampshire, United States",-0500,EST - Eastern Standard Time
@@ -278,46 +306,46 @@ HAST,-1000,HAST - Hawaii-Aleutian Standard Time
 "Suva, Fiji",+1200,no timezone abbreviation
 "Riverside, California, United States",-0800,PST - Pacific Standard Time
 "Bangui, Central African Republic",+0100,no timezone abbreviation
-"Salta, Salta, Argentina",-0200,no timezone abbreviation
-"Adamstown, Pitcairn Islands, United Kingdom",-0800,no timezone abbreviation
+"Salta, Salta, Argentina",-0300,no timezone abbreviation
+"Baton Rouge, Louisiana, United States",-0600,CST - Central Standard Time
 "Markham, Ontario, Canada",-0500,EST - Eastern Standard Time
+M,+1200,M - Mike Time Zone
 "Luoyang, China",+0800,no timezone abbreviation
 "Singaraja, Bali, Indonesia",+0800,no timezone abbreviation
-"Albany, New York, United States",-0500,EST - Eastern Standard Time
+"Lanzhou, China",+0800,no timezone abbreviation
 "Lubumbashi, Democratic Republic of the Congo",+0200,no timezone abbreviation
 "Tijuana, Baja California, Mexico",-0800,PST - Pacific Standard Time
 "Thimphu, Bhutan",+0600,no timezone abbreviation
+"Gambier Islands, French Polynesia",-0900,no timezone abbreviation
 "Lisbon, Portugal",+0000,WET - Western European Time
 "Iqaluit, Nunavut Territory, Canada",-0500,EST - Eastern Standard Time
-"Chatham Island, New Zealand",+1245,no timezone abbreviation
 "Seattle, Washington, United States",-0800,PST - Pacific Standard Time
 "Edinburgh, Scotland, United Kingdom",+0000,GMT - Greenwich Mean Time
 "Amman, Jordan",+0200,no timezone abbreviation
+"Karachi, Pakistan",+0500,no timezone abbreviation
 "Calgary, Alberta, Canada",-0700,MST - Mountain Standard Time
+"Yakutsk, Russian Federation",+0900,no timezone abbreviation
 "Lord Howe Island, Lord Howe Island, Australia",+1100,no timezone abbreviation
 AKST,-0900,AKST - Alaska Standard Time
-"Odesa, Ukraine",+0200,EET - Eastern European Time
 "Carson City, Nevada, United States",-0800,PST - Pacific Standard Time
 CEST,+0200,CEST - Central European Summer Time
 "Longueuil, Quebec, Canada",-0500,EST - Eastern Standard Time
-"Hamilton, Bermuda, United Kingdom",-0400,no timezone abbreviation
 "Monterrey, Nuevo León, Mexico",-0600,CST - Central Standard Time
 "Cancún, Quintana Roo, Mexico",-0600,CST - Central Standard Time
 "Madison, Wisconsin, United States",-0600,CST - Central Standard Time
+"Porto Novo, Benin",+0100,no timezone abbreviation
 "Kingstown, Saint Vincent and Grenadines",-0400,no timezone abbreviation
 "Nice, France",+0100,CET - Central European Time
 "Kawasaki, Japan",+0900,no timezone abbreviation
 "Las Vegas, Nevada, United States",-0800,PST - Pacific Standard Time
-M,+1200,M - Mike Time Zone
-"Kishinev, Moldova",+0200,EET - Eastern European Time
+"Pago Pago, American Samoa",-1100,no timezone abbreviation
+"Eucla, Western Australia, Australia",+0845,no timezone abbreviation
 "Montevideo, Uruguay",-0200,no timezone abbreviation
-"Aqtau, Kazakstan",+0500,no timezone abbreviation
+"Palma, Majorca, Spain",+0100,CET - Central European Time
 "Auckland, New Zealand",+1300,no timezone abbreviation
 "Aden, Yemen",+0300,no timezone abbreviation
 "Virginia Beach, Virginia, United States",-0500,EST - Eastern Standard Time
-"Hong Kong, China",+0800,no timezone abbreviation
-"Saint-Petersburg, Russian Federation",+0300,no timezone abbreviation
-"Canberra, Australian Capital Territory, Australia",+1100,EDT - Eastern Daylight Time
+"Saint-Petersburg, Russian Federation",+0300,MSK - Moscow Standard Time
 "Pyongyang, North Korea",+0900,no timezone abbreviation
 "Darwin, Northern Territory, Australia",+0930,CST - Central Standard Time
 "Beijing, China",+0800,no timezone abbreviation
@@ -325,7 +353,9 @@ M,+1200,M - Mike Time Zone
 "Long Beach, California, United States",-0800,PST - Pacific Standard Time
 "Mumbai, Maharashtra, India",+0530,no timezone abbreviation
 "Dubai, Dubai, United Arab Emirates",+0400,no timezone abbreviation
+"Barcelona, Barcelona, Spain",+0100,CET - Central European Time
 "Majuro, Marshall Islands",+1200,no timezone abbreviation
+"Cebu City, Philippines",+0800,no timezone abbreviation
 "Funchal, Madeira, Portugal",+0000,UTC - Coordinated Universal Time
 "Cali, Colombia",-0500,no timezone abbreviation
 "Taegu, South Korea",+0900,no timezone abbreviation
@@ -335,15 +365,13 @@ M,+1200,M - Mike Time Zone
 "Kigali, Rwanda",+0200,no timezone abbreviation
 "Toledo, Ohio, United States",-0500,EST - Eastern Standard Time
 "Rabat, Morocco",+0000,UTC - Coordinated Universal Time
-"Stanley, Falkland Islands, United Kingdom",-0300,no timezone abbreviation
 "Mbabane, Swaziland",+0200,no timezone abbreviation
 "Port-au-Prince, Haiti",-0500,no timezone abbreviation
 "Pusan, South Korea",+0900,no timezone abbreviation
-"Guam, Mariana Islands, United States",+1000,no timezone abbreviation
-"Brades, Montserrat, United Kingdom",-0400,no timezone abbreviation
-"Oranjestad, Aruba, Netherlands",-0400,no timezone abbreviation
+"George Town, Cayman Islands",-0500,EST - Eastern Standard Time
 "Sendai, Japan",+0900,no timezone abbreviation
 "Halifax, Nova Scotia, Canada",-0400,AST - Atlantic Standard Time
+"Shenyang, China",+0800,no timezone abbreviation
 H,+0800,H - Hotel Time Zone
 "Bujumbura, Burundi",+0200,no timezone abbreviation
 "Rome, Italy",+0100,CET - Central European Time
@@ -356,7 +384,7 @@ WET,+0000,WET - Western European Time
 X,-1100,X - X-ray Time Zone
 HAR,-0600,HAR - Heure Avancée des Rocheuses
 HAT,-0230,HAT - Heure Avancée de Terre-Neuve
-"Honolulu, Hawaii, United States",-1000,no timezone abbreviation
+"Honolulu, Hawaii, United States",-1000,HAST - Hawaii-Aleutian Standard Time
 "Dushanbe, Tajikistan",+0500,no timezone abbreviation
 "Tianjin, China",+0800,no timezone abbreviation
 "Santo Domingo, Dominican Republic",-0400,no timezone abbreviation
@@ -374,9 +402,10 @@ C,+0300,C - Charlie Time Zone
 "Surrey, British Columbia, Canada",-0800,PST - Pacific Standard Time
 "Galapagos Islands, Ecuador",-0600,no timezone abbreviation
 "Alofi, Niue",-1100,no timezone abbreviation
-"Mar del Plata, Buenos Aires, Argentina",-0200,no timezone abbreviation
+"Mar del Plata, Buenos Aires, Argentina",-0300,no timezone abbreviation
 "Kuwait City, Kuwait",+0300,no timezone abbreviation
 "Samara, Russian Federation",+0400,no timezone abbreviation
+"Rapid City, South Dakota, United States",-0700,MST - Mountain Standard Time
 "The Settlement, Christmas Island, Australia",+0700,CXT - Christmas Island Time
 "San Francisco, California, United States",-0800,PST - Pacific Standard Time
 "San Jose, Costa Rica",-0600,no timezone abbreviation
@@ -390,14 +419,14 @@ K,+1000,K - Kilo Time Zone
 "Easter Island, Chile",-0500,no timezone abbreviation
 CET,+0100,CET - Central European Time
 "Mesa, Arizona, United States",-0700,MST - Mountain Standard Time
-"Surat, Gujarat, India",+0530,no timezone abbreviation
+"Rio Branco, Acre, Brazil",-0400,no timezone abbreviation
 "Ambon, Seram, Indonesia",+0900,no timezone abbreviation
 "Montreal, Quebec, Canada",-0500,EST - Eastern Standard Time
 "Makkah, Saudi Arabia",+0300,no timezone abbreviation
 "Monaco, Monaco",+0100,CET - Central European Time
+"Nanjing, China",+0800,no timezone abbreviation
 "Patna, Bihar, India",+0530,no timezone abbreviation
-"Baton Rouge, Louisiana, United States",-0600,CST - Central Standard Time
-"Georgetown, Grand Cayman, United Kingdom",-0500,no timezone abbreviation
+"Albany, New York, United States",-0500,EST - Eastern Standard Time
 "Abuja, Nigeria",+0100,no timezone abbreviation
 S,-0600,S - Sierra Time Zone
 "Doha, Qatar",+0300,no timezone abbreviation
@@ -409,6 +438,7 @@ PST,-0800,PST - Pacific Standard Time
 HNA,-0400,HNA - Heure Normale de l'Atlantique
 "Christchurch, New Zealand",+1300,no timezone abbreviation
 HNE,-0500,HNE - Heure Normale de l'Est
+"Chiang Mai, Thailand",+0700,no timezone abbreviation
 HNP,-0800,HNP - Heure Normale du Pacifique
 UTC,+0000,UTC - Coordinated Universal Time
 HNR,-0700,HNR - Heure Normale des Rocheuses
@@ -416,7 +446,7 @@ HNR,-0700,HNR - Heure Normale des Rocheuses
 HNT,-0330,HNT - Heure Normale de Terre-Neuve
 "La Paz, Bolivia",-0400,no timezone abbreviation
 HNY,-0900,HNY - Heure Normale du Yukon
-"Cayenne, French Guiana, France",-0300,no timezone abbreviation
+"Stanley, Falkland Islands",-0300,no timezone abbreviation
 "Chelyabinsk, Russian Federation",+0500,no timezone abbreviation
 "Lagos, Nigeria",+0100,no timezone abbreviation
 "Berlin, Berlin, Germany",+0100,CET - Central European Time
@@ -448,39 +478,40 @@ NDT,-0230,NDT - Newfoundland Daylight Time
 "Kolkata, West Bengal, India",+0530,no timezone abbreviation
 "San Salvador, El Salvador",-0600,no timezone abbreviation
 "St. Louis, Missouri, United States",-0600,CST - Central Standard Time
-"Kingston, Norfolk Island, Australia",+1130,NFT - Norfolk (Island) Time
-"Belfast, Northern Ireland, United Kingdom",+0000,GMT - Greenwich Mean Time
+"Arlington, Texas, United States",-0600,CST - Central Standard Time
 CDT,-0500,CDT - Central Daylight Time
 "El Aaiún, Western Sahara",+0000,UTC - Coordinated Universal Time
+MSK,+0300,MSK - Moscow Standard Time
 "Sacramento, California, United States",-0800,PST - Pacific Standard Time
 "Sapporo, Japan",+0900,no timezone abbreviation
 "Mississauga, Ontario, Canada",-0500,EST - Eastern Standard Time
 "Albuquerque, New Mexico, United States",-0700,MST - Mountain Standard Time
 "Ouagadougou, Burkina Faso",+0000,UTC - Coordinated Universal Time
 "Quito, Ecuador",-0500,no timezone abbreviation
+"Kiritimati, Christmas Island, Kiribati",+1400,no timezone abbreviation
 "Tegucigalpa, Honduras",-0600,no timezone abbreviation
 G,+0700,G - Golf Time Zone
-"Port-aux-Francais, Kerguelen, France",+0500,no timezone abbreviation
+"Valletta, Malta",+0100,CET - Central European Time
+"Ryazan, Russian Federation",+0300,MSK - Moscow Standard Time
 WST,+0800,WST - Western Standard Time
 "Santiago, Chile",-0300,no timezone abbreviation
 "Paramaribo, Suriname",-0300,no timezone abbreviation
 "San Jose, California, United States",-0800,PST - Pacific Standard Time
-"Ludhiana, Punjab, India",+0530,no timezone abbreviation
+"Quezon, Philippines",+0800,no timezone abbreviation
 "Port of Spain, Trinidad and Tobago",-0400,no timezone abbreviation
 "Kowloon, China",+0800,no timezone abbreviation
 "Salvador, Bahia, Brazil",-0300,no timezone abbreviation
+"Midway, Midway Islands, United States",-1100,no timezone abbreviation
 "Mazatlan, Sinaloa, Mexico",-0700,MST - Mountain Standard Time
 "Novosibirsk, Russian Federation",+0600,no timezone abbreviation
 "Laval, Quebec, Canada",-0500,EST - Eastern Standard Time
 "Bandung, Java, Indonesia",+0700,no timezone abbreviation
 "Osaka, Japan",+0900,no timezone abbreviation
-"Murmansk, Russian Federation",+0300,no timezone abbreviation
+"Murmansk, Russian Federation",+0300,MSK - Moscow Standard Time
 "Taiyuan, China",+0800,no timezone abbreviation
-"Valletta, Malta",+0100,CET - Central European Time
 "Kunming, China",+0800,no timezone abbreviation
 "Buffalo, New York, United States",-0500,EST - Eastern Standard Time
 "Vatican City, Vatican City State",+0100,CET - Central European Time
-"Pago Pago, American Samoa, United States",-1100,no timezone abbreviation
 "Miami, Florida, United States",-0500,EST - Eastern Standard Time
 "San Juan, Puerto Rico",-0400,no timezone abbreviation
 "Vladivostok, Russian Federation",+1000,no timezone abbreviation
@@ -488,38 +519,42 @@ WST,+0800,WST - Western Standard Time
 Y,-1200,Y - Yankee Time Zone
 "Brampton, Ontario, Canada",-0500,EST - Eastern Standard Time
 "Norfolk, Virginia, United States",-0500,EST - Eastern Standard Time
+"Road Town, British Virgin Islands",-0400,no timezone abbreviation
+"Neuquén, Neuquén, Argentina",-0300,no timezone abbreviation
 "Papeete, Tahiti, France",-1000,no timezone abbreviation
 "Visakhapatnam, Andhra Pradesh, India",+0530,no timezone abbreviation
 "Indore, Madhya Pradesh, India",+0530,no timezone abbreviation
 "Dalian, China",+0800,no timezone abbreviation
 "Raleigh, North Carolina, United States",-0500,EST - Eastern Standard Time
 "Ljubljana, Slovenia",+0100,CET - Central European Time
-"Gambier Islands, French Polynesia, France",-0900,no timezone abbreviation
+"Odesa, Ukraine",+0200,EET - Eastern European Time
 "Prague, Czech Republic",+0100,CET - Central European Time
+"Nanning, China",+0800,no timezone abbreviation
 "Chicago, Illinois, United States",-0600,CST - Central Standard Time
 "Faisalabad, Pakistan",+0500,no timezone abbreviation
 "Sucre, Bolivia",-0400,no timezone abbreviation
 "Krasnoyarsk, Russian Federation",+0700,no timezone abbreviation
 "Peshawar, Pakistan",+0500,no timezone abbreviation
 "Pensacola, Florida, United States",-0600,CST - Central Standard Time
+"Mombasa, Kenya",+0300,no timezone abbreviation
 "Asmara, Eritrea",+0300,no timezone abbreviation
+"Adamstown, Pitcairn, Henderson, Ducie and Oeno Islands",-0800,no timezone abbreviation
 HNC,-0600,HNC - Heure Normale du Centre
 "Medellin, Colombia",-0500,no timezone abbreviation
 WDT,+0900,WDT - Western Daylight Time
 "Apia, Samoa",-1100,no timezone abbreviation
 "Jacksonville, Florida, United States",-0500,EST - Eastern Standard Time
 EEDT,+0300,EEDT - Eastern European Daylight Time
-"Kiritimati, Christmas Islands, Kiribati",+1400,no timezone abbreviation
-"Harrisburg, Pennsylvania, United States",-0500,EST - Eastern Standard Time
+"Changsha, China",+0800,no timezone abbreviation
 "Yamoussoukro, Cote d'Ivoire (Ivory Coast)",+0000,UTC - Coordinated Universal Time
 "Hyderãbãd, Andhra Pradesh, India",+0530,no timezone abbreviation
-"Philadelphia, Pennsylvania, United States",-0500,EST - Eastern Standard Time
+"Al Jizah, Egypt",+0200,no timezone abbreviation
 "Lexington-Fayette, Kentucky, United States",-0500,EST - Eastern Standard Time
+"Saint Helier, Jersey, United Kingdom",+0000,GMT - Greenwich Mean Time
 "Agra, Uttar Pradesh, India",+0530,no timezone abbreviation
 "Taipei, Taiwan",+0800,no timezone abbreviation
 "Tampa, Florida, United States",-0500,EST - Eastern Standard Time
 "Balikpapan, Kalimantan, Indonesia",+0800,no timezone abbreviation
-"Macau, China",+0800,no timezone abbreviation
 D,+0400,D - Delta Time Zone
 "Glasgow, Scotland, United Kingdom",+0000,GMT - Greenwich Mean Time
 "Minsk, Belarus",+0200,EET - Eastern European Time
@@ -530,41 +565,43 @@ T,-0700,T - Tango Time Zone
 "Manila, Philippines",+0800,no timezone abbreviation
 "Indianapolis, Indiana, United States",-0500,EST - Eastern Standard Time
 CXT,+0700,CXT - Christmas Island Time
-"Changsha, China",+0800,no timezone abbreviation
+"Harrisburg, Pennsylvania, United States",-0500,EST - Eastern Standard Time
 ACDT,+1030,ACDT - Australian Central Daylight Time
+"Guam, Guam",+1000,no timezone abbreviation
 "Windsor, Ontario, Canada",-0500,EST - Eastern Standard Time
 "Nagoya, Japan",+0900,no timezone abbreviation
 "Regina, Saskatchewan, Canada",-0600,CST - Central Standard Time
 "Naples, Italy",+0100,CET - Central European Time
-"Nicosia, Cyprus",+0200,no timezone abbreviation
+"Hamilton, Bermuda Islands",-0400,no timezone abbreviation
 "Sian, China",+0800,no timezone abbreviation
+"Anantapur, Andhra Pradesh, India",+0530,no timezone abbreviation
 "Fushun, China",+0800,no timezone abbreviation
 "Surakarta, Java, Indonesia",+0700,no timezone abbreviation
-"Basse-Terre, Guadeloupe, France",-0400,no timezone abbreviation
 "Zhengzhou, China",+0800,no timezone abbreviation
 "Gaza, Gaza Strip",+0200,no timezone abbreviation
-"Tucumán, Tucumán, Argentina",-0200,no timezone abbreviation
-"Vadodara, Gujarat, India",+0530,no timezone abbreviation
+"Nicosia, Cyprus",+0200,no timezone abbreviation
+"Barnaul, Russian Federation",+0600,no timezone abbreviation
+"Kryvyi Rih, Ukraine",+0200,EET - Eastern European Time
 EET,+0200,EET - Eastern European Time
 "Düsseldorf, North Rhine-Westphalia, Germany",+0100,CET - Central European Time
 "Vienna, Austria",+0100,CET - Central European Time
 "Veracruz, Veracruz, Mexico",-0600,CST - Central Standard Time
 "Saint George's, Grenada",-0400,no timezone abbreviation
 "Alexandria, Egypt",+0200,no timezone abbreviation
-"St. Paul, Minnesota, United States",-0600,CST - Central Standard Time
+"Hanoi, Vietnam",+0700,no timezone abbreviation
 "New York, New York, United States",-0500,EST - Eastern Standard Time
+"Pristina, Kosovo",+0100,CET - Central European Time
 "Esfahãn, Iran",+0330,no timezone abbreviation
-"Palma, Majorca, Spain",+0100,CET - Central European Time
 "Endeh, Flores, Indonesia",+0800,no timezone abbreviation
 "Shanghai, China",+0800,no timezone abbreviation
 "Kyoto, Japan",+0900,no timezone abbreviation
 "Praia, Cape Verde",-0100,no timezone abbreviation
 "Bethlehem, West Bank",+0200,no timezone abbreviation
 "Mogadishu, Somalia",+0300,no timezone abbreviation
-"Willemstad, Netherlands Antilles, Netherlands",-0400,no timezone abbreviation
 "Raba, Sumbawa, Indonesia",+0800,no timezone abbreviation
 "Taiohae, Marquesas Islands, France",-0930,no timezone abbreviation
 "Columbus, Ohio, United States",-0500,EST - Eastern Standard Time
+"Alicante, Spain",+0100,CET - Central European Time
 "Choibalsan, Mongolia",+0800,no timezone abbreviation
 "Whitehorse, Yukon Territory, Canada",-0800,PST - Pacific Standard Time
 "Newark, New Jersey, United States",-0500,EST - Eastern Standard Time
@@ -582,7 +619,7 @@ O,-0200,O - Oscar Time Zone
 "Victoria, British Columbia, Canada",-0800,PST - Pacific Standard Time
 "Milwaukee, Wisconsin, United States",-0600,CST - Central Standard Time
 "Santa Fe, New Mexico, United States",-0700,MST - Mountain Standard Time
-"Anshan, China",+0800,no timezone abbreviation
+"Hamilton, Ontario, Canada",-0500,EST - Eastern Standard Time
 "Lusaka, Zambia",+0200,no timezone abbreviation
 "San Bernardino, California, United States",-0800,PST - Pacific Standard Time
 "Jilin, China",+0800,no timezone abbreviation
@@ -590,48 +627,60 @@ O,-0200,O - Oscar Time Zone
 HAA,-0300,HAA - Heure Avancée de l'Atlantique
 "New Orleans, Louisiana, United States",-0600,CST - Central Standard Time
 "Szczecin, Poland",+0100,CET - Central European Time
-"La Plata, Buenos Aires, Argentina",-0200,no timezone abbreviation
+"La Plata, Buenos Aires, Argentina",-0300,no timezone abbreviation
 "Adelaide, South Australia, Australia",+0930,CDT - Central Daylight Time
 "Aguascalientes, Aguascalientes, Mexico",-0600,CST - Central Standard Time
 "Basra, Iraq",+0300,no timezone abbreviation
 "Tsingtao, China",+0800,no timezone abbreviation
+"Midland, Texas, United States",-0600,CST - Central Standard Time
 "Dallas, Texas, United States",-0600,CST - Central Standard Time
-"Lucknow, Uttar Pradesh, India",+0530,no timezone abbreviation
+"Little Rock, Arkansas, United States",-0600,CST - Central Standard Time
 "Anaheim, California, United States",-0800,PST - Pacific Standard Time
-"Buenos Aires, Argentina",-0200,no timezone abbreviation
+"Buenos Aires, Argentina",-0300,no timezone abbreviation
 "Honiara, Solomon Islands",+1100,no timezone abbreviation
 AEDT,+1100,AEDT - Australian Eastern Daylight Time or Australian Eastern Summer Time
 "Saint John, New Brunswick, Canada",-0400,AST - Atlantic Standard Time
 "Bandar Seri Begawan, Brunei Darussalam",+0800,no timezone abbreviation
 "Québec, Quebec, Canada",-0500,EST - Eastern Standard Time
 "Incheon, South Korea",+0900,no timezone abbreviation
+"Tucumán, Tucumán, Argentina",-0300,no timezone abbreviation
 "Stockton, California, United States",-0800,PST - Pacific Standard Time
+"Vadodara, Gujarat, India",+0530,no timezone abbreviation
 "Tashkent, Uzbekistan",+0500,no timezone abbreviation
 HAC,-0500,HAC - Heure Avancée du Centre
+"Wroclaw, Poland",+0100,CET - Central European Time
+"Surat, Gujarat, India",+0530,no timezone abbreviation
+"Annapolis, Maryland, United States",-0500,EST - Eastern Standard Time
 ADT,-0300,ADT - Atlantic Daylight Time
 "Ashgabat, Turkmenistan",+0500,no timezone abbreviation
-"Nuuk, Greenland, Denmark",-0300,no timezone abbreviation
+"Yuzhno-Sakhalinsk, Russian Federation",+1000,no timezone abbreviation
 "Jaipur, Rajasthan, India",+0530,no timezone abbreviation
-"Castries, Saint Lucia",-0400,no timezone abbreviation
+"Aqtau, Kazakstan",+0500,no timezone abbreviation
 "Dover, Delaware, United States",-0500,EST - Eastern Standard Time
 "Saint-Denis, Reunion (French)",+0400,no timezone abbreviation
 "Male, Maldives",+0500,no timezone abbreviation
 "Windhoek, Namibia",+0200,no timezone abbreviation
+"Hong Kong, Hong Kong",+0800,no timezone abbreviation
 Z,+0000,Z - Zulu Time Zone
 "Kamchatka, Russian Federation",+1200,no timezone abbreviation
 "Guayaquil, Ecuador",-0500,no timezone abbreviation
 GMT,+0000,GMT - Greenwich Mean Time
+"Tirane, Albania",+0100,CET - Central European Time
 AWDT,+0900,AWDT - Australian Western Daylight Time
 "Warsaw, Poland",+0100,CET - Central European Time
 "Seoul, South Korea",+0900,no timezone abbreviation
+"Kaduna, Nigeria",+0100,no timezone abbreviation
 "Rio de Janeiro, Rio de Janeiro, Brazil",-0200,no timezone abbreviation
 MEZ,+0100,MEZ - Mitteleuropäische Zeit
+"Basse-Terre, Guadeloupe",-0400,no timezone abbreviation
 "Lome, Togo",+0000,UTC - Coordinated Universal Time
 MST,-0700,MST - Mountain Standard Time
 "Ndjamena, Chad",+0100,no timezone abbreviation
 AEST,+1000,AEST - Australian Eastern Standard Time
 "Dublin, Ireland",+0000,GMT - Greenwich Mean Time
 "Khartoum, Sudan",+0300,no timezone abbreviation
+"Macau, Macau",+0800,no timezone abbreviation
+MSD,+0400,MSD - Moscow Daylight Time
 "Bucharest, Romania",+0200,EET - Eastern European Time
 "Nashville, Tennessee, United States",-0600,CST - Central Standard Time
 "Poznan, Poland",+0100,CET - Central European Time
@@ -644,10 +693,10 @@ ACST,+0930,ACST - Australian Central Standard Time
 "Helsinki, Finland",+0200,EET - Eastern European Time
 "Winnipeg, Manitoba, Canada",-0600,CST - Central Standard Time
 "Maseru, Lesotho",+0200,no timezone abbreviation
-"Hanoi, Vietnam",+0700,no timezone abbreviation
 CEDT,+0200,CEDT - Central European Daylight Time
 "Topeka, Kansas, United States",-0600,CST - Central Standard Time
 "Djibouti, Djibouti",+0300,no timezone abbreviation
+"Hohhot, China",+0800,no timezone abbreviation
 "Trenton, New Jersey, United States",-0500,EST - Eastern Standard Time
 "Accra, Ghana",+0000,UTC - Coordinated Universal Time
 "Freetown, Sierra Leone",+0000,UTC - Coordinated Universal Time
@@ -658,11 +707,10 @@ E,+0500,E - Echo Time Zone
 "Khon Kaen, Thailand",+0700,no timezone abbreviation
 "Fort Worth, Texas, United States",-0600,CST - Central Standard Time
 U,-0800,U - Uniform Time Zone
-"Arlington, Texas, United States",-0600,CST - Central Standard Time
 "Frankfort, Kentucky, United States",-0500,EST - Eastern Standard Time
-"Kazan, Russian Federation",+0300,no timezone abbreviation
+"Kazan, Russian Federation",+0300,MSK - Moscow Standard Time
 "Dili, Timor-Leste",+0900,no timezone abbreviation
-"Dhaka, Bangladesh",+0600,no timezone abbreviation
+"Dhaka, Bangladesh",+0700,no timezone abbreviation
 "Fresno, California, United States",-0800,PST - Pacific Standard Time
 "Birmingham, Alabama, United States",-0600,CST - Central Standard Time
 "Memphis, Tennessee, United States",-0600,CST - Central Standard Time
@@ -674,4 +722,5 @@ WEST,+0100,WEST - Western European Summer Time
 "Turin, Italy",+0100,CET - Central European Time
 "Fernando de Noronha, Pernambuco, Brazil",-0200,no timezone abbreviation
 "Shijiazhuang, China",+0800,no timezone abbreviation
-"Panama, Panama",-0500,no timezone abbreviation
+"Santa Ana, El Salvador",-0600,no timezone abbreviation
+"Dammam, Saudi Arabia",+0300,no timezone abbreviation
