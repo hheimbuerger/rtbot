@@ -37,7 +37,7 @@ class Settings:
     port = 6668
 
     # The channel to connect to. It SHOULD be possible to join passworded rooms like this: channel = "#channel password"
-    channel = "#RollingThunder.development"
+    channel = "#RT.development"
 
     # The nickname, username and realname to use (for WHOIS).
     nickname = "RTBotTest"

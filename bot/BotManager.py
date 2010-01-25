@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 """RTBot
 
 RTBot is a IRC bot unlike many others. It has been originally
@@ -85,7 +87,6 @@ class BotManager:
                 Internal use.
                 """
                 if(action == "start"):
-                if(action == "start"):
                     logging.info("Loading IRC library...")
                     self.irclib = IrcLib.LowlevelIrcLib()
                     self.irclib.connect(self.settings.server, self.settings.port, self.settings.nickname, self.settings.username, self.settings.realname)
@@ -99,7 +100,7 @@ class BotManager:
                 else:
                     raise Exception("Unsupported action sent to controller_IRCLibrary: %s" % action)
 
-            def controller_PluginInterface(self, action):
+        def controller_PluginInterface(self, action):
                 if(action == "start"):
                     logging.info("Loading PluginInterface...")
                     self.pluginInterface = PluginInterface.PluginInterface(self.pluginsDirectory)
@@ -113,7 +114,7 @@ class BotManager:
                 else:
                     raise Exception("Unsupported action sent to controller_PluginInterface: %s" % action)
 
-            def controller_BotCore(self, action):
+        def controller_BotCore(self, action):
                 if(action == "start"):
                     logging.info("Loading core bot code...")
                     self.rtbot = RTBot.RTBot(self.irclib, self.settings.channel, self.pluginInterface)
@@ -129,7 +130,7 @@ class BotManager:
                 else:
                     raise Exception("Unsupported action sent to controller_BotCore: %s" % action)
 
-            def controller_Plugins(self, action):
+        def controller_Plugins(self, action):
                 if(action == "start"):
                     logging.info("Loading plugins...")
                     self.pluginInterface.updatePlugins(False)
@@ -138,7 +139,7 @@ class BotManager:
                 else:
                     raise Exception("Unsupported action sent to controller_Plugins: %s" % action)
 
-            def controller_ModificationsTimer(self, action):
+        def controller_ModificationsTimer(self, action):
                 if(action == "start"):
                     logging.info("Starting to check for changed plugins every X seconds...")
                     self.modificationsTimerLock = threading.RLock()
@@ -150,7 +151,7 @@ class BotManager:
                 else:
                     raise Exception("Unsupported action sent to controller_ModificationsTimer: %s" % action)
 
-            def controller_WebService(self, action):
+        def controller_WebService(self, action):
                 if(action == "start"):
                     if(self.settings.webservice_host and self.settings.webservice_port):
                         logging.info("Starting WebService...")
@@ -164,26 +165,26 @@ class BotManager:
                 else:
                     raise("NO ACTION SPECIFIED")
 
-            def startup(self):
+        def startup(self):
                 self.controller_IRCLibrary("start")
                 self.controller_PluginInterface("start")
                 self.controller_BotCore("start")
                 self.controller_Plugins("start")
                 self.controller_ModificationsTimer("start")
 
-            @util.withMemberLock("modificationsTimerLock")
-            def shutdown(self):
+        @util.withMemberLock("modificationsTimerLock")
+        def shutdown(self):
                 self.controller_ModificationsTimer("stop")
                 self.controller_PluginInterface("stop")
                 self.controller_BotCore("stop")
                 self.controller_IRCLibrary("stop")
 
-            def startModificationsTimer(self):
+        def startModificationsTimer(self):
                 self.modificationsTimer = threading.Timer(10.0, self.checkForModifications)
                 self.modificationsTimer.start()
 
-            @util.withMemberLock("modificationsTimerLock", False) # If we can't lock, then we're shutting down - do nothing
-            def checkForModifications(self):
+        @util.withMemberLock("modificationsTimerLock", False) # If we can't lock, then we're shutting down - do nothing
+        def checkForModifications(self):
                 self.pluginInterface.updatePlugins()
                 
                 # Restart the timer
@@ -195,10 +196,10 @@ class BotManager:
             # PUBLIC
             # -----------------------
 
-            def getState(self):
+        def getState(self):
                 return(self.status)
 
-            def run(self):
+        def run(self):
                 self.status = "Launched."
                 self.controller_WebService("start")
                 

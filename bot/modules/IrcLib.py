@@ -170,7 +170,7 @@ class LowlevelIrcLib:
         """
         if(self.channel == None):
             raise Exception("ERROR: Tried to send channel message without being in a channel yet.")
-        elif not (self.channel == "#RollingThunder" or self.channel == "#RollingThunder.test" or self.channel == "#RollingThunder.development"):
+        elif not (self.channel == "#RollingThunder" or self.channel == "#RollingThunder.test" or self.channel == "#RT.development"):
             raise Exception("ERROR: Tried to send channel message to a suspicious channel: " + self.channel)
         else:
             logging.info("%s-->#: %s" % (self.nickname, msg))
