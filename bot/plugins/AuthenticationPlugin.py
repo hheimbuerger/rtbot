@@ -430,9 +430,9 @@ class AuthenticationPlugin:
 
     def onUserMode( self, irclib, source, targets, flags ):
       if( ( flags == "+o" ) and ( targets[0] == irclib.nickname ) ):
-          if( source == "L" ):
+          if( source == "Q" ):
               if( not self.dontThankLNextTime ):
-                  irclib.sendChannelMessage( "You op'ed me, L. But you're just a stupid bot, so I won't thank you. ;)" )
+                  irclib.sendChannelMessage( "You opped me, Q. But you're just a stupid bot, so I won't thank you. ;)" )
               self.dontThankLNextTime = False
           else:
               irclib.sendChannelMessage( "Hey, thank you, " + source.getCanonicalNick() + "! I like you..." )
@@ -487,7 +487,7 @@ class AuthenticationPlugin:
 
         # abort if we're not talking to a friend, set sourceUser otherwise
         if(not source.isAdmin() and source.nick != "Cort"):
-            irclib.sendPrivateMessage(source, "I don't know you, please leave me alone!")
+            # irclib.sendPrivateMessage(source, "I don't know you, please leave me alone!")
             return
         else:
             sourceName = source.getName()
@@ -547,12 +547,12 @@ class AuthenticationPlugin:
                     
                 # check that the user isn't trying to grant a password to his own account or nick
                 if(name == source.dataStore.getAttribute("authedAs") or nick == source.nick):
-                    irclib.sendPrivateMessage(source, "You're not allowed to grant yourself a password. Ask another admin!")
+                    irclib.sendPrivateMessage(source, "You are not allowed to grant yourself a password. Ask another admin!")
                     return
 
                 # make sure the target nick is aroundwant
                 if(not irclib.getUserList().isOnline(nick)):
-                    irclib.sendPrivateMessage(source, "%s isn't around. Say \"grant password <account> [<nick>]\" to grant somebody a password." % (nick))
+                    irclib.sendPrivateMessage(source, "%s is not around. Say \"grant password <account> [<nick>]\" to grant somebody a password." % (nick))
                     return
                 
                 # save the authorization in the dataStore of the target user
