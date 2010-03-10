@@ -2,40 +2,51 @@ import re, random
 
 class DieRollingPlugin:
 
+
     def getVersionInformation(self):
         return("$Id$")
 
     def rollDie(self, irclib, dieDesc):
         die = Die(dieDesc)
+
+        #colours should really go in config.py anyway.
+        emphasisStart = "\x0304" if irclib.areColoursAllowed() else ''
+        emphasisEnd = "\x0310" if irclib.areColoursAllowed() else ''
+        emphasize = (lambda message: "%s%s%s" % (emphasisStart, message, emphasisEnd))
+       
         if(die.isValid()):
-	  if(die.num_surfaces == 1):
-		irclib.sendChannelEmote("rolls " + dieDesc + "...")
-		irclib.sendChannelMessage("It rolls... and rolls... aww, I can't find it anymore. Damn marbles.")
-	  else:
-		irclib.sendChannelEmote("rolls " + dieDesc + "...")
-		irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up \x0304" + str(die.roll()) + "\x0310!")
+            if(die.num_surfaces == 1):
+                irclib.sendChannelEmote("rolls " + dieDesc + "...")
+                irclib.sendChannelMessage("No way, I'm running short on marbles. :(")
+            else:
+                irclib.sendChannelEmote("rolls " + dieDesc + "...")
+                irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up %s!" % emphasize(die.roll()))
         else:
-          irclib.sendChannelMessage("Sorry, I don't know that die...")
+          irclib.sendChannelMessage("Sorry, I don't have that die...")
 
     def rollFromList(self, irclib, listString):
         alternatives = listString.split(", ")
         irclib.sendChannelEmote("rolls a d%i..." % (len(alternatives)))
         resultId = int(random.random()*len(alternatives))
         resultText = alternatives[resultId]
-        irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up \x0304%s\x0310! %s is the one!" % (resultId+1, resultText))
+        irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up %s! %s is the one!" % (resultId+1, emphasize(resultText)))
 
     def flipCoin(self, irclib):
+        #colours should really go in config.py anyway.
+        emphasisStart = "\x0304" if irclib.areColoursAllowed() else ''
+        emphasisEnd = "\x0310" if irclib.areColoursAllowed() else ''
+        emphasize = (lambda message: "%s%s%s" % (emphasisStart, message, emphasisEnd))
+        
         irclib.sendChannelEmote("flips a coin...")
-        if(int(random.random() * 2) == 0):
-          irclib.sendChannelMessage("It flies... and flies... got it! -- \x0304heads\x0310!")
-        else:
-          irclib.sendChannelMessage("It flies... and flies... got it! -- \x0304tails\x0310!")
+        coinSide = "heads" if int(random.random() * 2) == 0 else "tails"
+        irclib.sendChannelMessage("It flies... and flies... got it! -- %s!" % emphasize(coinSide))
 
     def onChannelMessage(self, irclib, source, msg):
+        
         if((len(msg.split()) > 0) and (msg.split()[0] == "roll")):
             if(len(msg.split()) >= 2):
                 self.rollDie(irclib, msg.split()[1])
-        if((len(msg.split()) >= 2) and (msg.split()[0] == "rollfrom")):            
+        if((len(msg.split()) >= 2) and (msg.split()[0] == "rollfrom")):
             self.rollFromList(irclib, msg.split(" ", 1)[1])
         if(msg == "flip"):
             self.flipCoin(irclib)

@@ -11,6 +11,9 @@ class AllegTacToePlugin:
 
     def onChannelMessage(self, irclib, source, msg):
       if((msg == "play") or (msg == "play novice")):
+          if not irclib.areColoursAllowed():
+            irclib.sendChannelMessage("Sorry. Colours are required to play and they are not allowed in this channel right now.")
+            return
           if((len(msg.split()) >= 2) and (msg.split()[1] == "novice")):
             irclib.sendChannelMessage("Okay, here we go (easy mode):")
             expertMode = False
