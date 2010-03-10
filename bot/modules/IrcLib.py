@@ -538,9 +538,9 @@ class LowlevelIrcLib:
         elif(command == "ERROR"):
             #logging.debug("Error ERROR-command in handleIncomingMessage()!")
             raise IrcError("ERROR: ERROR-command in handleIncomingMessage() ('%s')" % (str((source, command, arguments, trailing))))
-        elif(command == "474"): #join failed (ban, invite only, channel limit, ...)
-            nickname, channel = arguments
-            if nickname == self.nickname:
+        elif(command in ["471", "473", "474", "475", "477", "442"]): #join failed (ban, invite only, channel limit, ...)
+            nickname, channel = arguments                            #471: +l, 473: +i, 474: +b, 475: +k
+            if nickname == self.nickname:                            #477: +r, 442: bot not in channel
                 self.joinChannel(channel)
         return
     
