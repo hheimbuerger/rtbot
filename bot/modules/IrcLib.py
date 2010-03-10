@@ -173,11 +173,14 @@ class LowlevelIrcLib:
         elif not (self.channel == "#RollingThunder" or self.channel == "#RollingThunder.test" or self.channel == "#RT.development"):
             raise Exception("ERROR: Tried to send channel message to a suspicious channel: " + self.channel)
         else:
-            style = "\x0310" if 'c' not in self.getChannelModes() else '' #do not trip up on the +c (no color) channel mode
+            style = "\x0310" if self.areColoursAllowed() else '' #do not trip up on the +c (no color) channel mode
             logging.info("%s-->#: %s" % (self.nickname, msg))
             for line in self.splitLongMessages(msg):
                 self.sendRawMsg("PRIVMSG %s :%s%s" % (self.channel, style, line))
 
+    def areColoursAllowed(self):
+        return 'c' not in self.getChannelModes()
+                
     # target: User object
     def sendPrivateMessage(self, target, msg):
         """Send <msg> to <target> via /msg
