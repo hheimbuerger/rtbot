@@ -535,6 +535,10 @@ class LowlevelIrcLib:
         elif(command == "ERROR"):
             #logging.debug("Error ERROR-command in handleIncomingMessage()!")
             raise IrcError("ERROR: ERROR-command in handleIncomingMessage() ('%s')" % (str((source, command, arguments, trailing))))
+        elif(command == "474"): #join failed (ban, invite only, channel limit, ...)
+            nickname, channel = arguments
+            if nickname == self.nickname:
+                self.joinChannel(channel)
         return
     
     def sendRawMsg(self, rawmsg):     # throws: socket.error
