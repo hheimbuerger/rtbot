@@ -47,7 +47,8 @@ class RespectahPlugin:
         header = "%s's %s" % (user, attribute)
         
         ircMessage = header + ": "
-        ircMessage += ", ".join("%s = %i" % (target, value) for (target, value) in topResults)
+        ircMessage += ", ".join("%s %s" % (target, "> 9000" if value > 9000 else "= %d" % value)
+                                for (target, value) in topResults)
 
         if len(results) > display_these_many:
             fullMessage = header + ":\n\n"
@@ -64,7 +65,7 @@ class RespectahPlugin:
             topKeys = keys[:display_these_many]
             
             if (len(keys)):
-                header = "%s's respectah list" % user
+                header = "%s's respectah lists" % user
         
                 ircMessage = header + ": "
                 ircMessage += ", ".join(topKeys)
@@ -141,7 +142,10 @@ class RespectahPlugin:
                     else:
                         op = -1
                     self.setValue(name, attribute, target, op)
-                    irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
+                    newValue = self.getValue(name, attribute, target, op)
+                    newValueString = "over nine thousand" if newValue > 9000 else "%d" % newValue
+                    if "over" in newValueString and "-" in operation: newValueString = "still " + newValueString
+                    irclib.sendChannelMessage("%s's current %s for %s is %s." % (name, attribute, target, newValueString))
 
             # "self.respect(something)+=value"
             result = RespectahPlugin.commandREPE.search(message)
@@ -158,7 +162,10 @@ class RespectahPlugin:
                         else:
                             op = -int(value)
                         self.setValue(name, attribute, target, op)
-                        irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
+                    newValue = self.getValue(name, attribute, target, op)
+                    newValueString = "over nine thousand" if newValue > 9000 else "%d" % newValue
+                    if "over" in newValueString and "-" in operation: newValueString = "still " + newValueString
+                    irclib.sendChannelMessage("%s's current %s for %s is %s." % (name, attribute, target, newValueString))
 
             # "self.respect(something)=value"
             result = RespectahPlugin.commandREEQ.search(message)
@@ -171,7 +178,10 @@ class RespectahPlugin:
                     if(value.isdigit()):
                         op = int(value)
                         self.setAbsValue(name, attribute, target, op)
-                        irclib.sendChannelMessage("%s's current %s for %s is %i." % (name, attribute, target, self.getValue(name, attribute, target, op)))
+                    newValue = self.getValue(name, attribute, target, op)
+                    newValueString = "still over nine thousand" if newValue > 9000 else "%d" % newValue
+                    irclib.sendChannelMessage("%s's current %s for %s is %s." % (name, attribute, target, newValueString))
+
 
 
 #Unit-test
