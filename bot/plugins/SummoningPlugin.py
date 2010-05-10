@@ -60,7 +60,8 @@ class SummoningPlugin:
             elif(source.isAdmin()):
                 self.banish(irclib, source.nick, targetNick)
             elif(source.getCanonicalNick()[:len("Imm")] == "Imm"):
-                irclib.sendChannelMessage("Looks like an RT to me...")
+                irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")
+                irclib.sendChannelMessage("Come think of it, you do look like an RT to me...")
                 self.banish(irclib, source.nick, targetNick)
             elif(irclib.getUserList()[targetNick].isAdmin()):
                 irclib.sendChannelMessage("Such a spell may only be cast for a member of my tribe!")

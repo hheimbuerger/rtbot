@@ -1,6 +1,5 @@
 import re, pickle
-
-
+from lib import pastebin
 
 class RespectahPlugin:
     commandRE = re.compile("(\\S*?)\\.(\\S*?)\\((\\S*?)\\)((\\+\\+)|(--))")
@@ -28,30 +27,55 @@ class RespectahPlugin:
         return("$Id$")
 
     def printCurrentList(self, irclib, user, attribute):
-        if(self.data.has_key(user)):
-            if(self.data[user].has_key(attribute)):
-                if(len(self.data[user][attribute].items())):
-                    results = []
-                    for (target, value) in self.data[user][attribute].items():
-                        results.append("%s = %i" % (target, value))
-                    results.sort()
-                    irclib.sendChannelMessage("%s's %s: %s" % (user, attribute, ", ".join(results)))
-                else:
-                    irclib.sendChannelMessage("You never gave %s to anybody!" % (attribute))
-            else:
-                irclib.sendChannelMessage("You never used that attribute!")
-        else:
+        if not self.data.has_key(user):
             irclib.sendChannelMessage("You never gave any respectah!")
+            return
+        if not self.data[user].has_key(attribute):
+            irclib.sendChannelMessage("You never used that attribute!")
+            return
+        if not len(self.data[user][attribute].items()):
+            irclib.sendChannelMessage("You never gave %s to anybody!" % (attribute))
+            return
+        
+        
+        results = self.data[user][attribute].items()
+        results.sort( key=(lambda pair: -pair[1]) ) #from highest to lowest
+        display_these_many = 5
+        
+        topResults = results[:display_these_many]
+        
+        header = "%s's %s" % (user, attribute)
+        
+        ircMessage = header + ": "
+        ircMessage += ", ".join("%s = %i" % (target, value) for (target, value) in topResults)
+
+        if len(results) > display_these_many:
+            fullMessage = header + ":\n\n"
+            fullMessage += "\n".join("\t%s = %i" % (target, value) for (target, value) in results)
+            url = pastebin.postToPastebin(fullMessage, title = header)
+            ircMessage += "; %s for all %d" % (url, len(results))
+
+        irclib.sendChannelMessage(ircMessage)          
 
     def printCurrentListAll(self, irclib, user):
         if(self.data.has_key(user)):
-            results = [] 
-            for (attribute, target) in self.data[user].items():
-                if ( attribute not in results ):
-                    results.append("%s" % (attribute))
-            if (len(results)):
-                results.sort()
-                irclib.sendChannelMessage("%s's %s" % (user, results))
+            keys = sorted(self.data[user], key = lambda x: -len(self.data[user][x]))
+            display_these_many = 7
+            topKeys = keys[:display_these_many]
+            
+            if (len(keys)):
+                header = "%s's respectah list" % user
+        
+                ircMessage = header + ": "
+                ircMessage += ", ".join(topKeys)
+
+                if len(keys) > display_these_many:
+                    fullMessage = header + ":\n\n"
+                    fullMessage += "\n".join(sorted("\t" + key for key in keys))
+                    url = pastebin.postToPastebin(fullMessage, title = header)
+                    ircMessage += "; %s for all %d" % (url, len(keys))
+
+                irclib.sendChannelMessage(ircMessage)
             else:
                 irclib.sendChannelMessage("You never gave any respectah!")
         else:
