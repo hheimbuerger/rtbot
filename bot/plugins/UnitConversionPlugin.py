@@ -15,8 +15,8 @@ class UnitConversionPlugin:
         self.currencyTableSource = {"host": "www.ecb.int", "url": "/stats/eurofxref/eurofxref-daily.xml"}
         self.usedCurrencies = ["EUR", "GBP", "USD", "CAD", "NZD", "PLN", "INR", "NIS"]          # removed: "AUD", "DKK", "SKK", "SEK", "NOK",
         self.currencyRE = "\s?(\\d{1,10}(\\.\\d{2})?)"
-        self.fixedCurrencies = {"INR": 65.301296, "NIS": 5.54656082}
-        self.fixedCurrencyUpdate = "2009-05-21"
+        self.fixedCurrencies = {"INR": 61.2932522, "NIS": 5.03071052} # that is, 61.stuff INR make 1 EUR.
+        self.fixedCurrencyUpdate = "2010-03-24"
         self.lastCurrencyUpdate = None
         self.lastCurrencyTable = None
         
@@ -61,15 +61,8 @@ class UnitConversionPlugin:
 
     def retrieveCurrencyTable(self, irclib):
         # retrieve the information from the ECB
-        startTime = datetime.datetime.utcnow()
         (status, document, location) = self.getPage(self.currencyTableSource["host"], self.currencyTableSource["url"])
-        endTime = datetime.datetime.utcnow()
-        elapsedTime = endTime-startTime
-        if(elapsedTime.seconds > 10):
-            irclib.sendChannelEmote("noticed that took %i.%i seconds -- does the ECB not like me, or what!?" % (elapsedTime.seconds, elapsedTime.microseconds/100000))
-        else:
-            irclib.sendChannelEmote("noticed that took %i.%i seconds." % (elapsedTime.seconds, elapsedTime.microseconds/100000))
-                
+                        
         # parse the information
         dom = xml.dom.minidom.parseString(document)
         envelope = dom.getElementsByTagName("gesmes:Envelope")[0]
@@ -90,7 +83,7 @@ class UnitConversionPlugin:
              # or if the last currency table update has been yesterday and it's after 14UTC (educated guess that this will always be after the daily update at "2.15 p.m. (14:15) ECB time")
              or (self.lastCurrencyUpdate < datetime.date.today() and datetime.datetime.utcnow().hour >= 14)):
             # then we'll update now
-            irclib.sendChannelEmote("retrieves new currency table from the ECB (this may take up to 30 seconds).")
+            irclib.sendChannelEmote("retrieves new currency information from the ECB.")
             self.lastCurrencyTable = self.retrieveCurrencyTable(irclib)
             self.lastCurrencyUpdate = datetime.date.today()
         return(self.lastCurrencyTable)
@@ -166,7 +159,7 @@ class UnitConversionPlugin:
                         else:
                             type = ""
                         output.append("%s%s %.2f" % (type, outputCurrency, round(baseValue*currencyTable[outputCurrency], 2)))
-                irclib.sendChannelMessage("%s [last fixed currency update: %s]" % (string.join(output, " = "), self.fixedCurrencyUpdate))
+                irclib.sendChannelMessage("%s (tilde currencies last updated %s)" % (string.join(output, " = "), self.fixedCurrencyUpdate))
 
 
 
