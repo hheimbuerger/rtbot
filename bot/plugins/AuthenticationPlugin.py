@@ -486,7 +486,7 @@ class AuthenticationPlugin:
                     return
 
         # abort if we're not talking to a friend, set sourceUser otherwise
-        if(not source.isAdmin() and source.nick != "bp|"):
+        if(not source.isAdmin() and source.nick != "Cort"):
             # irclib.sendPrivateMessage(source, "I don't know you, please leave me alone!")
             return
         else:
