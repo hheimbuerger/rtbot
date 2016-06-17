@@ -31,10 +31,10 @@ class Settings:
     See documentation of config.py for detailed information.
     """
     # The IRC server to connect to.
-    server = "de.quakenet.org"
+    server = "irc.quakenet.org"
 
     # The port used by the IRC server. (The default port is 6667, but some server hosts block this port.)
-    port = 6668
+    port = 6667
 
     # The channel to connect to. It SHOULD be possible to join passworded rooms like this: channel = "#channel password"
     channel = "#RT.development"
@@ -48,5 +48,5 @@ class Settings:
     database_connection_string = None    #"mysql://root@localhost/rtbotadmin"
 
     # The host and port of the webservice or "None" to deactivate the webservice.
-    webservice_host = None      #"tufer.de"
-    webservice_port = None      #8000
+    webservice_host = None
+    webservice_port = None

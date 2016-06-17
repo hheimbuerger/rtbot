@@ -21,9 +21,24 @@ underage and the unwary -- nasty stuff! :-}
 
 """
 
-import os, threading, time, logging
-from modules import IrcLib, RTBot, Log, config, PluginInterface, util, WebService
+import os, errno, threading, time, logging
 from lib import daemonize
+
+
+def _make_sure_path_exists(path):
+    """ taken from http://stackoverflow.com/a/5032238/6278! """
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
+
+_make_sure_path_exists('logs')
+_make_sure_path_exists('exceptions')
+
+
+from modules import IrcLib, RTBot, Log, config, PluginInterface, util, WebService
+
 
 class BotManager:
         """BotManager
@@ -191,7 +206,6 @@ class BotManager:
                 self.startModificationsTimer()
 
 
-                
             # -----------------------
             # PUBLIC
             # -----------------------
@@ -202,7 +216,7 @@ class BotManager:
         def run(self):
                 self.status = "Launched."
                 self.controller_WebService("start")
-                
+
                 logging.debug( "Entering main BotManager loop...")      
 
                 while(True):
