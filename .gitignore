@@ -1,0 +1,18 @@
+*.pyc
+
+# /bot/
+/bot/rtbot.pid
+
+# /bot/exceptions/
+/bot/exceptions/*.xml
+
+# /bot/logs/
+/bot/logs/debuglog.txt
+/bot/logs/logfile.txt
+/bot/logs/*.log
+
+# /bot/resources/
+/bot/resources/Copy of accounts.lst
+
+# /webapp/
+/webapp/tmp
