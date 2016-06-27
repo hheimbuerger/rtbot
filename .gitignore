@@ -1,4 +1,5 @@
 *.pyc
+.idea
 
 # /bot/
 /bot/rtbot.pid
@@ -12,7 +13,12 @@
 /bot/logs/*.log
 
 # /bot/resources/
-/bot/resources/Copy of accounts.lst
+/bot/resources/PluginMetaData.pickle
+/bot/resources/respectah_data.pickle
+/bot/resources/seentimes.lst
+/bot/resources/mails.csv
+/bot/resources/accounts.lst
+/bot/resources/timezone_aliases.csv
 
 # /webapp/
 /webapp/tmp

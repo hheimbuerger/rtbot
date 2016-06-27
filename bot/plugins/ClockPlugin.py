@@ -199,12 +199,15 @@ class ClockPlugin:
 
         # read aliases
         self.aliases = {}
-        file = open(self.aliasFilename, "rb")
-        reader = csv.reader(file)
-        for row in reader:
-            self.aliases[row[0]] = row[1]
-        file.close()
-
+        try:
+            file = open(self.aliasFilename, "rb")
+            reader = csv.reader(file)
+            for row in reader:
+                self.aliases[row[0]] = row[1]
+            file.close()
+        except IOError:
+            logging.info('Could not open timezone alias file, starting with empty list')
+            pass
 
 
     def onTimer(self, irclib):
