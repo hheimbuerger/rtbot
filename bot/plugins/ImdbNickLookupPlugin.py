@@ -21,7 +21,6 @@ class ImdbNickLookupPlugin:
         pass
 
     def onChannelMessage(self, irclib, source, msg):
-        print msg.split()
         if len(msg.split()) >= 2 and msg.split()[0] == "imdbwatch":
             person = msg.split()[1]
             for (nick, user) in irclib.getUserList().items():

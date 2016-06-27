@@ -112,10 +112,10 @@ ajaxlog.setLevel(logging.INFO)
 rootlog.addHandler(ajaxlog)
 
 # Standard file logs
-debuglog = logging.handlers.TimedRotatingFileHandler("logs/debuglog.txt", "midnight")
-debuglog.setLevel(logging.DEBUG)
-debuglog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
-rootlog.addHandler(debuglog)
+# debuglog = logging.handlers.TimedRotatingFileHandler("logs/debuglog.txt", "midnight")
+# debuglog.setLevel(logging.DEBUG)
+# debuglog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
+# rootlog.addHandler(debuglog)
 
 filelog = logging.handlers.TimedRotatingFileHandler("logs/logfile.txt", "midnight")
 filelog.setLevel(logging.INFO)
@@ -123,8 +123,8 @@ filelog.setFormatter(logging.Formatter("%(asctime)s %(module)s %(levelname)s %(m
 rootlog.addHandler(filelog)
 
 console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-console.setFormatter(logging.Formatter("%(asctime)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
+console.setLevel(logging.INFO)
+console.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s", "[UTC: %Y-%m-%d %H:%M:%S]"))
 # Uncomment this to receive verbose logging to console
 rootlog.addHandler(console)
 
