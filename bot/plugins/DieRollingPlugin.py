@@ -2,11 +2,18 @@ import re, random
 
 class DieRollingPlugin:
 
-    def getVersionInformation(self):
-        return("$Id$")
 
-    def rollDie(self, irclib, dieDesc, emphasize):
+    def getVersionInformation(self):
+        return("$Id: DieRollingPlugin.py 457 2010-03-10 13:53:25Z badpazzword $")
+
+    def rollDie(self, irclib, dieDesc):
         die = Die(dieDesc)
+
+        #colours should really go in config.py anyway.
+        emphasisStart = "\x0304" if irclib.areColoursAllowed() else ''
+        emphasisEnd = "\x0310" if irclib.areColoursAllowed() else ''
+        emphasize = (lambda message: "%s%s%s" % (emphasisStart, message, emphasisEnd))
+       
         if(die.isValid()):
             if(die.num_surfaces == 1):
                 irclib.sendChannelEmote("rolls " + dieDesc + "...")
@@ -17,32 +24,32 @@ class DieRollingPlugin:
         else:
           irclib.sendChannelMessage("Sorry, I don't have that die...")
 
-    def rollFromList(self, irclib, listString, emphasize):
+    def rollFromList(self, irclib, listString):
         alternatives = listString.split(", ")
         irclib.sendChannelEmote("rolls a d%i..." % (len(alternatives)))
         resultId = int(random.random()*len(alternatives))
         resultText = alternatives[resultId]
         irclib.sendChannelMessage("It rolls... and rolls... now it stopped -- it comes up %s! %s is the one!" % (resultId+1, emphasize(resultText)))
 
-    def flipCoin(self, irclib, emphasize): 
+    def flipCoin(self, irclib):
+        #colours should really go in config.py anyway.
+        emphasisStart = "\x0304" if irclib.areColoursAllowed() else ''
+        emphasisEnd = "\x0310" if irclib.areColoursAllowed() else ''
+        emphasize = (lambda message: "%s%s%s" % (emphasisStart, message, emphasisEnd))
+        
         irclib.sendChannelEmote("flips a coin...")
         coinSide = "heads" if int(random.random() * 2) == 0 else "tails"
         irclib.sendChannelMessage("It flies... and flies... got it! -- %s!" % emphasize(coinSide))
 
     def onChannelMessage(self, irclib, source, msg):
-        emphasisStart = "\x0304" 
-        emphasisEnd = "\x0310"
-        emphasize = (lambda message: "%s%s%s" % (emphasisStart if irclib.areColoursAllowed() else '',
-                                                 message,
-                                                 emphasisEnd if irclib.areColoursAllowed() else ''))
         
         if((len(msg.split()) > 0) and (msg.split()[0] == "roll")):
             if(len(msg.split()) >= 2):
-                self.rollDie(irclib, msg.split()[1], emphasize)
+                self.rollDie(irclib, msg.split()[1])
         if((len(msg.split()) >= 2) and (msg.split()[0] == "rollfrom")):
-            self.rollFromList(irclib, msg.split(" ", 1)[1], emphasize)
+            self.rollFromList(irclib, msg.split(" ", 1)[1])
         if(msg == "flip"):
-            self.flipCoin(irclib, emphasize)
+            self.flipCoin(irclib)
             
 
 class Die:
@@ -135,8 +142,6 @@ if __name__ == "__main__":
             print text
         def sendChannelEmote(self, text):
             print "* %s" % (text)
-        def areColoursAllowed(self):
-            return False
 
 #    print Die("1d1").roll()
 #    print Die("2d6").roll()
