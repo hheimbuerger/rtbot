@@ -1,5 +1,14 @@
-import sys, inspect, imp, operator, util, logging, traceback, pickle
-from lib.path import path
+import functools
+import importlib
+import inspect
+import logging
+import operator
+import pickle
+import sys
+from pathlib import Path
+
+from core import utils
+
 
 # Vocabulary
 # classname - the name of the plugin class in the plugin file (eg. SeenPlugin is the
@@ -64,7 +73,7 @@ class EventHandler:
     def __call__(self, *args):
         try:
             return self.procedure(self.pluginWrapper.pluginObject, *args)
-        except Exception, exception:
+        except Exception as exception:
             logging.exception("The plugin %s raised an exception in the eventhandler %s.", self.pluginWrapper.pluginName, self.eventName)
             raise PluginExceptionError(self.pluginWrapper, exception)
             
@@ -83,7 +92,7 @@ class PluginWrapper:
         self.filepath = filepath
         self.enabled = enabled
         
-        self.pluginName = self.filepath.namebase
+        self.pluginName = self.filepath.stem
         self.module = None       # the module loaded from the python file
         self.pluginClass = None  # the class named self.pluginName defined in self.module
         self.pluginObject = None # an instance of the pluginClass
@@ -152,8 +161,8 @@ class PluginWrapper:
         self.notifyDependencyStateChange()  # since our dependencies changed, see if they are online.
         
     ##  Plugin state management
-        
-    @util.decorator
+
+    @utils.decorator
     def changesState(func, self, *args, **kwargs):
         """Decorator for methods that potentially change the plugin's state. Ensures that the plugin is
         taken online or offline accordingly"""
@@ -194,7 +203,7 @@ class PluginWrapper:
     def notifyDependencyStateChange(self):
         "Checks if our dependencies are online. Called by our dependencies when they change their state"
         something1 = [plugin.online() for plugin in self.dependencies.values()]
-        something2 = reduce(operator.__and__, something1, True)
+        something2 = functools.reduce(operator.__and__, something1, True)
         self.dependenciesOnline = something2
 
     ## INTERNAL METHODS
@@ -221,7 +230,7 @@ class PluginWrapper:
     def removeDependent(self, plugin):
         self.dependents.remove(plugin)
     def hasDependency(self, name):
-        return name in self.dependencies.keys() or reduce(operator.__or__, [dependency.hasDependency(name) for dependency in self.dependencies.values()], False)
+        return name in self.dependencies.keys() or functools.reduce(operator.__or__, [dependency.hasDependency(name) for dependency in self.dependencies.values()], False)
     def getDependencies(self):
         return self.dependencies.keys()
 
@@ -240,26 +249,26 @@ class PluginWrapper:
 
     def loadPythonFile(self):
         """ Dynamically loads the plugin py-file, but does not instantiate the pluginObject """
-        self.lastModified = self.filepath.mtime
+        self.lastModified = self.filepath.stat().st_mtime
         try:
-            self.module = imp.load_source(self.filepath.namebase, self.filepath)
-        except Exception, e:
+            self.module = importlib.import_module('plugins.' + self.filepath.stem)
+        except Exception as e:
             logging.exception("Plugin raised exception during load")
-            raise PluginLoadError(e)
+            raise PluginLoadError(e) from e
         
         try:
             self.pluginClass = getattr(self.module, self.pluginName)
             assert inspect.isclass(self.pluginClass)
-        except:
-            raise PluginLoadError("Can't find plugin class in file %s" % self.filepath.name)
+        except Exception as e:
+            raise PluginLoadError("Can't find plugin class in file %s" % self.filepath.name) from e
         
         try:
             dependencyNames = set(self.pluginClass.getDependencies())                
         except (AttributeError, TypeError):  # if this fails ...
             dependencyNames = set() # then it's okay, it just means the plugin doesn't declare any dependencies, or that it doesn't declare getDependencies() as a classmethod
-        except Exception, e:
+        except Exception as e:
             logging.exception("Plugin raised exception while trying to determine its dependencies")
-            raise PluginLoadError(e)
+            raise PluginLoadError(e) from e
         
         # Find all the event handlers
         for (name,funcobj) in self.pluginClass.__dict__.items():
@@ -282,7 +291,7 @@ class PluginWrapper:
                 self.pluginObject = self.pluginClass(self.pluginInterface)
             else:  #   otherwise, call the argument-less constructor
                 self.pluginObject = self.pluginClass()
-        except Exception, e:
+        except Exception as e:
             logging.exception("Plugin raised exception during instantiation")
             raise PluginLoadError(e)
 
@@ -323,14 +332,14 @@ class EventHandlerRepository:
         else: return -1
 
     def sortHandlers(self):
-        self.handlers.sort(self.compareHandlers)
-        
-    def fireEvent(self, *args):
+        self.handlers.sort(key=functools.cmp_to_key(self.compareHandlers))
+
+    async def fireEvent(self, *args):
         logging.debug("firing event")
         for procedure in self.handlers:
             logging.debug("firing event %s for plugin %s", procedure.eventName, procedure.pluginWrapper.pluginName)
             # event handler procedures return true to abort processing
-            if procedure(*args):
+            if await procedure(*args):
                 break
 
 #---------------------------------------------------------------------------------
@@ -341,9 +350,9 @@ class PluginInterface:
 #---------------------------------------------------------------------------------
 #      PluginInterface Public interface
 #---------------------------------------------------------------------------------
-    pluginMetaData = path("resources/PluginMetaData.pickle")
+    pluginMetaData = Path("resources/PluginMetaData.pickle")
     def __init__(self, pluginsDirectory):
-        self.pluginsDirectory = path(pluginsDirectory)
+        self.pluginsDirectory = Path(pluginsDirectory)
         if not self.pluginsDirectory.exists():
             raise Exception("The plugins directory: " + pluginsDirectory + " doesn't exist!")        
         
@@ -366,11 +375,11 @@ class PluginInterface:
     def registerInformTarget(self, botcore):
         self.botcore = botcore
 
-    def fireEvent(self, eventname, *args):
+    async def fireEvent(self, eventname, *args):
         if eventname in self.eventHandlers:
             try:
-                self.eventHandlers[eventname].fireEvent(*args)
-            except PluginExceptionError, exception:
+                await self.eventHandlers[eventname].fireEvent(*args)
+            except PluginExceptionError as exception:
                 pluginName = exception.pluginWrapper.pluginName
                 logging.info("Disabling erraneous plugin: %s", pluginName)
                 if self.botcore:
@@ -390,17 +399,17 @@ class PluginInterface:
                 if pluginWrapper.checkForUpdate() : # if there was an update...
                     logging.info("reloaded the plugin %s", pluginName)
                     reloadedPlugins.add(pluginName)
-            except OSError, e:
+            except OSError as e:
                 # file was not found
                 self.pluginWrappers[pluginName].dispose()
                 logging.info("The plugin %s was deleted", pluginName)
         # Check if there are any new files
-        for file in self.pluginsDirectory.files("*Plugin.py"):
-            if not file.namebase in self.pluginWrappers.keys():
+        for file in self.pluginsDirectory.glob("*Plugin.py"):
+            if not file.stem in self.pluginWrappers.keys():
                 logging.info("New plugin file found: %s", file.name)
                 PluginWrapper(self, file)
-                if not self.pluginWrappers[file.namebase].enabled:
-                    self.botcore.informRemovedPluginDuringLoad("The plugin %s raised errors during load time and is now disabled" % (file.namebase))
+                if not self.pluginWrappers[file.stem].enabled:
+                    self.botcore.informRemovedPluginDuringLoad("The plugin %s raised errors during load time and is now disabled" % (file.stem))
 
         pluginsAfter = set(self.pluginWrappers.keys())
         loadedPlugins = pluginsAfter.difference(pluginsBefore)

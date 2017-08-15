@@ -1,6 +1,8 @@
 # Decorator for decorators that don't take any arguments - http://miscoranda.com/134
+from collections import UserDict
 
-def decorator(decorfunc): 
+
+def decorator(decorfunc):
    def wrapper(func): 
       return lambda *args, **kwargs: decorfunc(func, *args, **kwargs)
    return wrapper
@@ -37,7 +39,7 @@ def withMemberLock(lockName, blocking = True):
         return wrapped
     return decorator
 
-from UserDict import UserDict
+#from UserDict import UserDict
 import pickle
 class Archive(UserDict):
     # This is basically a shelf with custom picklers
