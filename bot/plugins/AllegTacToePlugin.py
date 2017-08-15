@@ -3,49 +3,41 @@ import random, logging
 class AllegTacToePlugin:
     gameKey = "AllegTacToeGame"
 
-    def getVersionInformation(self):
-        return("$Id$")
-
     def __init__(self):
         self.games = {}
 
-    def onChannelMessage(self, irclib, source, msg):
+    async def on_message(self, ctx, source, msg):
       if((msg == "play") or (msg == "play novice")):
-          if not irclib.areColoursAllowed():
-            irclib.sendChannelMessage("Sorry. Colours are required to play and they are not allowed in this channel right now.")
-            return
           if((len(msg.split()) >= 2) and (msg.split()[1] == "novice")):
-            irclib.sendChannelMessage("Okay, here we go (easy mode):")
+            await ctx.reply("Okay, here we go (easy mode):")
             expertMode = False
           else:
-            irclib.sendChannelMessage("Okay, here we go (expert mode):")
+            await ctx.reply("Okay, here we go (expert mode):")
             expertMode = True
 
           # create the game
           game = AllegTacToeGame(expertMode)
-          source.dataStore.setAttribute(AllegTacToePlugin.gameKey, game)
+          source.dataStore[AllegTacToePlugin.gameKey] = game
           
           #logging.debug("board:" + string.join(self.games[source].showBoard(), "\n"))
-          for line in game.showBoard():
-              irclib.sendChannelMessage(line)
-      elif(source.dataStore.getAttributeDefault(AllegTacToePlugin.gameKey)):
+          await ctx.reply('\n'.join(game.showBoard()))
+      elif(source.dataStore.get(AllegTacToePlugin.gameKey)):
           if(msg == "#resign"):
-              irclib.sendChannelMessage("HQ (all): %s's proposal to resign has passed. (1 for)" % (source.getCanonicalNick()))
-              irclib.sendChannelMessage("HQ (all): Team CleverAI has won by outlasting all other sides.")
-              source.dataStore.removeAttribute(AllegTacToePlugin.gameKey)
+              await ctx.reply("HQ (all): %s's proposal to resign has passed. (1 for)" % (source.getCanonicalNick()))
+              await ctx.reply("HQ (all): Team CleverAI has won by outlasting all other sides.")
+              del source.dataStore[AllegTacToePlugin.gameKey]
           else:
-              game = source.dataStore.getAttributeDefault(AllegTacToePlugin.gameKey)
+              game = source.dataStore.get(AllegTacToePlugin.gameKey)
               (isValid, error) = game.isValidMove(msg)
               if(isValid):
                   res = game.nextTurn(int(msg))
-                  for line in game.showBoard():
-                      irclib.sendChannelMessage(line)
+                  await ctx.reply('\n'.join(game.showBoard()))
                   if(res != ""):
-                      irclib.sendChannelMessage(res)
-                      source.dataStore.removeAttribute(AllegTacToePlugin.gameKey)
+                      await ctx.reply(res)
+                      del source.dataStore[AllegTacToePlugin.gameKey]
               else:
                   if(error != ""):
-                    irclib.sendChannelMessage(error)
+                    await ctx.reply(error)
 
 
 class AllegTacToeGame:
@@ -79,7 +71,7 @@ class AllegTacToeGame:
           return(self.board[field])
         else:
           if(field in self.finalWinConfig):
-            return("\x0304" + self.board[field] + "\x0310")
+            return("*" + self.board[field] + "*")   # FIXME: replaced IRC color codes here, but we can't do bold in a code block, so now everything's messed up
           else:
             return(self.board[field])
     
@@ -87,6 +79,7 @@ class AllegTacToeGame:
         output = []
         if(self.currentMessage != None):
           output.append(self.currentMessage)
+        output.append("```")
         output.append("   -" + self.showSector(0) + "-------" + self.showSector(1) + "-   ")
         output.append("  / |       | \  ")
         output.append(" /  " + self.showSector(2) + "---" + self.showSector(3) + "---" + self.showSector(4) + "  \ ")
@@ -96,6 +89,7 @@ class AllegTacToeGame:
         output.append(" \  " + self.showSector(8) + "---" + self.showSector(9) + "---" + self.showSector(10) + "  / ")
         output.append("  \ |       | /  ")
         output.append("   -" + self.showSector(11) + "-------" + self.showSector(12) + "-   ")
+        output.append("```")
         return(output)
     
       def isDraw(self):
@@ -255,9 +249,9 @@ class AllegTacToeGame:
 if __name__ == "__main__":
     class FakeIrcLib:
         def sendPrivateMessage(self, target, text):
-            print text
+            print(text)
         def sendChannelMessage(self, text):
-            print text
+            print(text)
 
     b = AllegTacToePlugin()
     b.onChannelMessage(FakeIrcLib(), "source", "play")

@@ -2,7 +2,7 @@
 import re, logging
 
 class VoiceChatPlugin:
-    import csv, os, pickle, exceptions
+    import csv, os, pickle
     
     vcDialects = {}
     DialectPreferences = {"test": "default"}
@@ -14,9 +14,8 @@ class VoiceChatPlugin:
 
         # If file present - load dialect preferences
         if self.os.path.isfile(self.PreferenceFilename) and self.os.path.getsize(self.PreferenceFilename) > 0:
-            file = open(self.PreferenceFilename, "r")
-            self.DialectPreferences = self.pickle.load(file)
-            file.close()
+            with open(self.PreferenceFilename, "rb") as f:
+                self.DialectPreferences = self.pickle.load(f)
         for file in self.os.listdir("resources/"):
             filepath = "resources/" + file
             if((file[:4] == "VCs.") and (file[-4:] == ".csv")):
@@ -29,9 +28,6 @@ class VoiceChatPlugin:
                     #print row[0] + " = " + row[1]
                     self.vcDialects[dialect][row[0].lower()] = row[1]
                 file.close()
-
-    def getVersionInformation(self):
-        return("$Id$")
 
     # Note: SetVCDialectPreference does not check whether the dialect exists or not.
     def SetVCDialectPreference(self, user, dialect):
@@ -48,10 +44,10 @@ class VoiceChatPlugin:
 
     def listAll(self):
         for a in self.vcDialects.keys():
-            print a
+            print(a)
         for b in self.vcDialects[a].keys():
-            print b + " = " + self.vcDialects[a][b]
-        print
+            print(b + " = " + self.vcDialects[a][b])
+        print()
 
     def getText(self, dialect, keyseq):
         if not dialect in self.vcDialects:
@@ -87,7 +83,7 @@ class VoiceChatPlugin:
 
     # Parses the different commands and acts accordingly.
     # replyfunc is called with an appropriate response as argument (it should be a function that takes a string)
-    def handleMessage(self, msg, source, replyfunc):
+    async def handleMessage(self, msg, source, replyfunc):
         if(len(msg.split()) > 0):
             messageWords = msg.split()
             command = messageWords[0]
@@ -98,48 +94,48 @@ class VoiceChatPlugin:
             if numTokens == 2 and command == "vc":
                 dialect = self.GetVCDialectPreference(user)
                 chatShortcut = messageWords[1]
-                replyfunc(self.getText(dialect, chatShortcut))
+                await replyfunc(self.getText(dialect, chatShortcut))
             
             # vc dialect 'XXX - read dialect from message                     
             elif numTokens == 3 and command == "vc":
                 (dialect, chatShortcut) = messageWords[1:3]
-                replyfunc(self.getText(dialect, chatShortcut))
+                await replyfunc(self.getText(dialect, chatShortcut))
             
             # findvc dialect <keywords> - read dialect from message
             elif numTokens >= 3 and command == "findvc" and msg.split()[1] in self.vcDialects:
                 dialect = messageWords[1]
                 query   = messageWords[2:]
-                replyfunc(self.getVC(dialect, query))
+                await replyfunc(self.getVC(dialect, query))
                 
             # findvc <keywords> - read dialect from preference or use default                    
             elif numTokens >= 2 and command == "findvc":
                 dialect = self.GetVCDialectPreference(user)
                 query = messageWords[1:]
-                replyfunc(self.getVC(dialect, query))
+                await replyfunc(self.getVC(dialect, query))
             
             # vcpref preference
             elif numTokens >= 2 and command == "vcpref":
                 dialect = messageWords[1]
                 if dialect in self.vcDialects:
                     self.SetVCDialectPreference(user, dialect)
-                    replyfunc("Setting VC dialect for " + user)
+                    await replyfunc("Setting VC dialect for " + user)
                 else:
-                    replyfunc("I'm sorry, but can't find the " + dialect + " voice chat dialect, " + source)
-        
-    def onPrivateMessage(self, irclib, source, msg):
-        self.handleMessage(msg, source, (lambda reply: irclib.sendPrivateMessage(source, reply)))
+                    await replyfunc("I'm sorry, but can't find the " + dialect + " voice chat dialect, " + source)
 
-    def onChannelMessage(self, irclib, source, msg):
-        self.handleMessage(msg, source, (lambda reply: irclib.sendChannelMessage(reply)))
+    async def onPrivateMessage(self, ctx, source, msg):
+        await self.handleMessage(msg, source, ctx.reply)
+
+    async def onChannelMessage(self, ctx, source, msg):
+        await self.handleMessage(msg, source, ctx.reply)
 
 
 #Unit-test
 if __name__ == "__main__":
     class FakeIrcLib:
         def sendPrivateMessage(self, target, text):
-            print text
+            print(text)
         def sendChannelMessage(self, text):
-            print text
+            print(text)
     
     class FakeAuthenticationPlugin:
         def getCanonicalName(self, name):
