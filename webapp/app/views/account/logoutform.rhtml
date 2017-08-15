@@ -1,9 +1,0 @@
-<%= start_form_tag :controller => 'account', :action => "logout" %>
-
-<div title="Account login" id="logoutform" class="form">
-    <p>You're logged in as <%= @session[:user].login %></p>
-    
-    <input type="submit" name="logout" value="Logout &#187;" class="primary" />
-</div>
-
-<%= end_form_tag %>

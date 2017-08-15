@@ -1,7 +1,0 @@
-<% if @has_connection %>
-    <p>Current state: <strong><%= @state %></strong></p>
-    <p>Number of loaded plugins: <strong><%= @num_plugins %></strong></p>
-    <p>Number of known event handlers: <strong><%= @num_events %></strong></p>
-<% else %>
-    Can't connect to the bot via XML-RPC. Not running?
-<% end %>
