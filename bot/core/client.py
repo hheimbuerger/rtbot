@@ -15,7 +15,10 @@ class User:   # TODO: this should be extracted into a separate module
 
     #@deprecated
     def getCanonicalNick(self):
-        return self.author
+        return self.author.name
+
+    def isAdmin(self):
+        return True
 
     @property
     def dataStore(self):
@@ -25,9 +28,14 @@ class User:   # TODO: this should be extracted into a separate module
 class MessageContext:   # TODO: this should be extracted into a separate module
     def __init__(self, client, message):
         self.client = client
+        self.message = message
         self.channel = message.channel
         self.author = message.author
         self.content = message.content
+
+    @property
+    def is_private(self):
+        return self.channel.is_private
 
     async def reply(self, content):
         await self.client.send_message(self.channel, content)
