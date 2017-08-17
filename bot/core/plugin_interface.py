@@ -7,8 +7,11 @@ import pickle
 import sys
 from pathlib import Path
 
-from core import utils
 
+def decorator(decorfunc):
+   def wrapper(func):
+      return lambda *args, **kwargs: decorfunc(func, *args, **kwargs)
+   return wrapper
 
 # Vocabulary
 # classname - the name of the plugin class in the plugin file (eg. SeenPlugin is the
@@ -162,7 +165,7 @@ class PluginWrapper:
         
     ##  Plugin state management
 
-    @utils.decorator
+    @decorator
     def changesState(func, self, *args, **kwargs):
         """Decorator for methods that potentially change the plugin's state. Ensures that the plugin is
         taken online or offline accordingly"""
