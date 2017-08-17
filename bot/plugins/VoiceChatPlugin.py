@@ -1,29 +1,25 @@
-# These imports are only used for the unit-test code, they are ignored when used as a plugin (but all of them are automatically imported by the PluginInterface)
-import re, logging
+import csv, os, pickle, re
+
 
 class VoiceChatPlugin:
-    import csv, os, pickle
-    
+
     vcDialects = {}
     DialectPreferences = {"test": "default"}
     PreferenceFilename = "resources/VCDialectPreferences.lst"
     
-    def __init__(self, pluginInterface):
-        # Save reference to the pluginInterface
-        self.pluginInterfaceReference = pluginInterface
-
+    def __init__(self):
         # If file present - load dialect preferences
-        if self.os.path.isfile(self.PreferenceFilename) and self.os.path.getsize(self.PreferenceFilename) > 0:
+        if os.path.isfile(self.PreferenceFilename) and os.path.getsize(self.PreferenceFilename) > 0:
             with open(self.PreferenceFilename, "rb") as f:
-                self.DialectPreferences = self.pickle.load(f)
-        for file in self.os.listdir("resources/"):
+                self.DialectPreferences = pickle.load(f)
+        for file in os.listdir("resources/"):
             filepath = "resources/" + file
             if((file[:4] == "VCs.") and (file[-4:] == ".csv")):
                 dialect = file[4:-4]
                 #print dialect
                 self.vcDialects[dialect] = {}
                 file = open(filepath, "r")
-                reader = self.csv.reader(file)
+                reader = csv.reader(file)
                 for row in reader:
                     #print row[0] + " = " + row[1]
                     self.vcDialects[dialect][row[0].lower()] = row[1]
@@ -33,8 +29,9 @@ class VoiceChatPlugin:
     def SetVCDialectPreference(self, user, dialect):
         self.DialectPreferences[user] = dialect
         file = open(self.PreferenceFilename, "w")
-        self.pickle.dump(self.DialectPreferences, file)
+        pickle.dump(self.DialectPreferences, file)
         file.close()
+
     # This might not return a valid dialect
     def GetVCDialectPreference(self, user):
         if user in self.DialectPreferences:
@@ -83,7 +80,7 @@ class VoiceChatPlugin:
 
     # Parses the different commands and acts accordingly.
     # replyfunc is called with an appropriate response as argument (it should be a function that takes a string)
-    async def handleMessage(self, msg, source, replyfunc):
+    async def on_message(self, ctx, source, msg):
         if(len(msg.split()) > 0):
             messageWords = msg.split()
             command = messageWords[0]
@@ -94,72 +91,30 @@ class VoiceChatPlugin:
             if numTokens == 2 and command == "vc":
                 dialect = self.GetVCDialectPreference(user)
                 chatShortcut = messageWords[1]
-                await replyfunc(self.getText(dialect, chatShortcut))
+                await ctx.reply(self.getText(dialect, chatShortcut))
             
             # vc dialect 'XXX - read dialect from message                     
             elif numTokens == 3 and command == "vc":
                 (dialect, chatShortcut) = messageWords[1:3]
-                await replyfunc(self.getText(dialect, chatShortcut))
+                await ctx.reply(self.getText(dialect, chatShortcut))
             
             # findvc dialect <keywords> - read dialect from message
             elif numTokens >= 3 and command == "findvc" and msg.split()[1] in self.vcDialects:
                 dialect = messageWords[1]
                 query   = messageWords[2:]
-                await replyfunc(self.getVC(dialect, query))
+                await ctx.reply(self.getVC(dialect, query))
                 
             # findvc <keywords> - read dialect from preference or use default                    
             elif numTokens >= 2 and command == "findvc":
                 dialect = self.GetVCDialectPreference(user)
                 query = messageWords[1:]
-                await replyfunc(self.getVC(dialect, query))
+                await ctx.reply(self.getVC(dialect, query))
             
             # vcpref preference
             elif numTokens >= 2 and command == "vcpref":
                 dialect = messageWords[1]
                 if dialect in self.vcDialects:
                     self.SetVCDialectPreference(user, dialect)
-                    await replyfunc("Setting VC dialect for " + user)
+                    await ctx.reply("Setting VC dialect for " + user)
                 else:
-                    await replyfunc("I'm sorry, but can't find the " + dialect + " voice chat dialect, " + source)
-
-    async def onPrivateMessage(self, ctx, source, msg):
-        await self.handleMessage(msg, source, ctx.reply)
-
-    async def onChannelMessage(self, ctx, source, msg):
-        await self.handleMessage(msg, source, ctx.reply)
-
-
-#Unit-test
-if __name__ == "__main__":
-    class FakeIrcLib:
-        def sendPrivateMessage(self, target, text):
-            print(text)
-        def sendChannelMessage(self, text):
-            print(text)
-    
-    class FakeAuthenticationPlugin:
-        def getCanonicalName(self, name):
-            return name
-    
-    class FakePluginInterface:
-        def getPlugin(self, name):
-            if name == "AuthenticationPlugin":
-                return FakeAuthenticationPlugin()
-    
-    class FakeFailingPluginInterface:
-        def getPlugin(self, name):
-            return None
-
-    a = VoiceChatPlugin(FakePluginInterface())
-    #a.listAll()
-    a.onChannelMessage(FakeIrcLib(), "source", "findvc default fir")
-    a.onChannelMessage(FakeIrcLib(), "source", "findvc CortDialect heh heh")
-    a.onChannelMessage(FakeIrcLib(), "source", "vc default ~ra")
-    a.onChannelMessage(FakeIrcLib(), "source", "vc '1")
-    a.onChannelMessage(FakeIrcLib(), "source", "findvc affir")
-    a.onChannelMessage(FakeIrcLib(), "tester", "vcpref TigereyeDialect")
-    a.onChannelMessage(FakeIrcLib(), "tester", "vc `tqa")  # Should be "Out of ammo - interesting"
-    a.onChannelMessage(FakeIrcLib(), "tester", "vcpref Nonexistant")
-    
-    b = VoiceChatPlugin(FakeFailingPluginInterface())
-    b.onChannelMessage(FakeIrcLib(), "foo", "vcpref bar") # Should print AuthenticationPlugin error message
+                    await ctx.reply("I'm sorry, but can't find the " + dialect + " voice chat dialect, " + source)
