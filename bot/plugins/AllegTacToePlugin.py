@@ -1,43 +1,46 @@
-import random, logging
+import random
 
-class AllegTacToePlugin:
+from plugin_base import BasePlugin
+
+
+class AllegTacToePlugin(BasePlugin):
     gameKey = "AllegTacToeGame"
 
     def __init__(self):
         self.games = {}
 
-    async def on_message(self, ctx, source, msg):
-      if((msg == "play") or (msg == "play novice")):
-          if((len(msg.split()) >= 2) and (msg.split()[1] == "novice")):
-            await ctx.reply("Okay, here we go (easy mode):")
+    async def on_message(self, channel, user, message):
+      if((message == "play") or (message == "play novice")):
+          if((len(message.split()) >= 2) and (message.split()[1] == "novice")):
+            await channel.reply("Okay, here we go (easy mode):")
             expertMode = False
           else:
-            await ctx.reply("Okay, here we go (expert mode):")
+            await channel.reply("Okay, here we go (expert mode):")
             expertMode = True
 
           # create the game
           game = AllegTacToeGame(expertMode)
-          source.dataStore[AllegTacToePlugin.gameKey] = game
+          user.data_store[AllegTacToePlugin.gameKey] = game
           
           #logging.debug("board:" + string.join(self.games[source].showBoard(), "\n"))
-          await ctx.reply('\n'.join(game.showBoard()))
-      elif(source.dataStore.get(AllegTacToePlugin.gameKey)):
-          if(msg == "#resign"):
-              await ctx.reply("HQ (all): %s's proposal to resign has passed. (1 for)" % (source.getCanonicalNick()))
-              await ctx.reply("HQ (all): Team CleverAI has won by outlasting all other sides.")
-              del source.dataStore[AllegTacToePlugin.gameKey]
+          await channel.reply('\n'.join(game.showBoard()))
+      elif(user.data_store.get(AllegTacToePlugin.gameKey)):
+          if(message == "#resign"):
+              await channel.reply("HQ (all): %s's proposal to resign has passed. (1 for)" % (source.getCanonicalNick()))
+              await channel.reply("HQ (all): Team CleverAI has won by outlasting all other sides.")
+              del user.data_store[AllegTacToePlugin.gameKey]
           else:
-              game = source.dataStore.get(AllegTacToePlugin.gameKey)
-              (isValid, error) = game.isValidMove(msg)
+              game = user.data_store.get(AllegTacToePlugin.gameKey)
+              (isValid, error) = game.isValidMove(message)
               if(isValid):
-                  res = game.nextTurn(int(msg))
-                  await ctx.reply('\n'.join(game.showBoard()))
+                  res = game.nextTurn(int(message))
+                  await channel.reply('\n'.join(game.showBoard()))
                   if(res != ""):
-                      await ctx.reply(res)
-                      del source.dataStore[AllegTacToePlugin.gameKey]
+                      await channel.reply(res)
+                      del user.data_store[AllegTacToePlugin.gameKey]
               else:
                   if(error != ""):
-                    await ctx.reply(error)
+                    await channel.reply(error)
 
 
 class AllegTacToeGame:

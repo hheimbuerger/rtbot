@@ -1,7 +1,9 @@
 import csv, os, pickle, re
 
+from plugin_base import BasePlugin
 
-class VoiceChatPlugin:
+
+class VoiceChatPlugin(BasePlugin):
 
     vcDialects = {}
     DialectPreferences = {"test": "default"}
@@ -79,42 +81,40 @@ class VoiceChatPlugin:
         return("I'm not aware of a VC with that content in the %s dialect." % (dialect))
 
     # Parses the different commands and acts accordingly.
-    # replyfunc is called with an appropriate response as argument (it should be a function that takes a string)
-    async def on_message(self, ctx, source, msg):
-        if(len(msg.split()) > 0):
-            messageWords = msg.split()
+    async def on_message(self, channel, user, message):
+        if(len(message.split()) > 0):
+            messageWords = message.split()
             command = messageWords[0]
             numTokens = len(messageWords)
-            user = source.getCanonicalNick()
         
             # vc 'XXX - either fetch dialect from preference or use default
             if numTokens == 2 and command == "vc":
-                dialect = self.GetVCDialectPreference(user)
+                dialect = self.GetVCDialectPreference(user.id)
                 chatShortcut = messageWords[1]
-                await ctx.reply(self.getText(dialect, chatShortcut))
+                await channel.reply(self.getText(dialect, chatShortcut))
             
             # vc dialect 'XXX - read dialect from message                     
             elif numTokens == 3 and command == "vc":
                 (dialect, chatShortcut) = messageWords[1:3]
-                await ctx.reply(self.getText(dialect, chatShortcut))
+                await channel.reply(self.getText(dialect, chatShortcut))
             
             # findvc dialect <keywords> - read dialect from message
-            elif numTokens >= 3 and command == "findvc" and msg.split()[1] in self.vcDialects:
+            elif numTokens >= 3 and command == "findvc" and message.split()[1] in self.vcDialects:
                 dialect = messageWords[1]
                 query   = messageWords[2:]
-                await ctx.reply(self.getVC(dialect, query))
+                await channel.reply(self.getVC(dialect, query))
                 
             # findvc <keywords> - read dialect from preference or use default                    
             elif numTokens >= 2 and command == "findvc":
-                dialect = self.GetVCDialectPreference(user)
+                dialect = self.GetVCDialectPreference(user.id)
                 query = messageWords[1:]
-                await ctx.reply(self.getVC(dialect, query))
+                await channel.reply(self.getVC(dialect, query))
             
             # vcpref preference
             elif numTokens >= 2 and command == "vcpref":
                 dialect = messageWords[1]
                 if dialect in self.vcDialects:
-                    self.SetVCDialectPreference(user, dialect)
-                    await ctx.reply("Setting VC dialect for " + user)
+                    self.SetVCDialectPreference(user.id, dialect)   # TODO: would be nice to able to just store 'user' as the identity here and then behind the scenes it would be the internal ID that gets serialized/deserialized
+                    await channel.reply("Setting VC dialect for " + user.name)
                 else:
-                    await ctx.reply("I'm sorry, but can't find the " + dialect + " voice chat dialect, " + source)
+                    await channel.reply("I'm sorry, but can't find the " + dialect + " voice chat dialect, " + user.name)

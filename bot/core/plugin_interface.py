@@ -290,10 +290,12 @@ class PluginWrapper:
     def instantiateObject(self):
         try:
             #   if a constructor exists and it has two parameters (self, pluginInterface), call it with the pluginInterface as argument
-            if  hasattr(self.pluginClass,"__init__") and len(inspect.getargspec(self.pluginClass.__init__)[0]) == 2:
-                self.pluginObject = self.pluginClass(self.pluginInterface)
-            else:  #   otherwise, call the argument-less constructor
-                self.pluginObject = self.pluginClass()
+            #if  hasattr(self.pluginClass,"__init__") and len(inspect.getargspec(self.pluginClass.__init__)[0]) == 2:
+            #    self.pluginObject = self.pluginClass(self.pluginInterface)
+            #else:  #   otherwise, call the argument-less constructor
+            self.pluginObject = self.pluginClass()
+            self.pluginObject.plugin_context = self.pluginInterface.pluginContext   # TODO: This gets injected instead of passed to the constructor, so that plugins don't have to remember
+                                                                                    # to have it in their signature and pass it through. But I'm not sure whether this is really any better...
         except Exception as e:
             logging.exception("Plugin raised exception during instantiation")
             raise PluginLoadError(e)
@@ -369,6 +371,8 @@ class PluginInterface:
                 up.load()
             except:
                 pass # If we can't load the plugin states, no biggie...
+
+        self.pluginContext = None   # FIXME: we're gonna inject this later, but of course that's not the right way to do this
         
     def dispose(self):
         p = pickle.Pickler(self.pluginMetaData.open("w"))

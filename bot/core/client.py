@@ -3,6 +3,7 @@ import collections
 import discord
 import asyncio
 
+from core import settings
 from core.decorators import deprecated
 
 
@@ -10,57 +11,88 @@ user_data_store = collections.defaultdict(dict)
 
 
 class User:   # TODO: this should be extracted into a separate module
-    def __init__(self, author):
-        self.author = author
+    def __init__(self, client, raw_message):
+        self.client = client
+        self.raw_user = raw_message.author
 
-    #@deprecated
-    def getCanonicalNick(self):
-        return self.author.name
+    @property
+    def id(self):
+        return self.raw_user.id
 
-    def isAdmin(self):
+    @property
+    def name(self):
+        return self.raw_user.name
+
+    @property
+    def is_admin(self):
         return True
 
     @property
-    def dataStore(self):
-        return user_data_store[self.author]
+    def data_store(self):
+        return user_data_store[self.raw_user.id]
+
+    def __str__(self):
+        return 'User {name}#{id}'.format(id=self.id, name=self.name)
 
 
-class MessageContext:   # TODO: this should be extracted into a separate module
-    def __init__(self, client, message):
+class Channel:   # TODO: this should be extracted into a separate module
+    def __init__(self, client, raw_message):
         self.client = client
-        self.message = message
-        self.channel = message.channel
-        self.author = message.author
-        self.content = message.content
+        self.raw_channel = raw_message.channel
+
+    @property
+    def name(self):
+        return self.raw_channel.name
 
     @property
     def is_private(self):
-        return self.channel.is_private
+        return self.raw_channel.is_private
 
-    async def reply(self, content):
-        await self.client.send_message(self.channel, content)
-
-    async def emote(self, content):
-        await self.client.send_message('_{}_'.format(content))
+    async def reply(self, message):
+        await self.client.dispatch_message(self, message)
 
     async def get_channel_users(self):
         raise NotImplementedError('does anyone need this?')
 
+    def __str__(self):
+        return 'Channel #{name}'.format(name=self.name)
+
+
+class PluginContext:
+    def __init__(self, client):
+        self.client = client
+
+    async def dispatch_message(self, target, content):
+        await self.client.dispatch_message(target, content)
+
 
 class RTBotClient(discord.Client):
 
-    MAIN_CHANNEL_NAME = '#rtbot-development'
-
-    def __init__(self, plugin_interface, discord_token):
+    def __init__(self, plugin_interface):
         super(RTBotClient, self).__init__()
         self.plugin_interface = plugin_interface
-        self.discord_token = discord_token
+        self.plugin_context = PluginContext(self)
+
+        # FIXME: not the right way to inject a dependency
+        self.plugin_interface.pluginContext = self.plugin_context
 
     def _determine_main_channel(self):
         for channel in self.get_all_channels():
             print(channel.name)
-            if channel.name == self.MAIN_CHANNEL_NAME[1:]:
+            if channel.name == settings.MAIN_CHANNEL_NAME[1:]:
                 self.main_channel = channel
+
+    async def dispatch_message(self, target, content):
+        if target is None:
+            destination = self.main_channel
+        elif isinstance(target, User):
+            destination = target.raw_user
+        elif isinstance(target, Channel):
+            destination = target.raw_channel
+        else:
+            raise Exception('Invalid message destination: %s', target)
+
+        await self.send_message(destination, content)
 
     async def on_timer(self):
         await self.wait_until_ready()
@@ -78,7 +110,7 @@ class RTBotClient(discord.Client):
         print('MSG: ', message.id, message.server, message.channel, message.author, message.timestamp, message.content)
         #print('---')
         if message.author != self.user:
-            await self.plugin_interface.fireEvent("on_message", MessageContext(self, message), User(message.author), message.content)
+            await self.plugin_interface.fireEvent("on_message", Channel(self, message), User(self, message), message.content)
 
     async def on_ready(self):
         self._determine_main_channel()
@@ -111,4 +143,4 @@ class RTBotClient(discord.Client):
 
     def obey_humans_forever(self):
         self.loop.create_task(self.on_timer())
-        self.run(self.discord_token)
+        self.run(settings.DISCORD_TOKEN)

@@ -34,7 +34,7 @@ logging.basicConfig(level=logging.INFO)
 plugin_interface = PluginInterface('plugins/')
 
 # create Discord client
-client = RTBotClient(plugin_interface=plugin_interface, discord_token=settings.discord_token)
+client = RTBotClient(plugin_interface=plugin_interface)
 
 # initialize plugins
 plugin_interface.registerInformTarget(client)

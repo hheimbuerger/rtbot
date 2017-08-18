@@ -1,15 +1,16 @@
 import asyncio
 
+from plugin_base import BasePlugin
 
-class DemoPlugin:
 
-    async def onMessage(self, ctx, source, message):
+class DemoPlugin(BasePlugin):
 
+    async def on_message(self, channel, user, message):
         if message == "!countdown":
             for i in range(5, 0, -1):
-                await ctx.reply(i)
+                await self.send_message(channel, i)   # one way to respond on the same channel
                 await asyncio.sleep(1)
-            await ctx.reply('Take off!')
+            await channel.reply('Take off!')   # another way
 
         elif message == '!test':
-            await ctx.reply('I can do two things at once!')
+            await self.send_message(channel, 'I can do two things at once!')
