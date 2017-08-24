@@ -17,8 +17,8 @@ class PluginTestCase(unittest.TestCase):
 
     def simulate_message(self, message):
         ctx = MessageContextMock()
-        from core.client import User
-        coro = self.plugin.on_message(ctx, User('foo'), message)
+
+        coro = self.plugin.on_message(ctx, 'Joe Tester', message)   # TODO: need to pass a mock user here
         asyncio.get_event_loop().run_until_complete(coro)
         return ctx.response_buffer
 

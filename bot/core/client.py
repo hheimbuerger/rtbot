@@ -31,7 +31,16 @@ class User:   # TODO: this should be extracted into a separate module
     def data_store(self):
         return user_data_store[self.raw_user.id]
 
+    def __hash__(self):
+        """
+        Don't hesitate to use User objects as dict keys!
+        """
+        return hash(self.id)
+
     def __str__(self):
+        return self.name
+
+    def __repr__(self):
         return 'User {name}#{id}'.format(id=self.id, name=self.name)
 
 
@@ -55,6 +64,9 @@ class Channel:   # TODO: this should be extracted into a separate module
         raise NotImplementedError('does anyone need this?')
 
     def __str__(self):
+        return '#' + self.name
+
+    def __repr__(self):
         return 'Channel #{name}'.format(name=self.name)
 
 
@@ -96,13 +108,9 @@ class RTBotClient(discord.Client):
 
     async def on_timer(self):
         await self.wait_until_ready()
-        counter = 0
-        #channel = discord.Object(id='channel_id_here')
         while not self.is_closed:
-            counter += 1
-            #await self.send_message(channel, counter)
-            #print('beep')
-            await asyncio.sleep(10) # task runs every 60 seconds
+            await self.plugin_interface.fireEvent("on_timer")
+            await asyncio.sleep(10)   # task runs every 60 seconds
 
     async def on_message(self, message):
         #print('Servers: ' + str(list(self.servers)))
